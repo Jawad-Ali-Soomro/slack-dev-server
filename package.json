@@ -1,0 +1,37 @@
+{
+  "name": "core-stack",
+  "version": "0.0.1",
+  "description": "one place toll for devs",
+  "main": "index.ts",
+  "scripts": {
+    "start": "tsc && node dist/index.js",
+    "dev": "nodemon index.ts"
+  },
+  "author": "Jawad-Ali-Soomro",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^3.0.2",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.2",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.18.1",
+    "multer": "^2.0.2",
+    "nodemailer": "^7.0.6",
+    "nodemon": "^3.1.10",
+    "redis": "^5.8.2",
+    "swagger": "^0.7.5",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1",
+    "winston": "^3.17.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.3",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/multer": "^2.0.0",
+    "@types/node": "^24.3.1",
+    "@types/nodemailer": "^7.0.1",
+    "@types/swagger-jsdoc": "^6.0.4",
+    "@types/swagger-ui-express": "^4.1.8"
+  }
+}
