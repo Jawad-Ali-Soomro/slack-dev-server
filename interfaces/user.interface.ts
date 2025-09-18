@@ -11,6 +11,21 @@ export interface IUser extends Document {
   passwordResetToken?: string;
   passwordResetTokenExpires?: Date;
   avatar?: string;
+  bio?: string;
+  userLocation?: string;
+  website?: string;
+  socialLinks?: {
+    twitter?: string;
+    linkedin?: string;
+    github?: string;
+    instagram?: string;
+    facebook?: string;
+  };
+  dateOfBirth?: Date;
+  phone?: string;
+  isPrivate?: boolean;
+  followersCount?: number;
+  followingCount?: number;
 }
 
 export enum Role {

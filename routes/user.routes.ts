@@ -22,14 +22,45 @@ import { authenticate, upload } from '../middlewares'
  *               username:
  *                 type: string
  *                 example: newusername
- *               email:
+ *               bio:
  *                 type: string
- *                 example: newemail@example.com
+ *                 example: Full-stack developer passionate about creating amazing apps
+ *               userLocation:
+ *                 type: string
+ *                 example: San Francisco, CA
+ *               website:
+ *                 type: string
+ *                 example: https://johndoe.dev
+ *               socialLinks:
+ *                 type: object
+ *                 properties:
+ *                   twitter:
+ *                     type: string
+ *                     example: https://twitter.com/johndoe
+ *                   linkedin:
+ *                     type: string
+ *                     example: https://linkedin.com/in/johndoe
+ *                   github:
+ *                     type: string
+ *                     example: https://github.com/johndoe
+ *                   instagram:
+ *                     type: string
+ *                     example: https://instagram.com/johndoe
+ *                   facebook:
+ *                     type: string
+ *                     example: https://facebook.com/johndoe
+ *               dateOfBirth:
+ *                 type: string
+ *                 format: date
+ *                 example: 1990-01-15
+ *               phone:
+ *                 type: string
+ *                 example: +1234567890
  *     responses:
  *       200:
  *         description: Profile updated successfully
  *       400:
- *         description: Email already in use or username already taken
+ *         description: Username already taken
  *       401:
  *         description: Unauthorized
  */

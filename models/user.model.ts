@@ -28,6 +28,51 @@ const UserSchema = new Schema<IUser>({
   },
   avatar: {
     type: String
+  },
+  bio: {
+    type: String,
+    maxlength: 500
+  },
+  userLocation: {
+    type: String
+  },
+  website: {
+    type: String
+  },
+  socialLinks: {
+    twitter: {
+      type: String
+    },
+    linkedin: {
+      type: String
+    },
+    github: {
+      type: String
+    },
+    instagram: {
+      type: String
+    },
+    facebook: {
+      type: String
+    }
+  },
+  dateOfBirth: {
+    type: Date
+  },
+  phone: {
+    type: String
+  },
+  isPrivate: {
+    type: Boolean,
+    default: false
+  },
+  followersCount: {
+    type: Number,
+    default: 0
+  },
+  followingCount: {
+    type: Number,
+    default: 0
   }
 });
 

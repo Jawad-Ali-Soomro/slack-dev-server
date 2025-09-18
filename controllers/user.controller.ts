@@ -10,23 +10,31 @@ const formatUserResponse = (user: IUser): UserResponse => ({
   username: user.username,
   role: user.role,
   avatar: user.avatar,
+  bio: user.bio,
+  userLocation: user.userLocation,
+  website: user.website,
+  socialLinks: user.socialLinks,
+  dateOfBirth: user.dateOfBirth,
+  phone: user.phone,
+  isPrivate: user.isPrivate,
+  followersCount: user.followersCount,
+  followingCount: user.followingCount,
   emailVerified: user.emailVerified
 });
 
 export const updateProfile = catchAsync(async (req: any, res: any) => {
-  const { username, email }: UpdateProfileRequest = req.body;
+  const { username, bio, userLocation, website, socialLinks, dateOfBirth, phone, isPrivate }: UpdateProfileRequest = req.body;
   const userId = req.user._id;
 
   const updateData: any = {};
   if (username) updateData.username = username;
-  if (email) updateData.email = email;
-
-  if (email) {
-    const existingUser = await User.findOne({ email, _id: { $ne: userId } });
-    if (existingUser) {
-      return res.status(400).json({ message: "email already in use" });
-    }
-  }
+  if (bio !== undefined) updateData.bio = bio;
+  if (userLocation !== undefined) updateData.userLocation = userLocation;
+  if (website !== undefined) updateData.website = website;
+  if (socialLinks !== undefined) updateData.socialLinks = socialLinks;
+  if (dateOfBirth !== undefined) updateData.dateOfBirth = dateOfBirth;
+  if (phone !== undefined) updateData.phone = phone;
+  if (isPrivate !== undefined) updateData.isPrivate = isPrivate;
 
   if (username) {
     const existingUser = await User.findOne({ username, _id: { $ne: userId } });

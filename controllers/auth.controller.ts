@@ -87,8 +87,7 @@ export const login = catchAsync(async (req: any, res: any) => {
   const token = generateToken({ id: user._id });
   res.status(200).json({
     message: "login successful",
-    token,
-    user: formatUserResponse(user)
+    token
   });
 });
 

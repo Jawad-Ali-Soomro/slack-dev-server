@@ -1,6 +1,18 @@
 export interface UpdateProfileRequest {
   username?: string;
-  email?: string;
+  bio?: string;
+  userLocation?: string;
+  website?: string;
+  socialLinks?: {
+    twitter?: string;
+    linkedin?: string;
+    github?: string;
+    instagram?: string;
+    facebook?: string;
+  };
+  dateOfBirth?: Date;
+  phone?: string;
+  isPrivate?: boolean;
 }
 
 export interface ChangePasswordRequest {
@@ -14,5 +26,20 @@ export interface UserResponse {
   username: string;
   role: string;
   avatar?: string;
+  bio?: string;
+  userLocation?: string;
+  website?: string;
+  socialLinks?: {
+    twitter?: string;
+    linkedin?: string;
+    github?: string;
+    instagram?: string;
+    facebook?: string;
+  };
+  dateOfBirth?: Date;
+  phone?: string;
+  isPrivate?: boolean;
+  followersCount?: number;
+  followingCount?: number;
   emailVerified?: boolean;
 }
