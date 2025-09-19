@@ -1,4 +1,5 @@
 import express from 'express'
+import cors from 'cors'
 import dotenv from 'dotenv'
 import swaggerUi from 'swagger-ui-express'
 import swaggerJSDoc from 'swagger-jsdoc'
@@ -19,6 +20,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec))
 dbConnection()
 
 // Middleware
+app.use(cors())
 app.use(express.static('public'))
 app.use('/profiles', express.static('uploads/profiles'))
 app.use(express.json())
@@ -32,7 +34,33 @@ app.get('/', (req, res) => {
   res.json({ 
     message: 'Server is running', 
     timestamp: new Date().toISOString(),
-    env: process.env.NODE_ENV 
+    env: process.env.NODE_ENV,
+    availableRoutes: [
+      'GET /',
+      'GET /api-docs',
+      'POST /api/auth/*',
+      'GET /api/user/*',
+      'POST /api/user/follow/*',
+      'GET /api/notifications/*'
+    ]
+  })
+})
+
+// Catch-all handler for debugging
+app.use('*', (req, res) => {
+  res.status(404).json({
+    error: 'Route not found',
+    method: req.method,
+    url: req.originalUrl,
+    path: req.path,
+    availableRoutes: [
+      'GET /',
+      'GET /api-docs',
+      '/api/auth/*',
+      '/api/user/*',
+      '/api/user/follow/*',
+      '/api/notifications/*'
+    ]
   })
 })
 
