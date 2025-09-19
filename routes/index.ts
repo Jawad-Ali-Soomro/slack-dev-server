@@ -7,7 +7,7 @@ const router = express.Router()
 
 router.use("/auth", authRouter)
 router.use("/user", userRouter)
-router.use("/follow", followRouter)
+router.use("/user/follow", followRouter)
 router.use("/notifications", notificationRouter)
 
 export default router

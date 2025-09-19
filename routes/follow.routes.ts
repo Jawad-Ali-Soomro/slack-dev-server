@@ -14,11 +14,11 @@ import { authenticate } from '../middlewares'
 
 /**
  * @openapi
- * /api/follow/user:
+ * /api/user/follow/user:
  *   post:
  *     summary: Follow a user
  *     tags:
- *       - Follow
+ *       - User
  *     security:
  *       - bearerAuth: []
  *     requestBody:
@@ -45,11 +45,11 @@ followRouter.post('/user', authenticate, followUser)
 
 /**
  * @openapi
- * /api/follow/user/{userId}:
+ * /api/user/follow/user/{userId}:
  *   delete:
  *     summary: Unfollow a user
  *     tags:
- *       - Follow
+ *       - User
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -69,11 +69,11 @@ followRouter.delete('/user/:userId', authenticate, unfollowUser)
 
 /**
  * @openapi
- * /api/follow/request/{followId}/accept:
+ * /api/user/follow/request/{followId}/accept:
  *   post:
  *     summary: Accept follow request
  *     tags:
- *       - Follow
+ *       - User
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -93,11 +93,11 @@ followRouter.post('/request/:followId/accept', authenticate, acceptFollowRequest
 
 /**
  * @openapi
- * /api/follow/request/{followId}/reject:
+ * /api/user/follow/request/{followId}/reject:
  *   post:
  *     summary: Reject follow request
  *     tags:
- *       - Follow
+ *       - User
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -117,11 +117,11 @@ followRouter.post('/request/:followId/reject', authenticate, rejectFollowRequest
 
 /**
  * @openapi
- * /api/follow/{userId}/followers:
+ * /api/user/follow/{userId}/followers:
  *   get:
  *     summary: Get user followers
  *     tags:
- *       - Follow
+ *       - User
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -149,11 +149,11 @@ followRouter.get('/:userId/followers', authenticate, getFollowers)
 
 /**
  * @openapi
- * /api/follow/{userId}/following:
+ * /api/user/follow/{userId}/following:
  *   get:
  *     summary: Get user following
  *     tags:
- *       - Follow
+ *       - User
  *     security:
  *       - bearerAuth: []
  *     parameters:
@@ -181,11 +181,11 @@ followRouter.get('/:userId/following', authenticate, getFollowing)
 
 /**
  * @openapi
- * /api/follow/requests:
+ * /api/user/follow/requests:
  *   get:
  *     summary: Get pending follow requests
  *     tags:
- *       - Follow
+ *       - User
  *     security:
  *       - bearerAuth: []
  *     responses:
@@ -196,11 +196,11 @@ followRouter.get('/requests', authenticate, getFollowRequests)
 
 /**
  * @openapi
- * /api/follow/{userId}/stats:
+ * /api/user/follow/{userId}/stats:
  *   get:
  *     summary: Get user follow statistics
  *     tags:
- *       - Follow
+ *       - User
  *     security:
  *       - bearerAuth: []
  *     parameters:
