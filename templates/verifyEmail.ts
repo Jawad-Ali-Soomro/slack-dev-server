@@ -7,7 +7,7 @@ export const buildOtpEmail = (data: OtpTemplateData) => {
     siteName = "CORE STACK",
     buttonText = "VERIFY EMAIL",
     buttonUrl = "#",
-    supportEmail = "SUPPORT@EXAMPLE.COM",
+    supportEmail = "support@slackdev.com",
     logoUrl,
   } = data;
 

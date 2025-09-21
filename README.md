@@ -63,7 +63,7 @@ PORT=8080
 BASE_URL=http://localhost:8080
 
 # Database
-MONGODB_URI=mongodb://localhost:27017/corestack
+MONGODB_URI=mongodb://localhost:27017/slack-dev
 
 # JWT Secret
 JWT_SECRET=your-super-secret-jwt-key
@@ -74,29 +74,6 @@ GMAIL_PASS=your-app-password
 ```
 
 ---
-
-## 📋 **API Endpoints**
-
-### 🔐 **Authentication**
-```
-POST   /api/auth/register        # Register new user
-POST   /api/auth/login           # User login
-POST   /api/auth/verify-email    # Verify email with OTP
-POST   /api/auth/forgot-password # Request password reset
-POST   /api/auth/reset-password  # Reset password with OTP
-GET    /api/auth/profile         # Get user profile
-```
-
-### 👤 **User Management**
-```
-PUT    /api/user/profile         # Update user profile
-POST   /api/user/avatar          # Upload avatar
-DELETE /api/user/avatar          # Delete avatar
-PUT    /api/user/change-password # Change password
-```
-
----
-
 ## 🎨 **Features**
 
 ### 🔒 **Robust Authentication**
@@ -229,8 +206,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 If you find this project helpful, please give it a ⭐ on GitHub!
 
 For support and questions:
-- 📧 Email: support@corestack.com
-- 💬 Issues: [GitHub Issues](https://github.com/your-repo/issues)
+- 📧 Email: support@slackdev.com
+- 💬 Issues: [GitHub Issues](https://github.com/slack-dev-server/issues)
 - 📖 Docs: [API Documentation](http://localhost:8080/api-docs)
 
 ---

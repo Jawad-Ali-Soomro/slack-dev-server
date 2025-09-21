@@ -32,10 +32,10 @@ export const register = catchAsync(async (req: any, res: any) => {
   const { html, text } = buildOtpEmail({
     otp: emailVerificationToken,
     username: username,
-    supportEmail: "support@corestack.com",
-    siteName: "Core Stack",
+    supportEmail: "support@slackdev.com",
+    siteName: "Slack Dev",
     buttonText: "Verify Email",
-    buttonUrl: "https://corestack.com/verify-email",
+    buttonUrl: `${process.env.FRONTEND_URL}/verify-email?token=${emailVerificationToken}`,
     logoUrl: `${process.env.BASE_URL || 'http://localhost:8080'}/logo.png`
   })
 
@@ -84,7 +84,30 @@ export const login = catchAsync(async (req: any, res: any) => {
     return res.status(401).json({ message: "invalid credentials" });
   }
   if (!user.emailVerified) {
-    return res.status(401).json({ message: "please verify your email first" });
+    res.status(401).json({ message: "please verify your email first" });
+    const emailVerificationToken = generateOtp();
+    const { html, text } = buildOtpEmail({
+      otp: emailVerificationToken,
+      username: user.username,
+      supportEmail: "support@slackdev.com",
+      siteName: "Slack Dev",
+      buttonText: "Verify Email",
+      buttonUrl: `${process.env.FRONTEND_URL}/verify-email?token=${emailVerificationToken}`,
+      logoUrl: `${process.env.BASE_URL || 'http://localhost:8080'}/logo.png`
+    })
+  
+    sendMail({
+      subject: "Verify Email",
+      to: email,
+      text,
+      html,
+      attachments: [{
+        filename: 'logo.png',
+        path: path.join(__dirname, '../public/logo.png'),
+        cid: 'logo'
+      }]
+    })
+    return;
   }
   const token = generateToken({ id: user._id });
   res.status(200).json({
@@ -126,10 +149,10 @@ export const forgotPassword = catchAsync(async (req: any, res: any) => {
   const { html, text } = buildResetPasswordEmail({
     otp: resetToken,
     username: user.username,
-    supportEmail: "support@corestack.com",
+    supportEmail: "support@slackdev.com",
     siteName: "Core Stack",
     buttonText: "Reset Password",
-    buttonUrl: "https://corestack.com/reset-password"
+    buttonUrl: `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`
   });
   sendMail({
     subject: "Reset Password",
