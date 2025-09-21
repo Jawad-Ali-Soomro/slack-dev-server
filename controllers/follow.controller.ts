@@ -1,6 +1,6 @@
 import { catchAsync } from "../middlewares";
-import { User } from "../models";
-import { FollowRequest, FollowResponse, UserFollowStats, FollowersResponse, FollowingResponse } from "../interfaces";
+import { User, Notification } from "../models";
+import { FollowRequest, UserFollowStats, FollowersResponse, FollowingResponse } from "../interfaces";
 
 export const followUser = catchAsync(async (req: any, res: any) => {
   const { userId }: FollowRequest = req.body;
@@ -33,6 +33,14 @@ export const followUser = catchAsync(async (req: any, res: any) => {
   // Add to target user's followers list
   await User.findByIdAndUpdate(userId, {
     $addToSet: { followers: currentUserId }
+  });
+
+  // Create notification for the followed user
+  await Notification.create({
+    recipient: userId,
+    sender: currentUserId,
+    type: "user_followed",
+    message: `${req.user.username} started following you`,
   });
 
   // Populate user data for response
@@ -88,6 +96,14 @@ export const unfollowUser = catchAsync(async (req: any, res: any) => {
   // Remove from target user's followers list
   await User.findByIdAndUpdate(userId, {
     $pull: { followers: currentUserId }
+  });
+
+  // Create notification for the unfollowed user
+  await Notification.create({
+    recipient: userId,
+    sender: currentUserId,
+    type: "user_unfollowed",
+    message: `${req.user.username} stopped following you`,
   });
 
   // Populate user data for response
@@ -243,5 +259,49 @@ export const checkFollowStatus = catchAsync(async (req: any, res: any) => {
     isFollowing,
     userId,
     currentUserId: currentUserId.toString()
+  });
+});
+
+export const getFollowNotifications = catchAsync(async (req: any, res: any) => {
+  const currentUserId = req.user._id;
+  const page = parseInt(req.query.page as string) || 1;
+  const limit = parseInt(req.query.limit as string) || 20;
+  const skip = (page - 1) * limit;
+
+  const notifications = await Notification.find({ 
+    recipient: currentUserId,
+    type: { $in: ["user_followed", "user_unfollowed"] }
+  })
+    .populate("sender", "username avatar")
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(limit);
+
+  const total = await Notification.countDocuments({ 
+    recipient: currentUserId,
+    type: { $in: ["user_followed", "user_unfollowed"] }
+  });
+
+  const notificationResponses = notifications.map(notification => ({
+    id: (notification._id as any).toString(),
+    sender: {
+      id: (notification.sender as any)._id.toString(),
+      username: (notification.sender as any).username,
+      avatar: (notification.sender as any).avatar
+    },
+    type: notification.type,
+    message: notification.message,
+    isRead: notification.isRead,
+    createdAt: notification.createdAt
+  }));
+
+  res.status(200).json({
+    notifications: notificationResponses,
+    pagination: {
+      page,
+      limit,
+      total,
+      pages: Math.ceil(total / limit)
+    }
   });
 });

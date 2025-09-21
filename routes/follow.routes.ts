@@ -6,7 +6,8 @@ import {
   getFollowers,
   getFollowing,
   getUserFollowStats,
-  checkFollowStatus
+  checkFollowStatus,
+  getFollowNotifications
 } from '../controllers/follow.controller'
 import { authenticate } from '../middlewares'
 
@@ -180,5 +181,31 @@ followRouter.get('/:userId/stats', authenticate, getUserFollowStats)
  *         description: User not found
  */
 followRouter.get('/:userId/status', authenticate, checkFollowStatus)
+
+/**
+ * @openapi
+ * /api/user/follow/notifications:
+ *   get:
+ *     summary: Get follow-related notifications
+ *     tags:
+ *       - User
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 20
+ *     responses:
+ *       200:
+ *         description: List of follow-related notifications
+ */
+followRouter.get('/notifications', authenticate, getFollowNotifications)
 
 export default followRouter
