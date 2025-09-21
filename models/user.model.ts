@@ -66,13 +66,15 @@ const UserSchema = new Schema<IUser>({
     type: Boolean,
     default: false
   },
-  followersCount: {
-    type: Number,
-    default: 0
+  followers: {
+    type: [Schema.Types.ObjectId],
+    ref: "User",
+    default: []
   },
-  followingCount: {
-    type: Number,
-    default: 0
+  following: {
+    type: [Schema.Types.ObjectId],
+    ref: "User",
+    default: []
   }
 });
 

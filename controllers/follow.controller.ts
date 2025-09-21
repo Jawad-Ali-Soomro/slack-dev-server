@@ -1,77 +1,63 @@
 import { catchAsync } from "../middlewares";
-import { User, Follow, Notification } from "../models";
-import { FollowRequest, FollowResponse, UserFollowStats } from "../interfaces";
-
-const createNotification = async (
-  recipientId: string,
-  senderId: string,
-  type: "follow_request" | "follow_accepted" | "follow_rejected",
-  message: string,
-  followId?: string
-) => {
-  await Notification.create({
-    recipient: recipientId,
-    sender: senderId,
-    type,
-    message,
-    followId
-  });
-};
+import { User } from "../models";
+import { FollowRequest, FollowResponse, UserFollowStats, FollowersResponse, FollowingResponse } from "../interfaces";
 
 export const followUser = catchAsync(async (req: any, res: any) => {
   const { userId }: FollowRequest = req.body;
   const currentUserId = req.user._id;
 
   if (userId === currentUserId.toString()) {
-    return res.status(400).json({ message: "cannot follow yourself" });
+    return res.status(400).json({ message: "Cannot follow yourself" });
   }
 
   const targetUser = await User.findById(userId);
   if (!targetUser) {
-    return res.status(404).json({ message: "user not found" });
+    return res.status(404).json({ message: "User not found" });
   }
 
-  const existingFollow = await Follow.findOne({
-    follower: currentUserId,
-    following: userId
+  const currentUser = await User.findById(currentUserId);
+  if (!currentUser) {
+    return res.status(404).json({ message: "Current user not found" });
+  }
+
+  // Check if already following
+  if ((currentUser as any).following.includes(userId as any)) {
+    return res.status(400).json({ message: "Already following this user" });
+  }
+
+  // Add to following list
+  await User.findByIdAndUpdate(currentUserId, {
+    $addToSet: { following: userId }
   });
 
-  if (existingFollow) {
-    return res.status(400).json({ message: "already following or request pending" });
-  }
-
-  const followStatus = targetUser.isPrivate ? "pending" : "accepted";
-  
-  const follow = await Follow.create({
-    follower: currentUserId,
-    following: userId,
-    status: followStatus
+  // Add to target user's followers list
+  await User.findByIdAndUpdate(userId, {
+    $addToSet: { followers: currentUserId }
   });
 
-  if (followStatus === "accepted") {
-    await User.findByIdAndUpdate(currentUserId, { $inc: { followingCount: 1 } });
-    await User.findByIdAndUpdate(userId, { $inc: { followersCount: 1 } });
-    
-    await createNotification(
-      userId,
-      currentUserId,
-      "follow_accepted",
-      `${req.user.username} started following you`,
-      (follow._id as any).toString()
-    );
-  } else {
-    await createNotification(
-      userId,
-      currentUserId,
-      "follow_request",
-      `${req.user.username} requested to follow you`,
-      (follow._id as any).toString()
-    );
-  }
+  // Populate user data for response
+  const updatedCurrentUser = await User.findById(currentUserId)
+    .populate("following", "username avatar")
+    .populate("followers", "username avatar");
+
+  const updatedTargetUser = await User.findById(userId)
+    .populate("following", "username avatar")
+    .populate("followers", "username avatar");
 
   res.status(200).json({
-    message: followStatus === "accepted" ? "user followed successfully" : "follow request sent",
-    status: followStatus
+    message: "User followed successfully",
+    currentUser: {
+      id: updatedCurrentUser?._id.toString(),
+      username: updatedCurrentUser?.username,
+      followersCount: (updatedCurrentUser as any)?.followers.length || 0,
+      followingCount: (updatedCurrentUser as any)?.following.length || 0
+    },
+    targetUser: {
+      id: updatedTargetUser?._id.toString(),
+      username: updatedTargetUser?.username,
+      followersCount: (updatedTargetUser as any)?.followers.length || 0,
+      followingCount: (updatedTargetUser as any)?.following.length || 0
+    }
   });
 });
 
@@ -79,77 +65,55 @@ export const unfollowUser = catchAsync(async (req: any, res: any) => {
   const { userId } = req.params;
   const currentUserId = req.user._id;
 
-  const follow = await Follow.findOneAndDelete({
-    follower: currentUserId,
-    following: userId
+  const targetUser = await User.findById(userId);
+  if (!targetUser) {
+    return res.status(404).json({ message: "User not found" });
+  }
+
+  const currentUser = await User.findById(currentUserId);
+  if (!currentUser) {
+    return res.status(404).json({ message: "Current user not found" });
+  }
+
+  // Check if currently following
+  if (!(currentUser as any).following.includes(userId as any)) {
+    return res.status(400).json({ message: "Not following this user" });
+  }
+
+  // Remove from following list
+  await User.findByIdAndUpdate(currentUserId, {
+    $pull: { following: userId }
   });
 
-  if (!follow) {
-    return res.status(404).json({ message: "not following this user" });
-  }
-
-  if (follow.status === "accepted") {
-    await User.findByIdAndUpdate(currentUserId, { $inc: { followingCount: -1 } });
-    await User.findByIdAndUpdate(userId, { $inc: { followersCount: -1 } });
-  }
-
-  res.status(200).json({ message: "user unfollowed successfully" });
-});
-
-export const acceptFollowRequest = catchAsync(async (req: any, res: any) => {
-  const { followId } = req.params;
-  const currentUserId = req.user._id;
-
-  const follow = await Follow.findOne({
-    _id: followId,
-    following: currentUserId,
-    status: "pending"
+  // Remove from target user's followers list
+  await User.findByIdAndUpdate(userId, {
+    $pull: { followers: currentUserId }
   });
 
-  if (!follow) {
-    return res.status(404).json({ message: "follow request not found" });
-  }
+  // Populate user data for response
+  const updatedCurrentUser = await User.findById(currentUserId)
+    .populate("following", "username avatar")
+    .populate("followers", "username avatar");
 
-  follow.status = "accepted";
-  await follow.save();
+  const updatedTargetUser = await User.findById(userId)
+    .populate("following", "username avatar")
+    .populate("followers", "username avatar");
 
-  await User.findByIdAndUpdate(follow.follower, { $inc: { followingCount: 1 } });
-  await User.findByIdAndUpdate(currentUserId, { $inc: { followersCount: 1 } });
-
-  await createNotification(
-    follow.follower.toString(),
-    currentUserId,
-    "follow_accepted",
-    `${req.user.username} accepted your follow request`,
-    (follow._id as any).toString()
-  );
-
-  res.status(200).json({ message: "follow request accepted" });
-});
-
-export const rejectFollowRequest = catchAsync(async (req: any, res: any) => {
-  const { followId } = req.params;
-  const currentUserId = req.user._id;
-
-  const follow = await Follow.findOneAndDelete({
-    _id: followId,
-    following: currentUserId,
-    status: "pending"
+  res.status(200).json({
+    message: "User unfollowed successfully",
+    currentUser: {
+      id: updatedCurrentUser?._id.toString(),
+      username: updatedCurrentUser?.username,
+      followersCount: (updatedCurrentUser as any)?.followers.length || 0,
+      followingCount: (updatedCurrentUser as any)?.following.length || 0
+    },
+    targetUser: {
+      id: updatedTargetUser?._id.toString(),
+      username: updatedTargetUser?.username,
+      followersCount: (updatedTargetUser as any)?.followers.length || 0,
+      followingCount: (updatedTargetUser as any)?.following.length || 0
+    }
   });
-
-  if (!follow) {
-    return res.status(404).json({ message: "follow request not found" });
-  }
-
-  await createNotification(
-    follow.follower.toString(),
-    currentUserId,
-    "follow_rejected",
-    `${req.user.username} rejected your follow request`,
-    (follow._id as any).toString()
-  );
-
-  res.status(200).json({ message: "follow request rejected" });
 });
 
 export const getFollowers = catchAsync(async (req: any, res: any) => {
@@ -158,26 +122,30 @@ export const getFollowers = catchAsync(async (req: any, res: any) => {
   const limit = parseInt(req.query.limit as string) || 20;
   const skip = (page - 1) * limit;
 
-  const follows = await Follow.find({
-    following: userId,
-    status: "accepted"
-  })
-  .populate("follower", "username avatar")
-  .sort({ createdAt: -1 })
-  .skip(skip)
-  .limit(limit);
+  const user = await User.findById(userId)
+    .populate({
+      path: "followers",
+      select: "username avatar",
+      options: {
+        skip,
+        limit,
+        sort: { createdAt: -1 }
+      }
+    });
 
-  const total = await Follow.countDocuments({
-    following: userId,
-    status: "accepted"
-  });
+  if (!user) {
+    return res.status(404).json({ message: "User not found" });
+  }
 
-  res.status(200).json({
-    followers: follows.map(follow => ({
-      id: (follow.follower as any)._id.toString(),
-      username: (follow.follower as any).username,
-      avatar: (follow.follower as any).avatar,
-      followedAt: follow.createdAt
+  const total = (user as any).followers.length;
+  const followers = (user as any).followers.slice(skip, skip + limit);
+
+  const followersResponse: FollowersResponse = {
+    followers: followers.map((follower: any) => ({
+      id: follower._id.toString(),
+      username: follower.username,
+      avatar: follower.avatar,
+      followedAt: new Date() // Since we don't track when follow happened, using current date
     })),
     pagination: {
       page,
@@ -185,7 +153,9 @@ export const getFollowers = catchAsync(async (req: any, res: any) => {
       total,
       pages: Math.ceil(total / limit)
     }
-  });
+  };
+
+  res.status(200).json(followersResponse);
 });
 
 export const getFollowing = catchAsync(async (req: any, res: any) => {
@@ -194,26 +164,30 @@ export const getFollowing = catchAsync(async (req: any, res: any) => {
   const limit = parseInt(req.query.limit as string) || 20;
   const skip = (page - 1) * limit;
 
-  const follows = await Follow.find({
-    follower: userId,
-    status: "accepted"
-  })
-  .populate("following", "username avatar")
-  .sort({ createdAt: -1 })
-  .skip(skip)
-  .limit(limit);
+  const user = await User.findById(userId)
+    .populate({
+      path: "following",
+      select: "username avatar",
+      options: {
+        skip,
+        limit,
+        sort: { createdAt: -1 }
+      }
+    });
 
-  const total = await Follow.countDocuments({
-    follower: userId,
-    status: "accepted"
-  });
+  if (!user) {
+    return res.status(404).json({ message: "User not found" });
+  }
 
-  res.status(200).json({
-    following: follows.map(follow => ({
-      id: (follow.following as any)._id.toString(),
-      username: (follow.following as any).username,
-      avatar: (follow.following as any).avatar,
-      followedAt: follow.createdAt
+  const total = (user as any).following.length;
+  const following = (user as any).following.slice(skip, skip + limit);
+
+  const followingResponse: FollowingResponse = {
+    following: following.map((followedUser: any) => ({
+      id: followedUser._id.toString(),
+      username: followedUser.username,
+      avatar: followedUser.avatar,
+      followedAt: new Date() // Since we don't track when follow happened, using current date
     })),
     pagination: {
       page,
@@ -221,62 +195,53 @@ export const getFollowing = catchAsync(async (req: any, res: any) => {
       total,
       pages: Math.ceil(total / limit)
     }
-  });
-});
+  };
 
-export const getFollowRequests = catchAsync(async (req: any, res: any) => {
-  const currentUserId = req.user._id;
-
-  const followRequests = await Follow.find({
-    following: currentUserId,
-    status: "pending"
-  })
-  .populate("follower", "username avatar")
-  .sort({ createdAt: -1 });
-
-  res.status(200).json({
-    requests: followRequests.map(follow => ({
-      id: (follow._id as any).toString(),
-      follower: {
-        id: (follow.follower as any)._id.toString(),
-        username: (follow.follower as any).username,
-        avatar: (follow.follower as any).avatar
-      },
-      createdAt: follow.createdAt
-    }))
-  });
+  res.status(200).json(followingResponse);
 });
 
 export const getUserFollowStats = catchAsync(async (req: any, res: any) => {
   const { userId } = req.params;
   const currentUserId = req.user._id;
 
-  const user = await User.findById(userId);
+  const user = await User.findById(userId)
+    .populate("followers", "_id")
+    .populate("following", "_id");
+
   if (!user) {
-    return res.status(404).json({ message: "user not found" });
+    return res.status(404).json({ message: "User not found" });
   }
 
-  let isFollowing = false;
-  let followStatus = undefined;
-
-  if (currentUserId.toString() !== userId) {
-    const follow = await Follow.findOne({
-      follower: currentUserId,
-      following: userId
-    });
-
-    if (follow) {
-      isFollowing = follow.status === "accepted";
-      followStatus = follow.status;
-    }
+  const currentUser = await User.findById(currentUserId);
+  if (!currentUser) {
+    return res.status(404).json({ message: "Current user not found" });
   }
+
+  const isFollowing = (currentUser as any).following.includes(userId as any);
 
   const stats: UserFollowStats = {
-    followersCount: user.followersCount || 0,
-    followingCount: user.followingCount || 0,
-    isFollowing,
-    followStatus
+    followersCount: (user as any).followers.length,
+    followingCount: (user as any).following.length,
+    isFollowing
   };
 
   res.status(200).json(stats);
+});
+
+export const checkFollowStatus = catchAsync(async (req: any, res: any) => {
+  const { userId } = req.params;
+  const currentUserId = req.user._id;
+
+  const currentUser = await User.findById(currentUserId);
+  if (!currentUser) {
+    return res.status(404).json({ message: "Current user not found" });
+  }
+
+  const isFollowing = (currentUser as any).following.includes(userId as any);
+
+  res.status(200).json({
+    isFollowing,
+    userId,
+    currentUserId: currentUserId.toString()
+  });
 });

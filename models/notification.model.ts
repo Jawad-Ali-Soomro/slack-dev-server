@@ -3,10 +3,10 @@ import mongoose, { Document, Schema } from "mongoose";
 export interface INotification extends Document {
   recipient: mongoose.Types.ObjectId;
   sender: mongoose.Types.ObjectId;
-  type: "follow_request" | "follow_accepted" | "follow_rejected";
+  type: "task_assigned" | "task_status_updated" | "task_due_soon";
   message: string;
   isRead: boolean;
-  followId?: mongoose.Types.ObjectId;
+  taskId?: mongoose.Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -24,7 +24,7 @@ const NotificationSchema = new Schema<INotification>({
   },
   type: {
     type: String,
-    enum: ["follow_request", "follow_accepted", "follow_rejected"],
+    enum: ["task_assigned", "task_status_updated", "task_due_soon"],
     required: true
   },
   message: {
@@ -35,9 +35,9 @@ const NotificationSchema = new Schema<INotification>({
     type: Boolean,
     default: false
   },
-  followId: {
+  taskId: {
     type: Schema.Types.ObjectId,
-    ref: "Follow"
+    ref: "Task"
   }
 }, {
   timestamps: true

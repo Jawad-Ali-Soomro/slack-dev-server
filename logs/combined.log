@@ -275,3 +275,16 @@
 2025-09-19 18:23:49 info: server requested ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.1.105"]}
 2025-09-19 18:23:51 info: connected database ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.1.105"]}
 2025-09-19 18:28:18 info: server requested ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.1.105"]}
+2025-09-20 09:29:19 info: server requested ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.100.71"]}
+2025-09-20 09:29:22 info: connected database ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.100.71"]}
+2025-09-20 09:30:09 info: server requested ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.100.71"]}
+2025-09-20 09:30:09 info: connected database ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.100.71"]}
+2025-09-20 09:30:30 info: server requested ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.100.71"]}
+2025-09-20 09:30:30 info: connected database ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.100.71"]}
+2025-09-20 09:30:42 info: server requested ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.100.71"]}
+2025-09-20 09:30:42 info: connected database ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.100.71"]}
+2025-09-20 09:31:21 info: server requested ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.100.71"]}
+2025-09-20 09:31:21 info: connected database ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.100.71"]}
+2025-09-20 09:32:45 info: server requested ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.100.71"]}
+2025-09-20 09:32:45 info: cors is running on http://locahost:5177 ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.100.71"]}
+2025-09-20 09:32:45 info: connected database ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.100.71"]}

@@ -1,3 +1,5 @@
+import mongoose, { Document } from "mongoose";
+
 export interface IUser extends Document {
   _id: string;
   email: string;
@@ -24,8 +26,10 @@ export interface IUser extends Document {
   dateOfBirth?: Date;
   phone?: string;
   isPrivate?: boolean;
-  followersCount?: number;
-  followingCount?: number;
+  followers?: mongoose.Types.ObjectId[];
+  following?: mongoose.Types.ObjectId[];
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export enum Role {

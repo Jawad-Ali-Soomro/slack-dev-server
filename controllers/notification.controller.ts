@@ -23,14 +23,14 @@ export const getNotifications = catchAsync(async (req: any, res: any) => {
   const notificationResponses: NotificationResponse[] = notifications.map(notification => ({
     id: (notification._id as any).toString(),
     sender: {
-      id: (notification.sender as any)._id,
+      id: (notification.sender as any)._id.toString(),
       username: (notification.sender as any).username,
       avatar: (notification.sender as any).avatar
     },
     type: notification.type,
     message: notification.message,
     isRead: notification.isRead,
-    followId: notification.followId?.toString(),
+    taskId: notification.taskId?.toString(),
     createdAt: notification.createdAt
   }));
 

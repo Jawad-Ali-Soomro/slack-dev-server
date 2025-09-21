@@ -42,4 +42,6 @@ export interface UserResponse {
   followersCount?: number;
   followingCount?: number;
   emailVerified?: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
 }

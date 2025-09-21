@@ -14,21 +14,6 @@ export interface FollowResponse {
     username: string;
     avatar?: string;
   };
-  status: "pending" | "accepted" | "rejected";
-  createdAt: Date;
-}
-
-export interface NotificationResponse {
-  id: string;
-  sender: {
-    id: string;
-    username: string;
-    avatar?: string;
-  };
-  type: "follow_request" | "follow_accepted" | "follow_rejected";
-  message: string;
-  isRead: boolean;
-  followId?: string;
   createdAt: Date;
 }
 
@@ -36,5 +21,34 @@ export interface UserFollowStats {
   followersCount: number;
   followingCount: number;
   isFollowing: boolean;
-  followStatus?: "pending" | "accepted" | "rejected";
+}
+
+export interface FollowersResponse {
+  followers: Array<{
+    id: string;
+    username: string;
+    avatar?: string;
+    followedAt: Date;
+  }>;
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    pages: number;
+  };
+}
+
+export interface FollowingResponse {
+  following: Array<{
+    id: string;
+    username: string;
+    avatar?: string;
+    followedAt: Date;
+  }>;
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    pages: number;
+  };
 }

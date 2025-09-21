@@ -17,9 +17,9 @@ const formatUserResponse = (user: IUser): UserResponse => ({
   dateOfBirth: user.dateOfBirth,
   phone: user.phone,
   isPrivate: user.isPrivate,
-  followersCount: user.followersCount,
-  followingCount: user.followingCount,
-  emailVerified: user.emailVerified
+  emailVerified: user.emailVerified,
+  followersCount: user.followers?.length || 0,
+  followingCount: user.following?.length || 0
 });
 
 export const updateProfile = catchAsync(async (req: any, res: any) => {
@@ -71,7 +71,7 @@ export const uploadAvatar = catchAsync(async (req: any, res: any) => {
     }
   }
 
-  const avatarUrl = `${process.env.BASE_URL || 'http://localhost:8080'}/profiles/${req.file.filename}`;
+  const avatarUrl = `/profiles/${req.file.filename}`;
   
   const updatedUser = await User.findByIdAndUpdate(
     userId, 

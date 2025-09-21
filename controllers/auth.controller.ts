@@ -12,7 +12,8 @@ const formatUserResponse = (user: IUser): UserResponse => ({
   username: user.username,
   role: user.role,
   avatar: user.avatar,
-  emailVerified: user.emailVerified
+  emailVerified: user.emailVerified,
+  isPrivate: user.isPrivate,
 });
 
 
@@ -58,7 +59,8 @@ export const register = catchAsync(async (req: any, res: any) => {
     const token = generateToken({ id: user._id });
     res.status(201).json({
       message: "user registered successfully",
-      token
+      token,
+      user: formatUserResponse(user)
     });
   } catch (err: any) {
     if (err.code === 11000) {
@@ -87,7 +89,8 @@ export const login = catchAsync(async (req: any, res: any) => {
   const token = generateToken({ id: user._id });
   res.status(200).json({
     message: "login successful",
-    token
+    token,
+    user: formatUserResponse(user)
   });
 });
 
