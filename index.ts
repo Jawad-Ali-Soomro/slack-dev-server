@@ -40,3 +40,6 @@ app.use("/api", router)
 app.listen(process.env.PORT as String, () => {
   console.log(`server is running working on port ${process.env.PORT}`)
 })
+module.exports = (req: any, res: any) => {
+  app(req, res);
+};
