@@ -5,6 +5,10 @@ import { User } from "../models";
 import { generateOtp, sendMail } from "../utils";
 import { buildOtpEmail, buildResetPasswordEmail } from "../templates";
 import path from "path";
+import dotenv from "dotenv";
+dotenv.config({
+  path: "../config/.env"
+});
 
 const formatUserResponse = (user: IUser): UserResponse => ({
   id: user._id,
@@ -84,8 +88,16 @@ export const login = catchAsync(async (req: any, res: any) => {
     return res.status(401).json({ message: "invalid credentials" });
   }
   if (!user.emailVerified) {
-    res.status(401).json({ message: "please verify your email first" });
+    // Generate new verification token
     const emailVerificationToken = generateOtp();
+    const emailVerificationTokenExpires = new Date(Date.now() + 24 * 60 * 60 * 1000);
+    
+    // Update user with new token
+    user.emailVerificationToken = emailVerificationToken;
+    user.emailVerificationTokenExpires = emailVerificationTokenExpires;
+    await user.save();
+    
+    // Send verification email
     const { html, text } = buildOtpEmail({
       otp: emailVerificationToken,
       username: user.username,
@@ -97,7 +109,7 @@ export const login = catchAsync(async (req: any, res: any) => {
     })
   
     sendMail({
-      subject: "Verify Email",
+      subject: "Verify Email - Login Attempt",
       to: email,
       text,
       html,
@@ -107,6 +119,13 @@ export const login = catchAsync(async (req: any, res: any) => {
         cid: 'logo'
       }]
     })
+    
+    // Return success response with email sent info
+    res.status(200).json({ 
+      message: "verification email sent", 
+      emailSent: true,
+      user: formatUserResponse(user)
+    });
     return;
   }
   const token = generateToken({ id: user._id });
@@ -133,6 +152,49 @@ export const verifyEmail = catchAsync(async (req: any, res: any) => {
   user.emailVerificationTokenExpires = undefined;
   await user.save();
   res.status(200).json({ message: "email verified successfully" });
+});
+
+export const resendOtp = catchAsync(async (req: any, res: any) => {
+  const { email } = req.body;
+  const user = await User.findOne({ email });
+  if (!user) {
+    return res.status(404).json({ message: "user not found" });
+  }
+  
+  if (user.emailVerified) {
+    return res.status(400).json({ message: "email already verified" });
+  }
+  
+  const emailVerificationToken = generateOtp();
+  const emailVerificationTokenExpires = new Date(Date.now() + 24 * 60 * 60 * 1000);
+  
+  user.emailVerificationToken = emailVerificationToken;
+  user.emailVerificationTokenExpires = emailVerificationTokenExpires;
+  await user.save();
+  
+  const { html, text } = buildOtpEmail({
+    otp: emailVerificationToken,
+    username: user.username,
+    supportEmail: "support@slackdev.com",
+    siteName: "Slack Dev",
+    buttonText: "Verify Email",
+    buttonUrl: `${process.env.FRONTEND_URL}/verify-email?token=${emailVerificationToken}`,
+    logoUrl: `${process.env.BASE_URL || 'http://localhost:8080'}/logo.png`
+  });
+
+  sendMail({
+    subject: "Verify Email - New Code",
+    to: email,
+    text,
+    html,
+    attachments: [{
+      filename: 'logo.png',
+      path: path.join(__dirname, '../public/logo.png'),
+      cid: 'logo'
+    }]
+  });
+  
+  res.status(200).json({ message: "verification code resent to email" });
 });
 
 export const forgotPassword = catchAsync(async (req: any, res: any) => {

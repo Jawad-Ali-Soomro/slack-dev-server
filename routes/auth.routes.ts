@@ -1,6 +1,6 @@
 import express from 'express'
 const authRouter = express.Router()
-import { register, login, verifyEmail, forgotPassword, resetPassword, getProfile } from '../controllers/auth.controller'
+import { register, login, verifyEmail, resendOtp, forgotPassword, resetPassword, getProfile } from '../controllers/auth.controller'
 import { authenticate } from '../middlewares'
 
 /**
@@ -89,6 +89,33 @@ authRouter.post('/login', login)
  *         description: Invalid or expired verification code
  */
 authRouter.post('/verify-email', verifyEmail)
+
+/**
+ * @openapi
+ * /api/auth/resend-otp:
+ *   post:
+ *     summary: Resend OTP for email verification
+ *     tags:
+ *       - Authentication
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: user@example.com
+ *     responses:
+ *       200:
+ *         description: Verification code resent to email
+ *       404:
+ *         description: User not found
+ *       400:
+ *         description: Email already verified
+ */
+authRouter.post('/resend-otp', resendOtp)
 
 /**
  * @openapi
