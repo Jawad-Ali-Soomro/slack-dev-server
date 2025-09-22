@@ -141,3 +141,90 @@ export const changePassword = catchAsync(async (req: any, res: any) => {
 
   res.status(200).json({ message: "password changed successfully" });
 });
+
+export const getUsers = catchAsync(async (req: any, res: any) => {
+  const { page = 1, limit = 20, search } = req.query;
+  const skip = (parseInt(page as string) - 1) * parseInt(limit as string);
+
+  const filter: any = {};
+  if (search) {
+    filter.$or = [
+      { username: { $regex: search, $options: 'i' } },
+      { email: { $regex: search, $options: 'i' } }
+    ];
+  }
+
+  const users = await User.find(filter)
+    .select('username email avatar role bio userLocation')
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(parseInt(limit as string));
+
+  const total = await User.countDocuments(filter);
+
+  const userResponses = users.map(user => ({
+    id: user._id.toString(),
+    username: user.username,
+    email: user.email,
+    avatar: user.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.username)}&background=random&color=fff&size=128`,
+    role: user.role,
+    bio: user.bio,
+    userLocation: user.userLocation
+  }));
+
+  res.status(200).json({
+    users: userResponses,
+    pagination: {
+      page: parseInt(page as string),
+      limit: parseInt(limit as string),
+      total,
+      pages: Math.ceil(total / parseInt(limit as string))
+    }
+  });
+});
+
+export const getUserById = catchAsync(async (req: any, res: any) => {
+  const { userId } = req.params;
+
+  const user = await User.findById(userId)
+    .select('username email avatar role bio userLocation website socialLinks dateOfBirth phone isPrivate emailVerified');
+  
+  if (!user) {
+    return res.status(404).json({ message: "user not found" });
+  }
+
+  res.status(200).json({
+    user: formatUserResponse(user)
+  });
+});
+
+export const searchUsers = catchAsync(async (req: any, res: any) => {
+  const { q } = req.query;
+
+  if (!q) {
+    return res.status(400).json({ message: "search query is required" });
+  }
+
+  const users = await User.find({
+    $or: [
+      { username: { $regex: q, $options: 'i' } },
+      { email: { $regex: q, $options: 'i' } }
+    ]
+  })
+    .select('username email avatar role bio userLocation')
+    .limit(10);
+
+  const userResponses = users.map(user => ({
+    id: user._id.toString(),
+    username: user.username,
+    email: user.email,
+    avatar: user.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.username)}&background=random&color=fff&size=128`,
+    role: user.role,
+    bio: user.bio,
+    userLocation: user.userLocation
+  }));
+
+  res.status(200).json({
+    users: userResponses
+  });
+});

@@ -39,15 +39,23 @@ export const createTask = catchAsync(async (req: any, res: any) => {
     id: (task._id as any).toString(),
     title: task.title,
     description: task.description,
-    assignTo: {
+    assignTo: task.assignTo ? {
       id: (task.assignTo as any)._id.toString(),
       username: (task.assignTo as any).username,
       avatar: (task.assignTo as any).avatar
+    } : {
+      id: 'deleted-user',
+      username: 'Deleted User',
+      avatar: undefined
     },
-    assignedBy: {
+    assignedBy: task.assignedBy ? {
       id: (task.assignedBy as any)._id.toString(),
       username: (task.assignedBy as any).username,
       avatar: (task.assignedBy as any).avatar
+    } : {
+      id: 'deleted-user',
+      username: 'Deleted User',
+      avatar: undefined
     },
     status: task.status,
     priority: task.priority,
@@ -87,15 +95,23 @@ export const getTasks = catchAsync(async (req: any, res: any) => {
     id: (task._id as any).toString(),
     title: task.title,
     description: task.description,
-    assignTo: {
+    assignTo: task.assignTo ? {
       id: (task.assignTo as any)._id.toString(),
       username: (task.assignTo as any).username,
       avatar: (task.assignTo as any).avatar
+    } : {
+      id: 'deleted-user',
+      username: 'Deleted User',
+      avatar: undefined
     },
-    assignedBy: {
+    assignedBy: task.assignedBy ? {
       id: (task.assignedBy as any)._id.toString(),
       username: (task.assignedBy as any).username,
       avatar: (task.assignedBy as any).avatar
+    } : {
+      id: 'deleted-user',
+      username: 'Deleted User',
+      avatar: undefined
     },
     status: task.status,
     priority: task.priority,
@@ -131,15 +147,23 @@ export const getTaskById = catchAsync(async (req: any, res: any) => {
     id: (task._id as any).toString(),
     title: task.title,
     description: task.description,
-    assignTo: {
+    assignTo: task.assignTo ? {
       id: (task.assignTo as any)._id.toString(),
       username: (task.assignTo as any).username,
       avatar: (task.assignTo as any).avatar
+    } : {
+      id: 'deleted-user',
+      username: 'Deleted User',
+      avatar: undefined
     },
-    assignedBy: {
+    assignedBy: task.assignedBy ? {
       id: (task.assignedBy as any)._id.toString(),
       username: (task.assignedBy as any).username,
       avatar: (task.assignedBy as any).avatar
+    } : {
+      id: 'deleted-user',
+      username: 'Deleted User',
+      avatar: undefined
     },
     status: task.status,
     priority: task.priority,
@@ -161,6 +185,21 @@ export const updateTask = catchAsync(async (req: any, res: any) => {
   const originalTask = await Task.findById(taskId);
   if (!originalTask) {
     return res.status(404).json({ message: "Task not found" });
+  }
+
+  // Check authorization based on what's being updated
+  const isAssignedBy = originalTask.assignedBy.toString() === currentUserId.toString();
+  const isAssignedTo = originalTask.assignTo.toString() === currentUserId.toString();
+
+  // Only allow status updates by the assigned user
+  if (updates.status && !isAssignedTo) {
+    return res.status(403).json({ message: "Only the assigned user can update task status" });
+  }
+
+  // Only allow other updates by the user who assigned the task
+  const hasOtherUpdates = Object.keys(updates).some(key => key !== 'status');
+  if (hasOtherUpdates && !isAssignedBy) {
+    return res.status(403).json({ message: "Only the user who assigned this task can update it" });
   }
 
   const task = await Task.findByIdAndUpdate(
@@ -191,15 +230,23 @@ export const updateTask = catchAsync(async (req: any, res: any) => {
     id: (task._id as any).toString(),
     title: task.title,
     description: task.description,
-    assignTo: {
+    assignTo: task.assignTo ? {
       id: (task.assignTo as any)._id.toString(),
       username: (task.assignTo as any).username,
       avatar: (task.assignTo as any).avatar
+    } : {
+      id: 'deleted-user',
+      username: 'Deleted User',
+      avatar: undefined
     },
-    assignedBy: {
+    assignedBy: task.assignedBy ? {
       id: (task.assignedBy as any)._id.toString(),
       username: (task.assignedBy as any).username,
       avatar: (task.assignedBy as any).avatar
+    } : {
+      id: 'deleted-user',
+      username: 'Deleted User',
+      avatar: undefined
     },
     status: task.status,
     priority: task.priority,
@@ -228,6 +275,11 @@ export const reassignTask = catchAsync(async (req: any, res: any) => {
   const originalTask = await Task.findById(taskId);
   if (!originalTask) {
     return res.status(404).json({ message: "Task not found" });
+  }
+
+  // Only the user who assigned the task can reassign it
+  if (originalTask.assignedBy.toString() !== currentUserId.toString()) {
+    return res.status(403).json({ message: "Only the user who assigned this task can reassign it" });
   }
 
   const task = await Task.findByIdAndUpdate(
@@ -259,15 +311,23 @@ export const reassignTask = catchAsync(async (req: any, res: any) => {
     id: (task._id as any).toString(),
     title: task.title,
     description: task.description,
-    assignTo: {
+    assignTo: task.assignTo ? {
       id: (task.assignTo as any)._id.toString(),
       username: (task.assignTo as any).username,
       avatar: (task.assignTo as any).avatar
+    } : {
+      id: 'deleted-user',
+      username: 'Deleted User',
+      avatar: undefined
     },
-    assignedBy: {
+    assignedBy: task.assignedBy ? {
       id: (task.assignedBy as any)._id.toString(),
       username: (task.assignedBy as any).username,
       avatar: (task.assignedBy as any).avatar
+    } : {
+      id: 'deleted-user',
+      username: 'Deleted User',
+      avatar: undefined
     },
     status: task.status,
     priority: task.priority,
@@ -285,13 +345,94 @@ export const reassignTask = catchAsync(async (req: any, res: any) => {
 
 export const deleteTask = catchAsync(async (req: any, res: any) => {
   const { taskId } = req.params;
+  const currentUserId = req.user._id;
 
-  const task = await Task.findByIdAndDelete(taskId);
+  const task = await Task.findById(taskId);
   if (!task) {
     return res.status(404).json({ message: "Task not found" });
   }
 
+  // Only the user who assigned the task can delete it
+  if (task.assignedBy.toString() !== currentUserId.toString()) {
+    return res.status(403).json({ message: "Only the user who assigned this task can delete it" });
+  }
+
+  await Task.findByIdAndDelete(taskId);
+
   res.status(200).json({ message: "Task deleted successfully" });
+});
+
+export const updateTaskStatus = catchAsync(async (req: any, res: any) => {
+  const { taskId } = req.params;
+  const { status } = req.body;
+  const currentUserId = req.user._id;
+
+  const task = await Task.findById(taskId);
+  if (!task) {
+    return res.status(404).json({ message: "Task not found" });
+  }
+
+  // Only the assigned user can update task status
+  if (task.assignTo.toString() !== currentUserId.toString()) {
+    return res.status(403).json({ message: "Only the assigned user can update task status" });
+  }
+
+  const updatedTask = await Task.findByIdAndUpdate(
+    taskId,
+    { status },
+    { new: true, runValidators: true }
+  ).populate([
+    { path: "assignTo", select: "username avatar" },
+    { path: "assignedBy", select: "username avatar" }
+  ]);
+
+  if (!updatedTask) {
+    return res.status(404).json({ message: "Task not found" });
+  }
+
+  // Create notification for status change
+  await Notification.create({
+    recipient: task.assignedBy,
+    sender: currentUserId,
+    type: "task_status_updated",
+    message: `${req.user.username} updated task "${task.title}" status to ${status}`,
+    taskId: task._id
+  });
+
+  const taskResponse: TaskResponse = {
+    id: (updatedTask._id as any).toString(),
+    title: updatedTask.title,
+    description: updatedTask.description,
+    assignTo: updatedTask.assignTo ? {
+      id: (updatedTask.assignTo as any)._id.toString(),
+      username: (updatedTask.assignTo as any).username,
+      avatar: (updatedTask.assignTo as any).avatar
+    } : {
+      id: 'deleted-user',
+      username: 'Deleted User',
+      avatar: undefined
+    },
+    assignedBy: updatedTask.assignedBy ? {
+      id: (updatedTask.assignedBy as any)._id.toString(),
+      username: (updatedTask.assignedBy as any).username,
+      avatar: (updatedTask.assignedBy as any).avatar
+    } : {
+      id: 'deleted-user',
+      username: 'Deleted User',
+      avatar: undefined
+    },
+    status: updatedTask.status,
+    priority: updatedTask.priority,
+    dueDate: updatedTask.dueDate,
+    tags: updatedTask.tags,
+    createdAt: updatedTask.createdAt,
+    updatedAt: updatedTask.updatedAt
+  };
+
+  res.status(200).json({
+    message: "Task status updated successfully",
+    task: taskResponse
+  });
 });
 
 export const getTaskStats = catchAsync(async (req: any, res: any) => {

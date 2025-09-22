@@ -2,8 +2,9 @@ import { logger } from "../helpers";
 import mongoose from "mongoose";
 
 export const dbConnection = () => {
+  const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/core-stack'
   mongoose
-    .connect(process.env.MONGODB_URI as string)
+    .connect(mongoUri)
     .then(() => {
       logger.info("connected database");
       console.log("connected database");

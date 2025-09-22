@@ -40,7 +40,7 @@ export const register = catchAsync(async (req: any, res: any) => {
     siteName: "Slack Dev",
     buttonText: "Verify Email",
     buttonUrl: `${process.env.FRONTEND_URL}/verify-email?token=${emailVerificationToken}`,
-    logoUrl: `${process.env.BASE_URL || 'http://localhost:8080'}/logo.png`
+    logoUrl: `${process.env.BASE_URL || 'http://localhost:4000'}/logo.png`
   })
 
   sendMail({
@@ -105,7 +105,7 @@ export const login = catchAsync(async (req: any, res: any) => {
       siteName: "Slack Dev",
       buttonText: "Verify Email",
       buttonUrl: `${process.env.FRONTEND_URL}/verify-email?token=${emailVerificationToken}`,
-      logoUrl: `${process.env.BASE_URL || 'http://localhost:8080'}/logo.png`
+      logoUrl: `${process.env.BASE_URL || 'http://localhost:4000'}/logo.png`
     })
   
     sendMail({
@@ -179,7 +179,7 @@ export const resendOtp = catchAsync(async (req: any, res: any) => {
     siteName: "Slack Dev",
     buttonText: "Verify Email",
     buttonUrl: `${process.env.FRONTEND_URL}/verify-email?token=${emailVerificationToken}`,
-    logoUrl: `${process.env.BASE_URL || 'http://localhost:8080'}/logo.png`
+    logoUrl: `${process.env.BASE_URL || 'http://localhost:4000'}/logo.png`
   });
 
   sendMail({

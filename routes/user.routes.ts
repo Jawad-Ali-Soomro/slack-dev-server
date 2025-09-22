@@ -1,6 +1,6 @@
 import express from 'express'
 const userRouter = express.Router()
-import { updateProfile, uploadAvatar, deleteAvatar, changePassword } from '../controllers/user.controller'
+import { updateProfile, uploadAvatar, deleteAvatar, changePassword, getUsers, getUserById, searchUsers } from '../controllers/user.controller'
 import { authenticate, upload } from '../middlewares'
 
 /**
@@ -152,5 +152,84 @@ userRouter.delete('/avatar', authenticate, deleteAvatar)
  *         description: Unauthorized
  */
 userRouter.put('/change-password', authenticate, changePassword)
+
+/**
+ * @openapi
+ * /api/users:
+ *   get:
+ *     summary: Get all users with pagination and search
+ *     tags:
+ *       - Users
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 20
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Search by username or email
+ *     responses:
+ *       200:
+ *         description: List of users
+ */
+userRouter.get('/', authenticate, getUsers)
+
+/**
+ * @openapi
+ * /api/users/search:
+ *   get:
+ *     summary: Search users
+ *     tags:
+ *       - Users
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: q
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Search query for username or email
+ *     responses:
+ *       200:
+ *         description: Search results
+ *       400:
+ *         description: Search query is required
+ */
+userRouter.get('/search', authenticate, searchUsers)
+
+/**
+ * @openapi
+ * /api/users/{userId}:
+ *   get:
+ *     summary: Get user by ID
+ *     tags:
+ *       - Users
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         example: 60d0fe4f5311236168a109ca
+ *     responses:
+ *       200:
+ *         description: User details
+ *       404:
+ *         description: User not found
+ */
+userRouter.get('/:userId', authenticate, getUserById)
 
 export default userRouter

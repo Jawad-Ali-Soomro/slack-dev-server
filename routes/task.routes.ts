@@ -5,6 +5,7 @@ import {
   getTasks,
   getTaskById,
   updateTask,
+  updateTaskStatus,
   reassignTask,
   deleteTask,
   getTaskStats
@@ -192,6 +193,45 @@ taskRouter.get('/:taskId', authenticate, getTaskById)
  *         description: Task not found
  */
 taskRouter.put('/:taskId', authenticate, updateTask)
+
+/**
+ * @openapi
+ * /api/tasks/{taskId}/status:
+ *   put:
+ *     summary: Update task status (assigned user only)
+ *     tags:
+ *       - Tasks
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: taskId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         example: 60d0fe4f5311236168a109cb
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               status:
+ *                 type: string
+ *                 enum: [pending, in_progress, completed, cancelled]
+ *                 example: "completed"
+ *             required:
+ *               - status
+ *     responses:
+ *       200:
+ *         description: Task status updated successfully
+ *       403:
+ *         description: Only assigned user can update status
+ *       404:
+ *         description: Task not found
+ */
+taskRouter.put('/:taskId/status', authenticate, updateTaskStatus)
 
 /**
  * @openapi
