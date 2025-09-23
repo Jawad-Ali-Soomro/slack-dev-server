@@ -7,6 +7,7 @@ import followRouter from './follow.routes'
 import notificationRouter from './notification.routes'
 import projectRouter from './project.routes'
 import teamRouter from './team.routes'
+import friendRouter from './friend.routes'
 const router = express.Router()
 
 router.use("/auth", authRouter)
@@ -18,5 +19,6 @@ router.use("/notifications", notificationRouter)
 router.use("/follow", followRouter)
 router.use("/projects", projectRouter)
 router.use("/teams", teamRouter)
+router.use("/friends", friendRouter)
 
 export default router
