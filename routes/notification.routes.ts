@@ -1,19 +1,13 @@
 import express from 'express'
 const notificationRouter = express.Router()
-import { 
-  getNotifications, 
-  markNotificationAsRead, 
-  markAllNotificationsAsRead,
-  deleteNotification,
-  getUnreadCount
-} from '../controllers/notification.controller'
+import { getNotifications, markAsRead, markAllAsRead, deleteNotification } from '../controllers/notification.controller'
 import { authenticate } from '../middlewares'
 
 /**
  * @openapi
  * /api/notifications:
  *   get:
- *     summary: Get user notifications
+ *     summary: Get all notifications for the current user
  *     tags:
  *       - Notifications
  *     security:
@@ -31,30 +25,17 @@ import { authenticate } from '../middlewares'
  *           default: 20
  *     responses:
  *       200:
- *         description: List of notifications with pagination
+ *         description: List of notifications
+ *       401:
+ *         description: Unauthorized
  */
 notificationRouter.get('/', authenticate, getNotifications)
 
 /**
  * @openapi
- * /api/notifications/unread-count:
- *   get:
- *     summary: Get unread notifications count
- *     tags:
- *       - Notifications
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: Unread notifications count
- */
-notificationRouter.get('/unread-count', authenticate, getUnreadCount)
-
-/**
- * @openapi
  * /api/notifications/{notificationId}/read:
  *   put:
- *     summary: Mark notification as read
+ *     summary: Mark a notification as read
  *     tags:
  *       - Notifications
  *     security:
@@ -65,18 +46,19 @@ notificationRouter.get('/unread-count', authenticate, getUnreadCount)
  *         required: true
  *         schema:
  *           type: string
- *         example: 60d0fe4f5311236168a109cc
  *     responses:
  *       200:
  *         description: Notification marked as read
+ *       401:
+ *         description: Unauthorized
  *       404:
  *         description: Notification not found
  */
-notificationRouter.put('/:notificationId/read', authenticate, markNotificationAsRead)
+notificationRouter.put('/:notificationId/read', authenticate, markAsRead)
 
 /**
  * @openapi
- * /api/notifications/mark-all-read:
+ * /api/notifications/read-all:
  *   put:
  *     summary: Mark all notifications as read
  *     tags:
@@ -86,14 +68,16 @@ notificationRouter.put('/:notificationId/read', authenticate, markNotificationAs
  *     responses:
  *       200:
  *         description: All notifications marked as read
+ *       401:
+ *         description: Unauthorized
  */
-notificationRouter.put('/mark-all-read', authenticate, markAllNotificationsAsRead)
+notificationRouter.put('/read-all', authenticate, markAllAsRead)
 
 /**
  * @openapi
  * /api/notifications/{notificationId}:
  *   delete:
- *     summary: Delete notification
+ *     summary: Delete a notification
  *     tags:
  *       - Notifications
  *     security:
@@ -104,10 +88,11 @@ notificationRouter.put('/mark-all-read', authenticate, markAllNotificationsAsRea
  *         required: true
  *         schema:
  *           type: string
- *         example: 60d0fe4f5311236168a109cc
  *     responses:
  *       200:
- *         description: Notification deleted successfully
+ *         description: Notification deleted
+ *       401:
+ *         description: Unauthorized
  *       404:
  *         description: Notification not found
  */

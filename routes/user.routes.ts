@@ -1,6 +1,6 @@
 import express from 'express'
 const userRouter = express.Router()
-import { updateProfile, uploadAvatar, deleteAvatar, changePassword, getUsers, getUserById, searchUsers } from '../controllers/user.controller'
+import { updateProfile, uploadAvatar, deleteAvatar, changePassword, getUsers, getUserById, searchUsers, getProfile } from '../controllers/user.controller'
 import { authenticate, upload } from '../middlewares'
 
 /**
@@ -64,6 +64,23 @@ import { authenticate, upload } from '../middlewares'
  *       401:
  *         description: Unauthorized
  */
+/**
+ * @openapi
+ * /api/user/profile:
+ *   get:
+ *     summary: Get user profile
+ *     tags:
+ *       - User
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: User profile retrieved successfully
+ *       401:
+ *         description: Unauthorized
+ */
+userRouter.get('/profile', authenticate, getProfile)
+
 userRouter.put('/profile', authenticate, updateProfile)
 
 /**

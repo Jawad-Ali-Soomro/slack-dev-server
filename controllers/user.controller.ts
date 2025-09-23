@@ -22,6 +22,13 @@ const formatUserResponse = (user: IUser): UserResponse => ({
   followingCount: user.following?.length || 0
 });
 
+export const getProfile = catchAsync(async (req: any, res: any) => {
+  const user = req.user;
+  res.status(200).json({
+    user: formatUserResponse(user)
+  });
+});
+
 export const updateProfile = catchAsync(async (req: any, res: any) => {
   const { username, bio, userLocation, website, socialLinks, dateOfBirth, phone, isPrivate }: UpdateProfileRequest = req.body;
   const userId = req.user._id;

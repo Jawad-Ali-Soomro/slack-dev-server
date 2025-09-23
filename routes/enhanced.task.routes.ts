@@ -1,22 +1,23 @@
 import express from 'express'
 const taskRouter = express.Router()
 import { 
-  createTask,
-  getTasks,
-  getTaskById,
-  updateTask,
-  updateTaskStatus,
+  createTask, 
+  getTasks, 
+  getTaskById, 
+  updateTask, 
+  updateTaskStatus, 
   reassignTask,
-  deleteTask,
-  getTaskStats
-} from '../controllers/task.controller'
+  deleteTask, 
+  getTaskStats,
+  clearTaskCaches
+} from '../controllers/enhanced.task.controller'
 import { authenticate } from '../middlewares'
 
 /**
  * @openapi
  * /api/tasks:
  *   post:
- *     summary: Create a new task
+ *     summary: Create a new task with Redis caching
  *     tags:
  *       - Tasks
  *     security:
@@ -26,38 +27,16 @@ import { authenticate } from '../middlewares'
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             properties:
- *               title:
- *                 type: string
- *                 example: "Complete project documentation"
- *               description:
- *                 type: string
- *                 example: "Write comprehensive documentation for the API"
- *               assignTo:
- *                 type: string
- *                 example: "60d0fe4f5311236168a109ca"
- *               priority:
- *                 type: string
- *                 enum: [low, medium, high, urgent]
- *                 example: "high"
- *               dueDate:
- *                 type: string
- *                 format: date-time
- *                 example: "2024-01-15T10:00:00Z"
- *               tags:
- *                 type: array
- *                 items:
- *                   type: string
- *                 example: ["documentation", "api"]
- *             required:
- *               - title
- *               - assignTo
+ *             $ref: '#/components/schemas/CreateTaskRequest'
  *     responses:
  *       201:
  *         description: Task created successfully
+ *       400:
+ *         description: Bad request
+ *       401:
+ *         description: Unauthorized
  *       404:
- *         description: Assignable user not found
+ *         description: AssignedTo user not found
  */
 taskRouter.post('/', authenticate, createTask)
 
@@ -65,7 +44,7 @@ taskRouter.post('/', authenticate, createTask)
  * @openapi
  * /api/tasks:
  *   get:
- *     summary: Get tasks with filters
+ *     summary: Get all tasks with Redis caching and filters
  *     tags:
  *       - Tasks
  *     security:
@@ -76,15 +55,23 @@ taskRouter.post('/', authenticate, createTask)
  *         schema:
  *           type: string
  *           enum: [pending, in_progress, completed, cancelled]
+ *         description: Filter by task status
  *       - in: query
  *         name: priority
  *         schema:
  *           type: string
- *           enum: [low, medium, high, urgent]
+ *           enum: [low, medium, high]
+ *         description: Filter by task priority
  *       - in: query
  *         name: assignTo
  *         schema:
  *           type: string
+ *         description: Filter by user assigned to the task (User ID)
+ *       - in: query
+ *         name: assignedBy
+ *         schema:
+ *           type: string
+ *         description: Filter by user who assigned the task (User ID)
  *       - in: query
  *         name: page
  *         schema:
@@ -98,35 +85,16 @@ taskRouter.post('/', authenticate, createTask)
  *     responses:
  *       200:
  *         description: List of tasks
+ *       401:
+ *         description: Unauthorized
  */
 taskRouter.get('/', authenticate, getTasks)
 
 /**
  * @openapi
- * /api/tasks/stats:
- *   get:
- *     summary: Get task statistics
- *     tags:
- *       - Tasks
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: query
- *         name: assignTo
- *         schema:
- *           type: string
- *         description: Filter stats by assignTo user
- *     responses:
- *       200:
- *         description: Task statistics
- */
-taskRouter.get('/stats', authenticate, getTaskStats)
-
-/**
- * @openapi
  * /api/tasks/{taskId}:
  *   get:
- *     summary: Get task by ID
+ *     summary: Get task by ID with Redis caching
  *     tags:
  *       - Tasks
  *     security:
@@ -137,10 +105,12 @@ taskRouter.get('/stats', authenticate, getTaskStats)
  *         required: true
  *         schema:
  *           type: string
- *         example: 60d0fe4f5311236168a109cb
+ *         example: 60d0fe4f5311236168a109ca
  *     responses:
  *       200:
  *         description: Task details
+ *       401:
+ *         description: Unauthorized
  *       404:
  *         description: Task not found
  */
@@ -150,7 +120,7 @@ taskRouter.get('/:taskId', authenticate, getTaskById)
  * @openapi
  * /api/tasks/{taskId}:
  *   put:
- *     summary: Update task
+ *     summary: Update task details (only by assignedBy user)
  *     tags:
  *       - Tasks
  *     security:
@@ -161,34 +131,22 @@ taskRouter.get('/:taskId', authenticate, getTaskById)
  *         required: true
  *         schema:
  *           type: string
- *         example: 60d0fe4f5311236168a109cb
+ *         example: 60d0fe4f5311236168a109ca
  *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
- *             type: object
- *             properties:
- *               title:
- *                 type: string
- *               description:
- *                 type: string
- *               status:
- *                 type: string
- *                 enum: [pending, in_progress, completed, cancelled]
- *               priority:
- *                 type: string
- *                 enum: [low, medium, high, urgent]
- *               dueDate:
- *                 type: string
- *                 format: date-time
- *               tags:
- *                 type: array
- *                 items:
- *                   type: string
+ *             $ref: '#/components/schemas/UpdateTaskRequest'
  *     responses:
  *       200:
  *         description: Task updated successfully
+ *       400:
+ *         description: Bad request
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Only the user who assigned this task can update it
  *       404:
  *         description: Task not found
  */
@@ -198,7 +156,7 @@ taskRouter.put('/:taskId', authenticate, updateTask)
  * @openapi
  * /api/tasks/{taskId}/status:
  *   put:
- *     summary: Update task status (assigned user only)
+ *     summary: Update task status (only by assignedTo user)
  *     tags:
  *       - Tasks
  *     security:
@@ -209,7 +167,7 @@ taskRouter.put('/:taskId', authenticate, updateTask)
  *         required: true
  *         schema:
  *           type: string
- *         example: 60d0fe4f5311236168a109cb
+ *         example: 60d0fe4f5311236168a109ca
  *     requestBody:
  *       required: true
  *       content:
@@ -220,14 +178,17 @@ taskRouter.put('/:taskId', authenticate, updateTask)
  *               status:
  *                 type: string
  *                 enum: [pending, in_progress, completed, cancelled]
- *                 example: "completed"
  *             required:
  *               - status
  *     responses:
  *       200:
  *         description: Task status updated successfully
+ *       400:
+ *         description: Bad request
+ *       401:
+ *         description: Unauthorized
  *       403:
- *         description: Only assigned user can update status
+ *         description: Only the assigned user can update task status
  *       404:
  *         description: Task not found
  */
@@ -237,7 +198,7 @@ taskRouter.put('/:taskId/status', authenticate, updateTaskStatus)
  * @openapi
  * /api/tasks/{taskId}/reassign:
  *   put:
- *     summary: Reassign task to another user
+ *     summary: Reassign task to another user (only by assignedBy user)
  *     tags:
  *       - Tasks
  *     security:
@@ -248,7 +209,7 @@ taskRouter.put('/:taskId/status', authenticate, updateTaskStatus)
  *         required: true
  *         schema:
  *           type: string
- *         example: 60d0fe4f5311236168a109cb
+ *         example: 60d0fe4f5311236168a109ca
  *     requestBody:
  *       required: true
  *       content:
@@ -258,14 +219,20 @@ taskRouter.put('/:taskId/status', authenticate, updateTaskStatus)
  *             properties:
  *               assignTo:
  *                 type: string
- *                 example: 60d0fe4f5311236168a109ca
+ *                 description: New assignee user ID
  *             required:
  *               - assignTo
  *     responses:
  *       200:
  *         description: Task reassigned successfully
+ *       400:
+ *         description: Bad request
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Only the user who assigned this task can reassign it
  *       404:
- *         description: Task or assignTo user not found
+ *         description: Task or new assignee not found
  */
 taskRouter.put('/:taskId/reassign', authenticate, reassignTask)
 
@@ -273,7 +240,7 @@ taskRouter.put('/:taskId/reassign', authenticate, reassignTask)
  * @openapi
  * /api/tasks/{taskId}:
  *   delete:
- *     summary: Delete task
+ *     summary: Delete a task (only by assignedBy user)
  *     tags:
  *       - Tasks
  *     security:
@@ -284,13 +251,51 @@ taskRouter.put('/:taskId/reassign', authenticate, reassignTask)
  *         required: true
  *         schema:
  *           type: string
- *         example: 60d0fe4f5311236168a109cb
+ *         example: 60d0fe4f5311236168a109ca
  *     responses:
  *       200:
  *         description: Task deleted successfully
+ *       401:
+ *         description: Unauthorized
+ *       403:
+ *         description: Only the user who assigned this task can delete it
  *       404:
  *         description: Task not found
  */
 taskRouter.delete('/:taskId', authenticate, deleteTask)
+
+/**
+ * @openapi
+ * /api/tasks/stats:
+ *   get:
+ *     summary: Get task statistics for the current user with Redis caching
+ *     tags:
+ *       - Tasks
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Task statistics
+ *       401:
+ *         description: Unauthorized
+ */
+taskRouter.get('/stats', authenticate, getTaskStats)
+
+/**
+ * @openapi
+ * /api/tasks/clear-cache:
+ *   post:
+ *     summary: Clear all task caches
+ *     tags:
+ *       - Tasks
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: All task caches cleared successfully
+ *       401:
+ *         description: Unauthorized
+ */
+taskRouter.post('/clear-cache', authenticate, clearTaskCaches)
 
 export default taskRouter
