@@ -27,6 +27,11 @@ const formatTaskResponse = (task: any): TaskResponse => ({
     username: 'Deleted User',
     avatar: undefined
   },
+  project: task.projectId ? {
+    id: task.projectId._id.toString(),
+    name: task.projectId.name,
+    logo: task.projectId.logo
+  } : null,
   dueDate: task.dueDate,
   tags: task.tags,
   createdAt: task.createdAt,
@@ -35,7 +40,7 @@ const formatTaskResponse = (task: any): TaskResponse => ({
 
 // Create task with Redis caching
 export const createTask = catchAsync(async (req: any, res: any) => {
-  const { title, description, priority, assignTo, dueDate, tags }: CreateTaskRequest = req.body;
+  const { title, description, priority, assignTo, dueDate, tags, projectId }: CreateTaskRequest = req.body;
   const assignedBy = req.user._id;
 
   const assignToUser = await User.findById(assignTo);
@@ -49,17 +54,27 @@ export const createTask = catchAsync(async (req: any, res: any) => {
     priority,
     assignTo,
     assignedBy,
+    projectId: projectId || undefined,
     dueDate,
     tags: tags || [],
   });
 
   await task.populate([
     { path: "assignTo", select: "username avatar" },
-    { path: "assignedBy", select: "username avatar" }
+    { path: "assignedBy", select: "username avatar" },
+    { path: "projectId", select: "name logo" }
   ]);
 
   // Cache the new task
   await redisService.cacheTask((task._id as any).toString(), formatTaskResponse(task));
+
+  // Add task to project if projectId is provided
+  if (projectId) {
+    const { Project } = await import('../models/project.model');
+    await Project.findByIdAndUpdate(projectId, {
+      $addToSet: { tasks: task._id }
+    });
+  }
 
   // Invalidate all task-related caches
   await redisService.invalidateUserTasks(assignedBy.toString());
@@ -107,7 +122,8 @@ export const getTasks = catchAsync(async (req: any, res: any) => {
   const tasks = await Task.find(filter)
     .populate([
       { path: "assignTo", select: "username avatar" },
-      { path: "assignedBy", select: "username avatar" }
+      { path: "assignedBy", select: "username avatar" },
+      { path: "projectId", select: "name logo" }
     ])
     .sort({ createdAt: -1 })
     .skip(skip)
@@ -143,7 +159,8 @@ export const getTaskById = catchAsync(async (req: any, res: any) => {
 
   const task = await Task.findById(taskId).populate([
     { path: "assignTo", select: "username avatar" },
-    { path: "assignedBy", select: "username avatar" }
+    { path: "assignedBy", select: "username avatar" },
+    { path: "projectId", select: "name logo" }
   ]);
   
   if (!task) {

@@ -21,6 +21,7 @@ export interface IMeeting extends Document {
   status: MeetingStatus;
   assignedTo: IUser["_id"] | IUser;
   assignedBy: IUser["_id"] | IUser;
+  projectId?: string;
   startDate: Date;
   endDate: Date;
   location?: string;
@@ -36,6 +37,7 @@ export interface CreateMeetingRequest {
   description?: string;
   type: MeetingType;
   assignedTo: string; // User ID
+  projectId?: string; // Project ID
   startDate: string; // ISO Date String
   endDate: string; // ISO Date String
   location?: string;
@@ -50,6 +52,7 @@ export interface UpdateMeetingRequest {
   type?: MeetingType;
   status?: MeetingStatus;
   assignedTo?: string; // User ID
+  projectId?: string; // Project ID
   startDate?: string; // ISO Date String
   endDate?: string; // ISO Date String
   location?: string;
@@ -66,6 +69,7 @@ export interface MeetingResponse {
   status: MeetingStatus;
   assignedTo: { id: string; username: string; avatar?: string };
   assignedBy: { id: string; username: string; avatar?: string };
+  project?: { id: string; name: string; logo?: string } | null;
   startDate: Date;
   endDate: Date;
   location?: string;

@@ -34,6 +34,7 @@ app.use(cors({
 logger.info(`cors is running on ${process.env.FRONTEND_URL}`)
 app.use(express.static('public'))
 app.use('/profiles', express.static('uploads/profiles'))
+app.use('/projects', express.static('uploads/projects'))
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use("/api", router)

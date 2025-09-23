@@ -27,6 +27,11 @@ const formatMeetingResponse = (meeting: any): MeetingResponse => ({
     username: 'Deleted User',
     avatar: undefined
   },
+  project: meeting.projectId ? {
+    id: meeting.projectId._id.toString(),
+    name: meeting.projectId.name,
+    logo: meeting.projectId.logo
+  } : null,
   startDate: meeting.startDate,
   endDate: meeting.endDate,
   location: meeting.location,
@@ -43,7 +48,7 @@ const formatMeetingResponse = (meeting: any): MeetingResponse => ({
 
 // Create meeting with Redis caching
 export const createMeeting = catchAsync(async (req: any, res: any) => {
-  const { title, description, type, assignedTo, startDate, endDate, location, meetingLink, tags, attendees }: CreateMeetingRequest = req.body;
+  const { title, description, type, assignedTo, startDate, endDate, location, meetingLink, tags, attendees, projectId }: CreateMeetingRequest = req.body;
   const assignedBy = req.user._id;
 
   const assignToUser = await User.findById(assignedTo);
@@ -57,6 +62,7 @@ export const createMeeting = catchAsync(async (req: any, res: any) => {
     type,
     assignedTo,
     assignedBy,
+    projectId: projectId || undefined,
     startDate,
     endDate,
     location,
@@ -68,8 +74,17 @@ export const createMeeting = catchAsync(async (req: any, res: any) => {
   await meeting.populate([
     { path: "assignedTo", select: "username avatar" },
     { path: "assignedBy", select: "username avatar" },
-    { path: "attendees", select: "username avatar" }
+    { path: "attendees", select: "username avatar" },
+    { path: "projectId", select: "name logo" }
   ]);
+
+  // Add meeting to project if projectId is provided
+  if (projectId) {
+    const { Project } = await import('../models/project.model');
+    await Project.findByIdAndUpdate(projectId, {
+      $addToSet: { meetings: meeting._id }
+    });
+  }
 
   // Cache the new meeting
   await redisService.cacheMeeting((meeting._id as any).toString(), formatMeetingResponse(meeting));
@@ -119,7 +134,8 @@ export const getMeetings = catchAsync(async (req: any, res: any) => {
     .populate([
       { path: "assignedTo", select: "username avatar" },
       { path: "assignedBy", select: "username avatar" },
-      { path: "attendees", select: "username avatar" }
+      { path: "attendees", select: "username avatar" },
+      { path: "projectId", select: "name logo" }
     ])
     .sort({ startDate: -1 })
     .skip(skip)
@@ -156,7 +172,8 @@ export const getMeetingById = catchAsync(async (req: any, res: any) => {
   const meeting = await Meeting.findById(meetingId).populate([
     { path: "assignedTo", select: "username avatar" },
     { path: "assignedBy", select: "username avatar" },
-    { path: "attendees", select: "username avatar" }
+    { path: "attendees", select: "username avatar" },
+    { path: "projectId", select: "name logo" }
   ]);
   
   if (!meeting) {

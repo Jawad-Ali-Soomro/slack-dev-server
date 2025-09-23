@@ -2,6 +2,7 @@ export interface CreateTaskRequest {
   title: string;
   description?: string;
   assignTo: string;
+  projectId?: string;
   priority?: "low" | "medium" | "high" | "urgent";
   dueDate?: Date;
   tags?: string[];
@@ -12,6 +13,7 @@ export interface UpdateTaskRequest {
   description?: string;
   status?: "pending" | "in_progress" | "completed" | "cancelled";
   priority?: "low" | "medium" | "high" | "urgent";
+  projectId?: string;
   dueDate?: Date;
   tags?: string[];
 }
@@ -30,6 +32,11 @@ export interface TaskResponse {
     username: string;
     avatar?: string;
   };
+  project?: {
+    id: string;
+    name: string;
+    logo?: string;
+  } | null;
   status: "pending" | "in_progress" | "completed" | "cancelled";
   priority: "low" | "medium" | "high" | "urgent";
   dueDate?: Date;

@@ -18,6 +18,7 @@ const MeetingSchema = new Schema<IMeeting>({
   },
   assignedTo: { type: Schema.Types.ObjectId, ref: "User", required: true },
   assignedBy: { type: Schema.Types.ObjectId, ref: "User", required: true },
+  projectId: { type: Schema.Types.ObjectId, ref: "Project" },
   startDate: { type: Date, required: true },
   endDate: { type: Date, required: true },
   location: { type: String, trim: true },

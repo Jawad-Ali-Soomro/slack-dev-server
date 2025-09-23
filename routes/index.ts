@@ -5,6 +5,8 @@ import enhancedTaskRouter from './enhanced.task.routes'
 import enhancedMeetingRouter from './enhanced.meeting.routes'
 import followRouter from './follow.routes'
 import notificationRouter from './notification.routes'
+import projectRouter from './project.routes'
+import teamRouter from './team.routes'
 const router = express.Router()
 
 router.use("/auth", authRouter)
@@ -14,5 +16,7 @@ router.use("/tasks", enhancedTaskRouter)
 router.use("/meetings", enhancedMeetingRouter)
 router.use("/notifications", notificationRouter)
 router.use("/follow", followRouter)
+router.use("/projects", projectRouter)
+router.use("/teams", teamRouter)
 
 export default router

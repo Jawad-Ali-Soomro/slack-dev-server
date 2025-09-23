@@ -12,6 +12,7 @@ const folders = [
   "videos",
   "audios",
   "files",
+  "projects",
 ];
 if (!fs.existsSync(uploadsDirectory)) {
   fs.mkdirSync(uploadsDirectory);
