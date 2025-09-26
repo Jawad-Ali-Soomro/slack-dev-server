@@ -95,7 +95,14 @@ export const getTeams = catchAsync(async (req: any, res: Response) => {
   const teams = await Team.find(query)
     .populate('createdBy', 'username email avatar role')
     .populate('members.user', 'username email avatar role')
-    .populate('projects', 'name logo status')
+    .populate({
+      path: 'projects',
+      select: 'name description logo status priority progress startDate endDate',
+      populate: {
+        path: 'createdBy',
+        select: 'username avatar'
+      }
+    })
     .sort({ createdAt: -1 })
     .limit(limit * 1)
     .skip((page - 1) * limit)
@@ -128,7 +135,14 @@ export const getTeamById = catchAsync(async (req: any, res: Response) => {
   })
     .populate('createdBy', 'username email avatar role')
     .populate('members.user', 'username email avatar role')
-    .populate('projects', 'name logo status')
+    .populate({
+      path: 'projects',
+      select: 'name description logo status priority progress startDate endDate',
+      populate: {
+        path: 'createdBy',
+        select: 'username avatar'
+      }
+    })
 
   if (!team) {
     return res.status(404).json({

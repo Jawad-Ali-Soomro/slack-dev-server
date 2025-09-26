@@ -86,6 +86,14 @@ export const createProject = catchAsync(async (req: any, res: Response) => {
   await project.save()
   await project.populate('createdBy members.user', 'username email avatar role')
 
+  // If project has a teamId, add it to the team's projects array
+  if (project.teamId) {
+    const Team = require('../models/team.model').Team
+    await Team.findByIdAndUpdate(project.teamId, {
+      $addToSet: { projects: project._id }
+    })
+  }
+
   res.status(201).json({
     success: true,
     message: 'Project created successfully',
@@ -130,6 +138,23 @@ export const getProjects = catchAsync(async (req: any, res: Response) => {
   const projects = await Project.find(query)
     .populate('createdBy', 'username email avatar role')
     .populate('members.user', 'username email avatar role')
+    .populate({
+      path: 'tasks',
+      select: 'title status priority assignTo',
+      populate: {
+        path: 'assignTo',
+        select: 'username avatar'
+      }
+    })
+    .populate({
+      path: 'meetings',
+      select: 'title status type startDate assignedTo',
+      populate: {
+        path: 'assignedTo',
+        select: 'username avatar'
+      }
+    })
+    .populate('teamId', 'name description')
     .sort({ createdAt: -1 })
     .limit(limit * 1)
     .skip((page - 1) * limit)
@@ -176,6 +201,7 @@ export const getProjectById = catchAsync(async (req: any, res: Response) => {
   })
     .populate('createdBy', 'username email avatar role')
     .populate('members.user', 'username email avatar role')
+    .populate('teamId', 'name description')
     .populate({
       path: 'tasks',
       select: 'title status priority assignTo',
@@ -200,6 +226,10 @@ export const getProjectById = catchAsync(async (req: any, res: Response) => {
     })
   }
 
+  console.log('=== PROJECT DEBUG START ===')
+  console.log('Project ID:', project._id)
+  console.log('Project tasks array length:', project.tasks?.length || 0)
+  console.log('Project meetings array length:', project.meetings?.length || 0)
   console.log('Project tasks:', project.tasks)
   console.log('Project meetings:', project.meetings)
 
@@ -210,6 +240,7 @@ export const getProjectById = catchAsync(async (req: any, res: Response) => {
   // Debug: Check if there are any meetings with this projectId
   const meetingsWithProject = await Meeting.find({ projectId: project._id })
   console.log('Meetings with projectId:', meetingsWithProject.length, meetingsWithProject.map(m => ({ id: m._id, title: m.title, projectId: m.projectId })))
+  console.log('=== PROJECT DEBUG END ===')
 
   // Sync tasks and meetings with project if they exist but aren't in the arrays
   if (tasksWithProject.length > 0 || meetingsWithProject.length > 0) {
@@ -227,6 +258,7 @@ export const getProjectById = catchAsync(async (req: any, res: Response) => {
     const updatedProject = await Project.findById(project._id)
       .populate('createdBy', 'username email avatar role')
       .populate('members.user', 'username email avatar role')
+      .populate('teamId', 'name description')
       .populate({
         path: 'tasks',
         select: 'title status priority assignTo',
