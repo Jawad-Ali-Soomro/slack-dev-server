@@ -12,6 +12,7 @@
   "author": "Jawad-Ali-Soomro",
   "license": "ISC",
   "dependencies": {
+    "@types/socket.io": "^3.0.1",
     "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",
     "dotenv": "^17.2.2",
@@ -23,6 +24,7 @@
     "nodemailer": "^7.0.6",
     "nodemon": "^3.1.10",
     "redis": "^5.8.2",
+    "socket.io": "^4.8.1",
     "swagger": "^0.7.5",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",

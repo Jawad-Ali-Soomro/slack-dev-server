@@ -1,5 +1,7 @@
 import express from 'express'
+import { createServer } from 'http'
 const app = express()
+const server = createServer(app)
 import dotenv from 'dotenv'
 import swaggerUi from 'swagger-ui-express'
 import swaggerJSDoc from 'swagger-jsdoc'
@@ -7,6 +9,7 @@ import { logger, swaggerOptions } from './helpers'
 import { dbConnection } from './config'
 import router from './routes'
 import cors from 'cors'
+import SocketService from './services/socketService'
 const swaggerSpec = swaggerJSDoc(swaggerOptions);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 dotenv.config({
@@ -38,8 +41,15 @@ app.use('/projects', express.static('uploads/projects'))
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use("/api", router)
-app.listen(process.env.PORT as String, () => {
-  console.log(`server is running working on port ${process.env.PORT}`)
-})
 
-export default app
+// Initialize Socket.IO
+const socketService = new SocketService(server);
+
+// Make socketService available globally for use in controllers
+(global as any).socketService = socketService;
+
+const PORT = process.env.PORT || 5000;
+server.listen(PORT, () => {
+  console.log(`🚀 Server is running on port ${PORT}`)
+  console.log(`🔌 Socket.IO server ready for connections`)
+})
