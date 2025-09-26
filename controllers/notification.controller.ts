@@ -1,10 +1,19 @@
 import { catchAsync } from "../middlewares";
 import { Notification } from "../models";
+import redisService from "../services/redis.service";
 
 export const getNotifications = catchAsync(async (req: any, res: any) => {
   const { page = 1, limit = 20 } = req.query;
   const skip = (parseInt(page as string) - 1) * parseInt(limit as string);
   const userId = req.user._id;
+
+  // Try to get from cache first
+  const cacheKey = `user:${userId}:notifications:${page}:${limit}`;
+  const cached = await redisService.get(cacheKey);
+  
+  if (cached) {
+    return res.status(200).json(cached);
+  }
 
   const notifications = await Notification.find({ recipient: userId })
     .populate('sender', 'username avatar')
@@ -14,7 +23,7 @@ export const getNotifications = catchAsync(async (req: any, res: any) => {
 
   const total = await Notification.countDocuments({ recipient: userId });
 
-  res.status(200).json({
+  const response = {
     notifications,
     pagination: {
       page: parseInt(page as string),
@@ -22,7 +31,12 @@ export const getNotifications = catchAsync(async (req: any, res: any) => {
       total,
       pages: Math.ceil(total / parseInt(limit as string))
     }
-  });
+  };
+
+  // Cache the response for 5 minutes
+  await redisService.set(cacheKey, response, 300);
+
+  res.status(200).json(response);
 });
 
 export const markAsRead = catchAsync(async (req: any, res: any) => {
@@ -39,6 +53,10 @@ export const markAsRead = catchAsync(async (req: any, res: any) => {
     return res.status(404).json({ message: "Notification not found" });
   }
 
+  // Invalidate user notification caches
+  await redisService.invalidateUserNotifications(userId);
+  await redisService.invalidatePattern(`user:${userId}:notifications:*`);
+
   res.status(200).json({
     message: "Notification marked as read",
     notification
@@ -52,6 +70,10 @@ export const markAllAsRead = catchAsync(async (req: any, res: any) => {
     { recipient: userId, isRead: false },
     { isRead: true }
   );
+
+  // Invalidate user notification caches
+  await redisService.invalidateUserNotifications(userId);
+  await redisService.invalidatePattern(`user:${userId}:notifications:*`);
 
   res.status(200).json({ message: "All notifications marked as read" });
 });

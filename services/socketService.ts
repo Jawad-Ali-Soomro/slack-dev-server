@@ -87,6 +87,60 @@ class SocketService {
         });
       });
 
+      // Code Collaboration Events
+      socket.on('join_session', (data: { sessionId: string }) => {
+        socket.join(`session:${data.sessionId}`);
+        logger.info(`User ${user.id} joined code session ${data.sessionId}`);
+        
+        socket.to(`session:${data.sessionId}`).emit('user_joined_session', {
+          sessionId: data.sessionId,
+          user: {
+            _id: user.id,
+            username: user.name,
+            email: user.email,
+            avatar: user.avatar
+          },
+          participantCount: 0 // Will be updated by the service
+        });
+      });
+
+      socket.on('leave_session', (data: { sessionId: string }) => {
+        socket.leave(`session:${data.sessionId}`);
+        logger.info(`User ${user.id} left code session ${data.sessionId}`);
+        
+        socket.to(`session:${data.sessionId}`).emit('user_left_session', {
+          sessionId: data.sessionId,
+          userId: user.id,
+          participantCount: 0 // Will be updated by the service
+        });
+      });
+
+      socket.on('code_change', (data: { sessionId: string; code: string; cursorPosition?: { line: number; column: number } }) => {
+        socket.to(`session:${data.sessionId}`).emit('code_updated', {
+          sessionId: data.sessionId,
+          code: data.code,
+          updatedBy: user.id,
+          cursorPosition: data.cursorPosition
+        });
+        logger.info(`User ${user.id} updated code in session ${data.sessionId}`);
+      });
+
+      socket.on('cursor_move', (data: { sessionId: string; cursorPosition: { line: number; column: number } }) => {
+        socket.to(`session:${data.sessionId}`).emit('cursor_updated', {
+          sessionId: data.sessionId,
+          userId: user.id,
+          cursorPosition: data.cursorPosition
+        });
+      });
+
+      socket.on('user_typing_session', (data: { sessionId: string; isTyping: boolean }) => {
+        socket.to(`session:${data.sessionId}`).emit('user_typing_session', {
+          sessionId: data.sessionId,
+          userId: user.id,
+          isTyping: data.isTyping
+        });
+      });
+
       socket.on('disconnect', () => {
         this.connectedUsers.delete(user.id);
         
@@ -105,18 +159,35 @@ class SocketService {
     try {
       const token = socket.handshake.auth.token || socket.handshake.headers.authorization?.split(' ')[1];
       
+      logger.info('Socket authentication attempt:', {
+        hasToken: !!token,
+        authToken: !!socket.handshake.auth.token,
+        headerToken: !!socket.handshake.headers.authorization
+      });
+      
       if (!token) {
+        logger.error('Socket authentication failed: No token provided');
         return next(new Error('Authentication error: No token provided'));
       }
 
       const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key') as any;
-      const user = await User.findById(decoded.id).select('name email avatar');
+      logger.info('Token decoded successfully:', { userId: decoded.id });
+      
+      const user = await User.findById(decoded.id).select('username email avatar');
       
       if (!user) {
+        logger.error('Socket authentication failed: User not found', { userId: decoded.id });
         return next(new Error('Authentication error: User not found'));
       }
 
-      socket.data.user = user;
+      socket.data.user = {
+        id: user._id.toString(),
+        name: user.username,
+        email: user.email,
+        avatar: user.avatar
+      };
+      
+      logger.info('Socket authentication successful:', { userId: user._id, username: user.username });
       next();
     } catch (error) {
       logger.error('Socket authentication error:', error);
@@ -169,6 +240,59 @@ class SocketService {
 
   public emitChatUpdate(chatId: string, chat: any): void {
     this.emitToChat(chatId, 'chat_updated', chat);
+  }
+
+  // Code Collaboration Methods
+  public emitToSession(sessionId: string, event: string, data: any): void {
+    this.io.to(`session:${sessionId}`).emit(event, data);
+  }
+
+  public emitCodeUpdate(sessionId: string, code: string, updatedBy: string, cursorPosition?: { line: number; column: number }): void {
+    this.emitToSession(sessionId, 'code_updated', {
+      sessionId,
+      code,
+      updatedBy,
+      cursorPosition
+    });
+  }
+
+  public emitCursorUpdate(sessionId: string, userId: string, cursorPosition: { line: number; column: number }): void {
+    this.emitToSession(sessionId, 'cursor_updated', {
+      sessionId,
+      userId,
+      cursorPosition
+    });
+  }
+
+  public emitUserJoinedSession(sessionId: string, user: any, participantCount: number): void {
+    this.emitToSession(sessionId, 'user_joined_session', {
+      sessionId,
+      user,
+      participantCount
+    });
+  }
+
+  public emitUserLeftSession(sessionId: string, userId: string, participantCount: number): void {
+    this.emitToSession(sessionId, 'user_left_session', {
+      sessionId,
+      userId,
+      participantCount
+    });
+  }
+
+  public emitSessionEnded(sessionId: string, reason: string): void {
+    this.emitToSession(sessionId, 'session_ended', {
+      sessionId,
+      reason
+    });
+  }
+
+  public emitUserTypingSession(sessionId: string, userId: string, isTyping: boolean): void {
+    this.emitToSession(sessionId, 'user_typing_session', {
+      sessionId,
+      userId,
+      isTyping
+    });
   }
 }
 

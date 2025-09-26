@@ -9,6 +9,7 @@ import projectRouter from './project.routes'
 import teamRouter from './team.routes'
 import friendRouter from './friend.routes'
 import chatRouter from './chat.routes'
+import codeCollaborationRouter from './codeCollaboration.routes'
 const router = express.Router()
 
 router.use("/auth", authRouter)
@@ -22,5 +23,6 @@ router.use("/projects", projectRouter)
 router.use("/teams", teamRouter)
 router.use("/friends", friendRouter)
 router.use("/chat", chatRouter)
+router.use("/code-collaboration", codeCollaborationRouter)
 
 export default router

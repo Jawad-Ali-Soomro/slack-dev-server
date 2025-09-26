@@ -5,6 +5,7 @@ import User from '../models/user.model'
 import Task from '../models/task.model'
 import Meeting from '../models/meeting.model'
 import { catchAsync } from '../middlewares'
+import redisService from '../services/redis.service'
 import { 
   CreateProjectRequest, 
   UpdateProjectRequest, 
@@ -97,6 +98,14 @@ export const getProjects = catchAsync(async (req: any, res: Response) => {
   const userId = req.user._id
   const { status, priority, search, page = 1, limit = 10 } = req.query
 
+  // Try to get from cache first
+  const cacheKey = `user:${userId}:projects:${JSON.stringify({ status, priority, search, page, limit })}`
+  const cached = await redisService.get(cacheKey)
+  
+  if (cached) {
+    return res.status(200).json(cached)
+  }
+
   const query: any = {
     $or: [
       { createdBy: userId },
@@ -127,7 +136,7 @@ export const getProjects = catchAsync(async (req: any, res: Response) => {
 
   const total = await Project.countDocuments(query)
 
-  res.status(200).json({
+  const response = {
     success: true,
     projects: projects.map(formatProjectResponse),
     pagination: {
@@ -136,13 +145,27 @@ export const getProjects = catchAsync(async (req: any, res: Response) => {
       total,
       pages: Math.ceil(total / limit)
     }
-  })
+  }
+
+  // Cache the response for 5 minutes
+  await redisService.set(cacheKey, response, 300)
+
+  res.status(200).json(response)
 })
 
 // Get project by ID
 export const getProjectById = catchAsync(async (req: any, res: Response) => {
   const { projectId } = req.params
   const userId = req.user._id
+
+  // Try to get from cache first
+  const cached = await redisService.getProject(projectId)
+  if (cached) {
+    return res.status(200).json({
+      success: true,
+      project: cached
+    })
+  }
 
   let project = await Project.findOne({
     _id: projectId,
@@ -226,9 +249,14 @@ export const getProjectById = catchAsync(async (req: any, res: Response) => {
     }
   }
 
+  const projectResponse = formatProjectResponse(project)
+  
+  // Cache the project
+  await redisService.cacheProject(projectId, projectResponse)
+
   res.status(200).json({
     success: true,
-    project: formatProjectResponse(project)
+    project: projectResponse
   })
 })
 
@@ -257,10 +285,19 @@ export const updateProject = catchAsync(async (req: any, res: Response) => {
   await project.save()
   await project.populate('createdBy members.user', 'username email avatar role')
 
+  const projectResponse = formatProjectResponse(project)
+  
+  // Update cache
+  await redisService.cacheProject(projectId, projectResponse)
+  
+  // Invalidate user project caches
+  await redisService.invalidateUserProjects(userId)
+  await redisService.invalidatePattern(`user:${userId}:projects:*`)
+
   res.status(200).json({
     success: true,
     message: 'Project updated successfully',
-    project: formatProjectResponse(project)
+    project: projectResponse
   })
 })
 
@@ -282,6 +319,11 @@ export const deleteProject = catchAsync(async (req: any, res: Response) => {
   }
 
   await Project.findByIdAndDelete(projectId)
+
+  // Invalidate caches
+  await redisService.invalidateProject(projectId)
+  await redisService.invalidateUserProjects(userId)
+  await redisService.invalidatePattern(`user:${userId}:projects:*`)
 
   res.status(200).json({
     success: true,

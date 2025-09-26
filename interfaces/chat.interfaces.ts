@@ -30,6 +30,7 @@ export interface ChatResponse {
   _id: string;
   participants: Array<{
     _id: string;
+    username: string;
     name: string;
     email: string;
     avatar?: string;
@@ -53,6 +54,7 @@ export interface MessageResponse {
   _id: string;
   chat: string;
   sender: {
+    username: string;
     _id: string;
     name: string;
     email: string;

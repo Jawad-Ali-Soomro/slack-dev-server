@@ -95,7 +95,7 @@ class ChatService {
     try {
       const chat = await Chat.findOne({
         _id: chatId,
-        participants: userId,
+        participants: { $in: [userId] },
         isActive: true
       });
 
@@ -136,13 +136,6 @@ class ChatService {
     try {
       const { chatId, content, type = 'text', attachments, replyTo } = messageData;
 
-      logger.info('SendMessage request:', {
-        userId,
-        chatId,
-        content: content?.substring(0, 50),
-        type,
-        messageData
-      });
 
       if (!chatId) {
         throw new Error('Chat ID is required');
@@ -163,7 +156,6 @@ class ChatService {
       }).populate('participants', '_id');
 
       if (!chat) {
-        logger.error('Chat not found:', { chatId, userId });
         throw new Error('Chat not found or access denied');
       }
 
@@ -186,7 +178,8 @@ class ChatService {
       chat.lastMessageAt = new Date();
       await chat.save();
       
-      // Populate the lastMessage for the response
+      // Populate the participants and lastMessage for the response
+      await chat.populate('participants', 'username email avatar');
       await chat.populate({
         path: 'lastMessage',
         populate: {
@@ -200,13 +193,6 @@ class ChatService {
 
       const messageResponse = this.formatMessageResponse(message);
 
-      // Debug logging
-      logger.info('Chat object for notifications:', {
-        chatId: chat._id,
-        participants: chat.participants,
-        participantsLength: chat.participants?.length,
-        senderId: userId
-      });
 
       await this.createMessageNotifications(chat, message, userId);
 
@@ -214,7 +200,9 @@ class ChatService {
       const socketService = (global as any).socketService;
       if (socketService) {
         socketService.emitNewMessage(chatId, messageResponse);
-        socketService.emitChatUpdate(chatId, this.formatChatResponse(chat, userId));
+        const chatResponse = this.formatChatResponse(chat, userId);
+        console.log('Emitting chat update with participants:', chatResponse.participants);
+        socketService.emitChatUpdate(chatId, chatResponse);
       }
 
       return messageResponse;
@@ -298,7 +286,7 @@ class ChatService {
     try {
       const chat = await Chat.findOne({
         _id: chatId,
-        participants: userId,
+        participants: { $in: [userId] },
         isActive: true
       });
 
@@ -397,7 +385,8 @@ class ChatService {
       _id: chat._id.toString(),
       participants: chat.participants.map((p: any) => ({
         _id: p._id.toString(),
-        name: p.username || p.name, // Use username field from User model
+        username: p.username,
+        name: p.username, // Use username as name for display
         email: p.email,
         avatar: p.avatar
       })),
@@ -409,7 +398,8 @@ class ChatService {
         content: chat.lastMessage.content,
         sender: chat.lastMessage.sender ? {
           _id: chat.lastMessage.sender._id.toString(),
-          name: chat.lastMessage.sender.username || chat.lastMessage.sender.name,
+          username: chat.lastMessage.sender.username,
+          name: chat.lastMessage.sender.username,
           email: chat.lastMessage.sender.email,
           avatar: chat.lastMessage.sender.avatar
         } : chat.lastMessage.sender,
@@ -428,7 +418,8 @@ class ChatService {
       chat: message.chat.toString(),
       sender: {
         _id: message.sender._id.toString(),
-        name: message.sender.username || message.sender.name,
+        username: message.sender.username,
+        name: message.sender.username,
         email: message.sender.email,
         avatar: message.sender.avatar
       },

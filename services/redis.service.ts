@@ -157,6 +157,119 @@ class RedisService {
     }
   }
 
+  // Notification cache methods
+  async cacheUserNotifications(userId: string, notifications: any[], ttl: number = 1800): Promise<void> {
+    await this.set(`user:${userId}:notifications`, notifications, ttl);
+  }
+
+  async getUserNotifications(userId: string): Promise<any[]> {
+    return await this.get(`user:${userId}:notifications`) || [];
+  }
+
+  async invalidateUserNotifications(userId: string): Promise<void> {
+    await this.del(`user:${userId}:notifications`);
+  }
+
+  async cacheNotification(notificationId: string, notificationData: any, ttl: number = 3600): Promise<void> {
+    await this.set(`notification:${notificationId}`, notificationData, ttl);
+  }
+
+  async getNotification(notificationId: string): Promise<any> {
+    return await this.get(`notification:${notificationId}`);
+  }
+
+  async invalidateNotification(notificationId: string): Promise<void> {
+    await this.del(`notification:${notificationId}`);
+  }
+
+  // Project cache methods
+  async cacheUserProjects(userId: string, projects: any[], ttl: number = 1800): Promise<void> {
+    await this.set(`user:${userId}:projects`, projects, ttl);
+  }
+
+  async getUserProjects(userId: string): Promise<any[]> {
+    return await this.get(`user:${userId}:projects`) || [];
+  }
+
+  async invalidateUserProjects(userId: string): Promise<void> {
+    await this.del(`user:${userId}:projects`);
+  }
+
+  async cacheProject(projectId: string, projectData: any, ttl: number = 3600): Promise<void> {
+    await this.set(`project:${projectId}`, projectData, ttl);
+  }
+
+  async getProject(projectId: string): Promise<any> {
+    return await this.get(`project:${projectId}`);
+  }
+
+  async invalidateProject(projectId: string): Promise<void> {
+    await this.del(`project:${projectId}`);
+  }
+
+  // Team cache methods
+  async cacheUserTeams(userId: string, teams: any[], ttl: number = 1800): Promise<void> {
+    await this.set(`user:${userId}:teams`, teams, ttl);
+  }
+
+  async getUserTeams(userId: string): Promise<any[]> {
+    return await this.get(`user:${userId}:teams`) || [];
+  }
+
+  async invalidateUserTeams(userId: string): Promise<void> {
+    await this.del(`user:${userId}:teams`);
+  }
+
+  async cacheTeam(teamId: string, teamData: any, ttl: number = 3600): Promise<void> {
+    await this.set(`team:${teamId}`, teamData, ttl);
+  }
+
+  async getTeam(teamId: string): Promise<any> {
+    return await this.get(`team:${teamId}`);
+  }
+
+  async invalidateTeam(teamId: string): Promise<void> {
+    await this.del(`team:${teamId}`);
+  }
+
+  // Friend cache methods
+  async cacheUserFriends(userId: string, friends: any[], ttl: number = 1800): Promise<void> {
+    await this.set(`user:${userId}:friends`, friends, ttl);
+  }
+
+  async getUserFriends(userId: string): Promise<any[]> {
+    return await this.get(`user:${userId}:friends`) || [];
+  }
+
+  async invalidateUserFriends(userId: string): Promise<void> {
+    await this.del(`user:${userId}:friends`);
+  }
+
+  // Follow cache methods
+  async cacheUserFollowers(userId: string, followers: any[], ttl: number = 1800): Promise<void> {
+    await this.set(`user:${userId}:followers`, followers, ttl);
+  }
+
+  async getUserFollowers(userId: string): Promise<any[]> {
+    return await this.get(`user:${userId}:followers`) || [];
+  }
+
+  async invalidateUserFollowers(userId: string): Promise<void> {
+    await this.del(`user:${userId}:followers`);
+  }
+
+  async cacheUserFollowing(userId: string, following: any[], ttl: number = 1800): Promise<void> {
+    await this.set(`user:${userId}:following`, following, ttl);
+  }
+
+  async getUserFollowing(userId: string): Promise<any[]> {
+    return await this.get(`user:${userId}:following`) || [];
+  }
+
+  async invalidateUserFollowing(userId: string): Promise<void> {
+    await this.del(`user:${userId}:following`);
+  }
+
   // Health check
   async ping(): Promise<string> {
     return await this.client.ping();
