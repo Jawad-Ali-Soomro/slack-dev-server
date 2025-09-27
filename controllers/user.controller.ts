@@ -29,6 +29,131 @@ export const getProfile = catchAsync(async (req: any, res: any) => {
   });
 });
 
+export const getUserDetails = catchAsync(async (req: any, res: any) => {
+  const { userId } = req.params;
+  const currentUserId = req.user._id;
+
+  // Get basic user details
+  const user = await User.findById(userId);
+
+  if (!user) {
+    return res.status(404).json({
+      success: false,
+      message: 'User not found'
+    });
+  }
+
+  // Import models
+  const { Project } = await import('../models/project.model');
+  const Task = (await import('../models/task.model')).default;
+  const Meeting = (await import('../models/meeting.model')).default;
+  const { Team } = await import('../models/team.model');
+
+  // Find projects where user is creator or member
+  const projects = await Project.find({
+    $or: [
+      { createdBy: userId },
+      { 'members.user': userId }
+    ]
+  })
+  .populate('createdBy', 'username avatar')
+  .select('name description logo status priority progress createdAt members')
+  .sort({ createdAt: -1 });
+
+  // Find tasks where user is assignee or assigner
+  const tasks = await Task.find({
+    $or: [
+      { assignTo: userId },
+      { assignedBy: userId }
+    ]
+  })
+  .populate('assignTo assignedBy', 'username avatar')
+  .populate('projectId', 'name')
+  .select('title status priority createdAt assignTo assignedBy projectId')
+  .sort({ createdAt: -1 });
+
+  // Find meetings where user is assigned or creator
+  const meetings = await Meeting.find({
+    $or: [
+      { assignedTo: userId },
+      { assignedBy: userId }
+    ]
+  })
+  .populate('assignedTo assignedBy', 'username avatar')
+  .populate('projectId', 'name')
+  .select('title status type startDate createdAt assignedTo assignedBy projectId')
+  .sort({ createdAt: -1 });
+
+  // Find teams where user is member
+  const teams = await Team.find({
+    'members.user': userId
+  })
+  .populate('createdBy', 'username avatar')
+  .select('name description members createdAt')
+  .sort({ createdAt: -1 });
+
+  // Format projects
+  const formattedProjects = projects.map((project: any) => ({
+    id: project._id,
+    name: project.name,
+    description: project.description,
+    logo: project.logo,
+    status: project.status,
+    priority: project.priority,
+    progress: project.progress,
+    role: project.createdBy.toString() === userId ? 'creator' : 'member',
+    createdAt: project.createdAt
+  }));
+
+  // Format teams with member count and user role
+  const formattedTeams = teams.map((team: any) => ({
+    id: team._id,
+    name: team.name,
+    description: team.description,
+    members: team.members.length,
+    role: team.members.find((member: any) => 
+      member.user.toString() === userId
+    )?.role || 'member',
+    createdAt: team.createdAt
+  }));
+
+  // Format tasks
+  const formattedTasks = tasks.map((task: any) => ({
+    id: task._id,
+    title: task.title,
+    status: task.status,
+    priority: task.priority,
+    role: task.assignTo.toString() === userId ? 'assignee' : 'assigner',
+    projectName: task.projectId?.name,
+    createdAt: task.createdAt
+  }));
+
+  // Format meetings
+  const formattedMeetings = meetings.map((meeting: any) => ({
+    id: meeting._id,
+    title: meeting.title,
+    status: meeting.status,
+    type: meeting.type,
+    startDate: meeting.startDate,
+    role: meeting.assignedTo.toString() === userId ? 'attendee' : 'organizer',
+    projectName: meeting.projectId?.name,
+    createdAt: meeting.createdAt
+  }));
+
+  const userResponse = {
+    ...formatUserResponse(user),
+    projects: formattedProjects,
+    teams: formattedTeams,
+    tasks: formattedTasks,
+    meetings: formattedMeetings
+  };
+
+  res.status(200).json({
+    success: true,
+    user: userResponse
+  });
+});
+
 export const updateProfile = catchAsync(async (req: any, res: any) => {
   const { username, bio, userLocation, website, socialLinks, dateOfBirth, phone, isPrivate }: UpdateProfileRequest = req.body;
   const userId = req.user._id;

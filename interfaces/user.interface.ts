@@ -28,6 +28,8 @@ export interface IUser extends Document {
   isPrivate?: boolean;
   followers?: mongoose.Types.ObjectId[];
   following?: mongoose.Types.ObjectId[];
+  projects?: mongoose.Types.ObjectId[];
+  teams?: mongoose.Types.ObjectId[];
   createdAt?: Date;
   updatedAt?: Date;
 }

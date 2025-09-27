@@ -226,22 +226,14 @@ export const getProjectById = catchAsync(async (req: any, res: Response) => {
     })
   }
 
-  console.log('=== PROJECT DEBUG START ===')
-  console.log('Project ID:', project._id)
-  console.log('Project tasks array length:', project.tasks?.length || 0)
-  console.log('Project meetings array length:', project.meetings?.length || 0)
-  console.log('Project tasks:', project.tasks)
-  console.log('Project meetings:', project.meetings)
+
 
   // Debug: Check if there are any tasks with this projectId
   const tasksWithProject = await Task.find({ projectId: project._id })
-  console.log('Tasks with projectId:', tasksWithProject.length, tasksWithProject.map(t => ({ id: t._id, title: t.title, projectId: t.projectId })))
-
+ 
   // Debug: Check if there are any meetings with this projectId
   const meetingsWithProject = await Meeting.find({ projectId: project._id })
-  console.log('Meetings with projectId:', meetingsWithProject.length, meetingsWithProject.map(m => ({ id: m._id, title: m.title, projectId: m.projectId })))
-  console.log('=== PROJECT DEBUG END ===')
-
+ 
   // Sync tasks and meetings with project if they exist but aren't in the arrays
   if (tasksWithProject.length > 0 || meetingsWithProject.length > 0) {
     const taskIds = tasksWithProject.map(t => t._id)
@@ -413,6 +405,7 @@ export const addMember = catchAsync(async (req: any, res: Response) => {
 
   await project.save()
   await project.populate('createdBy members.user', 'username email avatar role')
+
 
   res.status(200).json({
     success: true,

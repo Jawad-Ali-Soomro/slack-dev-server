@@ -84,6 +84,11 @@ export const createMeeting = catchAsync(async (req: any, res: any) => {
     await Project.findByIdAndUpdate(projectId, {
       $addToSet: { meetings: meeting._id }
     });
+    
+    // Invalidate project cache
+    await redisService.invalidateProject(projectId);
+    await redisService.invalidatePattern(`user:${assignedBy}:projects:*`);
+    await redisService.invalidatePattern(`user:${assignedTo}:projects:*`);
   }
 
   // Cache the new meeting
@@ -104,6 +109,7 @@ export const createMeeting = catchAsync(async (req: any, res: any) => {
     message: `${req.user.username} assigned you a new meeting: "${title}"`,
     meetingId: meeting._id
   });
+
 
   res.status(201).json({
     message: "Meeting created and assigned successfully",

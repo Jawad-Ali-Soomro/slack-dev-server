@@ -187,7 +187,7 @@ export class CodeCollaborationService {
       });
 
       if (!session) {
-        logger.error('Session not found or inactive:', { sessionId, userId });
+        logger.error(`Session ${sessionId} not found or inactive for user ${userId}`);
         return false;
       }
 
@@ -206,11 +206,11 @@ export class CodeCollaborationService {
         return true;
       }
 
-      logger.error('Participant not found in session:', { sessionId, userId });
+      logger.error(`User ${userId} not found in session ${sessionId}`);
       return false;
     } catch (error) {
-      logger.error('Error leaving session:', error);
-      throw new Error('Failed to leave session');
+      logger.error(`Error leaving session ${sessionId} for user ${userId}:`, error);
+      throw new Error(`Failed to leave session ${sessionId}`);
     }
   }
 

@@ -107,7 +107,7 @@ export const leaveSession = catchAsync(async (req: any, res: Response) => {
   if (!success) {
     return res.status(404).json({
       success: false,
-      message: 'Session not found or user not in session'
+      message: `Session ${sessionId} not found or user ${userId} not in session`
     });
   }
 

@@ -74,6 +74,11 @@ export const createTask = catchAsync(async (req: any, res: any) => {
     await Project.findByIdAndUpdate(projectId, {
       $addToSet: { tasks: task._id }
     });
+    
+    // Invalidate project cache
+    await redisService.invalidateProject(projectId);
+    await redisService.invalidatePattern(`user:${assignedBy}:projects:*`);
+    await redisService.invalidatePattern(`user:${assignTo}:projects:*`);
   }
 
   // Invalidate all task-related caches
@@ -93,6 +98,8 @@ export const createTask = catchAsync(async (req: any, res: any) => {
     message: `${req.user.username} assigned you a new task: "${title}"`,
     taskId: task._id
   });
+
+
 
   res.status(201).json({
     message: "Task created and assigned successfully",
@@ -215,6 +222,13 @@ export const updateTask = catchAsync(async (req: any, res: any) => {
   await redisService.invalidateDashboardData(originalTask.assignedBy.toString());
   await redisService.invalidateDashboardData(originalTask.assignTo.toString());
   await redisService.invalidatePattern('tasks:*');
+  
+  // Invalidate project cache if task has projectId
+  if (originalTask.projectId) {
+    await redisService.invalidateProject(originalTask.projectId.toString());
+    await redisService.invalidatePattern(`user:${originalTask.assignedBy}:projects:*`);
+    await redisService.invalidatePattern(`user:${originalTask.assignTo}:projects:*`);
+  }
 
   // Create notification for assignee
   await Notification.create({
@@ -266,6 +280,13 @@ export const updateTaskStatus = catchAsync(async (req: any, res: any) => {
   await redisService.invalidateDashboardData(task.assignedBy.toString());
   await redisService.invalidateDashboardData(task.assignTo.toString());
   await redisService.invalidatePattern('tasks:*');
+  
+  // Invalidate project cache if task has projectId
+  if (task.projectId) {
+    await redisService.invalidateProject(task.projectId.toString());
+    await redisService.invalidatePattern(`user:${task.assignedBy}:projects:*`);
+    await redisService.invalidatePattern(`user:${task.assignTo}:projects:*`);
+  }
 
   // Create notification for assigner
   await Notification.create({

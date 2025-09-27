@@ -75,7 +75,15 @@ const UserSchema = new Schema<IUser>({
     type: [Schema.Types.ObjectId],
     ref: "User",
     default: []
-  }
+  },
+  projects: [{
+    type: Schema.Types.ObjectId,
+    ref: "Project"
+  }],
+  teams: [{
+    type: Schema.Types.ObjectId,
+    ref: "Team"
+  }]
 });
 
 UserSchema.pre("save", async function (next) {

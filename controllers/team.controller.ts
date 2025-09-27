@@ -265,6 +265,7 @@ export const addMember = catchAsync(async (req: any, res: Response) => {
   await team.save()
   await team.populate('createdBy members.user', 'username email avatar role')
 
+
   res.status(200).json({
     success: true,
     message: 'Member added successfully',

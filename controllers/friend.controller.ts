@@ -132,6 +132,9 @@ export const sendFriendRequest = catchAsync(async (req: any, res: Response) => {
 
   await notification.save()
 
+  // Send email notification
+  
+
   res.status(201).json({
     success: true,
     message: 'Friend request sent successfully',
@@ -262,6 +265,8 @@ export const respondToFriendRequest = catchAsync(async (req: any, res: Response)
       message: `${(request.receiver as any).username} accepted your friend request`
     })
     await notification.save()
+
+   
   } else {
     // Create notification for sender about rejection
     const notification = new Notification({

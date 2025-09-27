@@ -1,6 +1,6 @@
 import express from 'express'
 const userRouter = express.Router()
-import { updateProfile, uploadAvatar, deleteAvatar, changePassword, getUsers, getUserById, searchUsers, getProfile } from '../controllers/user.controller'
+import { updateProfile, uploadAvatar, deleteAvatar, changePassword, getUsers, getUserById, searchUsers, getProfile, getUserDetails } from '../controllers/user.controller'
 import { authenticate, upload } from '../middlewares'
 
 /**
@@ -248,5 +248,29 @@ userRouter.get('/search', authenticate, searchUsers)
  *         description: User not found
  */
 userRouter.get('/:userId', authenticate, getUserById)
+
+/**
+ * @openapi
+ * /api/user/{userId}/details:
+ *   get:
+ *     summary: Get detailed user information including projects and teams
+ *     tags:
+ *       - Users
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         example: 60d0fe4f5311236168a109ca
+ *     responses:
+ *       200:
+ *         description: Detailed user information
+ *       404:
+ *         description: User not found
+ */
+userRouter.get('/:userId/details', authenticate, getUserDetails)
 
 export default userRouter
