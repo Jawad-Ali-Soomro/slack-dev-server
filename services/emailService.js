@@ -57,7 +57,7 @@ class EmailService {
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <style>
+    <style>
     @media only screen and (max-width: 620px) {
       .container { width: 100% !important; }
       .content { padding: 16px !important; }
@@ -65,8 +65,8 @@ class EmailService {
     }
     * {
       font-family: 'Public Sans', Arial, sans-serif;
-    }
-  </style>
+        }
+    </style>
 </head>
 <body style="margin:0; padding:0; background-color:#f5f7fb; color:#333; font-family:'Public Sans', Arial, sans-serif;">
 
@@ -90,9 +90,9 @@ class EmailService {
                 ${message}
               </p>
 
-              ${details}
-
-              ${actionText && actionUrl ? `
+            ${details}
+            
+            ${actionText && actionUrl ? `
                 <table role="presentation" border="0" cellpadding="0" cellspacing="0" align="center" style="margin: 20px auto;">
                   <tr>
                     <td align="center">
@@ -103,8 +103,8 @@ class EmailService {
                     </td>
                   </tr>
                 </table>
-              ` : ''}
-
+            ` : ''}
+            
               <p style="margin:0; line-height:1.4;">
                 <span style="color:#6b7280; font-size:10px;font-weight:600 ">IF YOU DIDN'T EXPECT THIS, CONTACT US AT</span> <br />
                 <a href="mailto:support@corestack.com" style="color:#f97316; text-transform:none !important; margin-top: 10px !important; margin-bottom: 20px; ">support@corestack.com</a>
@@ -112,7 +112,7 @@ class EmailService {
 
               <p style="margin:20px 0 0; color:#6b7280; font-size:10px;font-weight:600">
                 ${footerText || 'This is an automated message from Core Stack. Please do not reply to this email.'}
-              </p>
+            </p>
             </td>
           </tr>
 
