@@ -460,14 +460,14 @@ export class CodeCollaborationService {
         throw new Error('Invalid invite code or session not found');
       }
 
-      // Check if user can join
-      const canJoin = session.isPublic || 
-                     session.invitedUsers?.includes(userId as any) || 
-                     session.owner.toString() === userId;
+      // // Check if user can join
+      // const canJoin = session.isPublic || 
+      //                session.invitedUsers?.includes(userId as any) || 
+      //                session.owner.toString() === userId;
       
-      if (!canJoin) {
-        throw new Error('You are not authorized to join this session');
-      }
+      // if (!canJoin) {
+      //   throw new Error('You are not authorized to join this session');
+      // }
 
       // Check if session is full
       if (session.participants.length >= (session.maxParticipants || 10)) {
