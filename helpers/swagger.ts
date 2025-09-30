@@ -8,7 +8,7 @@ export const swaggerOptions = {
     },
     servers: [
       {
-        url: "http://localhost:4000",
+        url: "https://c4b45d68-d548-497d-a47b-ae04856a5fbc-00-1956bkb0royma.sisko.replit.dev:8080/",
         description: "Development server"
       },
     ],

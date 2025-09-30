@@ -41,7 +41,7 @@ export const register = catchAsync(async (req: any, res: any) => {
     siteName: "Slack Dev",
     buttonText: "Verify Email",
     buttonUrl: `${process.env.FRONTEND_URL}/verify-email?token=${emailVerificationToken}`,
-    logoUrl: `${process.env.BASE_URL || 'http://localhost:4000'}/logo.png`
+    logoUrl: `${process.env.BASE_URL || 'https://c4b45d68-d548-497d-a47b-ae04856a5fbc-00-1956bkb0royma.sisko.replit.dev:8080/'}/logo.png`
   })
 
   sendMail({
@@ -106,7 +106,7 @@ export const login = catchAsync(async (req: any, res: any) => {
       siteName: "Slack Dev",
       buttonText: "Verify Email",
       buttonUrl: `${process.env.FRONTEND_URL}/verify-email?token=${emailVerificationToken}`,
-      logoUrl: `${process.env.BASE_URL || 'http://localhost:4000'}/logo.png`
+      logoUrl: `${process.env.BASE_URL || 'https://c4b45d68-d548-497d-a47b-ae04856a5fbc-00-1956bkb0royma.sisko.replit.dev:8080/'}/logo.png`
     })
   
     sendMail({
@@ -180,7 +180,7 @@ export const resendOtp = catchAsync(async (req: any, res: any) => {
     siteName: "Slack Dev",
     buttonText: "Verify Email",
     buttonUrl: `${process.env.FRONTEND_URL}/verify-email?token=${emailVerificationToken}`,
-    logoUrl: `${process.env.BASE_URL || 'http://localhost:4000'}/logo.png`
+    logoUrl: `${process.env.BASE_URL || 'https://c4b45d68-d548-497d-a47b-ae04856a5fbc-00-1956bkb0royma.sisko.replit.dev:8080/'}/logo.png`
   });
 
   sendMail({
