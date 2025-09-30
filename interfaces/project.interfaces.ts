@@ -1,4 +1,5 @@
-import { IUser } from './user.interfaces'
+import { IUser } from "./user.interface"
+
 
 export interface ProjectMember {
   user: IUser

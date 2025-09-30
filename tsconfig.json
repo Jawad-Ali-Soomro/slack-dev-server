@@ -4,22 +4,10 @@
     "module": "CommonJS",
     "outDir": "dist",
     "rootDir": ".",
-    "strict": true,
     "esModuleInterop": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "resolveJsonModule": true,
-    "typeRoots": [
-      "./node_modules/@types",
-      "./types",
-      "./types/express.d.ts"
-    ]
+    "strict": true,
+    "skipLibCheck": true
   },
-  "include": [
-    "**/*.ts"
-  ],
-  "exclude": [
-    "node_modules",
-    "dist"
-  ]
+  "include": ["index.ts", "helpers/**/*", "config/**/*", "routes/**/*", "services/**/*"],
+  "exclude": ["node_modules"]
 }

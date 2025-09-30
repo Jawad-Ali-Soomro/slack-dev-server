@@ -18,6 +18,7 @@ const formatUserResponse = (user: IUser): UserResponse => ({
   avatar: user.avatar,
   emailVerified: user.emailVerified,
   isPrivate: user.isPrivate,
+  createdAt: user.createdAt,
 });
 
 
