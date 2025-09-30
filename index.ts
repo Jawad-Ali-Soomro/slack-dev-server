@@ -49,7 +49,4 @@ const socketService = new SocketService(server);
 (global as any).socketService = socketService;
 
 const PORT = process.env.PORT || 5000;
-server.listen(PORT, () => {
-  console.log(`🚀 Server is running on port ${PORT}`)
-  console.log(`🔌 Socket.IO server ready for connections`)
-})
+export default app;
