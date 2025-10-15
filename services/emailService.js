@@ -34,7 +34,7 @@ class EmailService {
         attachments: [
           {
             filename: 'logo.png',
-            path: `${process.env.CLIENT_URL || 'https://c4b45d68-d548-497d-a47b-ae04856a5fbc-00-1956bkb0royma.sisko.replit.dev:8080/'}/logo.png`,
+            path: `${process.env.CLIENT_URL || 'http://localhost:4000'}/logo.png`,
             cid: 'logo'
           }
         ]

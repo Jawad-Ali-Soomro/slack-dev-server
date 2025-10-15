@@ -406,6 +406,10 @@ export const addMember = catchAsync(async (req: any, res: Response) => {
   await project.save()
   await project.populate('createdBy members.user', 'username email avatar role')
 
+  // Invalidate caches
+  await redisService.invalidateProject(projectId)
+  await redisService.invalidateUserProjects(userId)
+  await redisService.invalidatePattern(`user:${userId}:projects:*`)
 
   res.status(200).json({
     success: true,
@@ -450,6 +454,11 @@ export const removeMember = catchAsync(async (req: any, res: Response) => {
   await project.save()
   await project.populate('createdBy members.user', 'username email avatar role')
 
+  // Invalidate caches
+  await redisService.invalidateProject(projectId)
+  await redisService.invalidateUserProjects(userId)
+  await redisService.invalidatePattern(`user:${userId}:projects:*`)
+
   res.status(200).json({
     success: true,
     message: 'Member removed successfully',
@@ -486,6 +495,11 @@ export const updateMemberRole = catchAsync(async (req: any, res: Response) => {
   member.role = role
   await project.save()
   await project.populate('createdBy members.user', 'username email avatar role')
+
+  // Invalidate caches
+  await redisService.invalidateProject(projectId)
+  await redisService.invalidateUserProjects(userId)
+  await redisService.invalidatePattern(`user:${userId}:projects:*`)
 
   res.status(200).json({
     success: true,

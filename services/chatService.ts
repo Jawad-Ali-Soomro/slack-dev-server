@@ -20,10 +20,22 @@ class ChatService {
         throw new Error('Group chat must have at least 2 participants');
       }
 
-      const existingChat = await Chat.findOne({
-        type: 'direct',
-        participants: { $all: uniqueParticipants, $size: uniqueParticipants.length }
-      }).populate('participants', 'username email avatar');
+      // For direct chats, find existing chat between the same two users
+      let existingChat = null;
+      if (type === 'direct') {
+        // Convert all participant IDs to ObjectIds for proper comparison
+        const participantObjectIds = uniqueParticipants.map(id => 
+          typeof id === 'string' ? new mongoose.Types.ObjectId(id) : id
+        );
+        
+        existingChat = await Chat.findOne({
+          type: 'direct',
+          participants: { $all: participantObjectIds, $size: participantObjectIds.length }
+        }).populate('participants', 'username email avatar');
+        
+        logger.info('Looking for existing chat with participants:', participantObjectIds);
+        logger.info('Found existing chat:', existingChat ? existingChat._id : 'None');
+      }
 
       if (existingChat) {
         return this.formatChatResponse(existingChat, userId);

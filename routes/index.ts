@@ -9,7 +9,9 @@ import projectRouter from './project.routes'
 import teamRouter from './team.routes'
 import friendRouter from './friend.routes'
 import chatRouter from './chat.routes'
-import codeCollaborationRouter from './codeCollaboration.routes'
+import postRouter from './post.routes'
+import uploadRouter from './upload.routes'
+import githubRouter from './github.routes'
 const router = express.Router()
 
 router.use("/auth", authRouter)
@@ -23,6 +25,8 @@ router.use("/projects", projectRouter)
 router.use("/teams", teamRouter)
 router.use("/friends", friendRouter)
 router.use("/chat", chatRouter)
-router.use("/code-collaboration", codeCollaborationRouter)
+router.use("/posts", postRouter)
+router.use("/upload", uploadRouter)
+router.use("/github", githubRouter)
 
 export default router
