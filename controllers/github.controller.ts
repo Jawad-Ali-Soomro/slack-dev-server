@@ -154,8 +154,8 @@ export const createPullRequest = catchAsync(async (req: Request, res: Response) 
     githubHash,
     repository,
     createdBy: userId,
-    assignedTo,
-    team,
+    assignedTo: assignedTo && assignedTo.trim() !== '' ? assignedTo : undefined,
+    team: team && team.trim() !== '' ? team : undefined,
     labels: labels || [],
     priority: priority || 'medium',
     estimatedHours,
@@ -225,6 +225,14 @@ export const updatePullRequest = catchAsync(async (req: Request, res: Response) 
   const userId = (req as any).user?.id
   const updateData = req.body
 
+  // Handle empty strings for ObjectId fields
+  if (updateData.assignedTo && updateData.assignedTo.trim() === '') {
+    updateData.assignedTo = undefined
+  }
+  if (updateData.team && updateData.team.trim() === '') {
+    updateData.team = undefined
+  }
+
   // If status is being updated to closed/merged, set completedAt
   if (updateData.status && ['closed', 'merged'].includes(updateData.status)) {
     updateData.completedAt = new Date()
@@ -284,8 +292,8 @@ export const createIssue = catchAsync(async (req: Request, res: Response) => {
     githubHash,
     repository,
     createdBy: userId,
-    assignedTo,
-    team,
+    assignedTo: assignedTo && assignedTo.trim() !== '' ? assignedTo : undefined,
+    team: team && team.trim() !== '' ? team : undefined,
     labels: labels || [],
     priority: priority || 'medium',
     type: type || 'bug',
@@ -359,6 +367,14 @@ export const updateIssue = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params
   const userId = (req as any).user?.id
   const updateData = req.body
+
+  // Handle empty strings for ObjectId fields
+  if (updateData.assignedTo && updateData.assignedTo.trim() === '') {
+    updateData.assignedTo = undefined
+  }
+  if (updateData.team && updateData.team.trim() === '') {
+    updateData.team = undefined
+  }
 
   // If status is being updated to resolved/closed, set resolvedAt
   if (updateData.status && ['resolved', 'closed'].includes(updateData.status)) {

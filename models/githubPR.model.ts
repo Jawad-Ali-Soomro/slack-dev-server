@@ -35,12 +35,6 @@ const GitHubPRSchema = new Schema<IGitHubPR>({
     type: String,
     required: true,
     trim: true,
-    validate: {
-      validator: function(v: string) {
-        return /^https:\/\/github\.com\/[^\/]+\/[^\/]+\/pull\/\d+$/.test(v)
-      },
-      message: 'Invalid GitHub PR URL'
-    }
   },
   githubHash: {
     type: String,
@@ -105,3 +99,4 @@ GitHubPRSchema.index({ team: 1, status: 1 })
 GitHubPRSchema.index({ githubHash: 1, repository: 1 }, { unique: true })
 
 export const GitHubPR = mongoose.model<IGitHubPR>('GitHubPR', GitHubPRSchema)
+

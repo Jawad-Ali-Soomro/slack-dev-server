@@ -36,12 +36,6 @@ const GitHubIssueSchema = new Schema<IGitHubIssue>({
     type: String,
     required: true,
     trim: true,
-    validate: {
-      validator: function(v: string) {
-        return /^https:\/\/github\.com\/[^\/]+\/[^\/]+\/issues\/\d+$/.test(v)
-      },
-      message: 'Invalid GitHub issue URL'
-    }
   },
   githubHash: {
     type: String,
@@ -112,3 +106,4 @@ GitHubIssueSchema.index({ type: 1, status: 1 })
 GitHubIssueSchema.index({ githubHash: 1, repository: 1 }, { unique: true })
 
 export const GitHubIssue = mongoose.model<IGitHubIssue>('GitHubIssue', GitHubIssueSchema)
+
