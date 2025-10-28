@@ -12,7 +12,8 @@ import {
   addLink,
   updateLink,
   removeLink,
-  getProjectStats
+  getProjectStats,
+  clearProjectCache
 } from '../controllers/project.controller'
 
 const projectRouter = express.Router()
@@ -143,6 +144,23 @@ projectRouter.get('/', authenticate, getProjects)
  *         description: Unauthorized
  */
 projectRouter.get('/stats', authenticate, getProjectStats)
+
+/**
+ * @openapi
+ * /api/projects/clear-cache:
+ *   post:
+ *     summary: Clear project cache for current user
+ *     tags:
+ *       - Projects
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Project cache cleared successfully
+ *       401:
+ *         description: Unauthorized
+ */
+projectRouter.post('/clear-cache', authenticate, clearProjectCache)
 
 /**
  * @openapi

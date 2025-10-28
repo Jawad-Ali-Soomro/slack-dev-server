@@ -1,17 +1,12 @@
 import Redis from 'ioredis';
 import { logger } from '../helpers';
+import { redisConfig } from '../config';
 
 class RedisService {
   private client: Redis;
 
   constructor() {
-    this.client = new Redis({
-      host: process.env.REDIS_HOST || 'localhost',
-      port: parseInt(process.env.REDIS_PORT || '6379'),
-      password: process.env.REDIS_PASSWORD,
-      maxRetriesPerRequest: 3,
-      lazyConnect: true,
-    });
+    this.client = new Redis(redisConfig);
 
     this.client.on('connect', () => {
       logger.info('Redis connected successfully');

@@ -1,6 +1,7 @@
-import { catchAsync } from "../middlewares";
+import { catchAsync, invalidateUserCache } from "../middlewares";
 import { User } from "../models";
 import { UpdateProfileRequest, ChangePasswordRequest, UserResponse, IUser } from "../interfaces";
+import redisService from "../services/redis.service";
 import path from "path";
 import fs from "fs";
 
@@ -32,6 +33,14 @@ export const getProfile = catchAsync(async (req: any, res: any) => {
 export const getUserDetails = catchAsync(async (req: any, res: any) => {
   const { userId } = req.params;
   const currentUserId = req.user._id;
+
+  // Try to get from cache first
+  const cacheKey = `user:${userId}:details`;
+  const cached = await redisService.get(cacheKey);
+  
+  if (cached) {
+    return res.status(200).json(cached);
+  }
 
   // Get basic user details
   const user = await User.findById(userId);
@@ -148,10 +157,15 @@ export const getUserDetails = catchAsync(async (req: any, res: any) => {
     meetings: formattedMeetings
   };
 
-  res.status(200).json({
+  const response = {
     success: true,
     user: userResponse
-  });
+  };
+
+  // Cache the response for 10 minutes
+  await redisService.set(cacheKey, response, 600);
+
+  res.status(200).json(response);
 });
 
 export const updateProfile = catchAsync(async (req: any, res: any) => {
@@ -180,6 +194,9 @@ export const updateProfile = catchAsync(async (req: any, res: any) => {
   if (!user) {
     return res.status(404).json({ message: "user not found" });
   }
+
+  // Invalidate user cache
+  await invalidateUserCache(userId);
 
   res.status(200).json({
     message: "profile updated successfully",
@@ -215,6 +232,9 @@ export const uploadAvatar = catchAsync(async (req: any, res: any) => {
     return res.status(404).json({ message: "user not found" });
   }
 
+  // Invalidate user cache
+  await invalidateUserCache(userId);
+
   res.status(200).json({
     message: "avatar uploaded successfully", 
     user: formatUserResponse(updatedUser)
@@ -248,6 +268,9 @@ export const deleteAvatar = catchAsync(async (req: any, res: any) => {
     return res.status(404).json({ message: "user not found" });
   }
 
+  // Invalidate user cache
+  await invalidateUserCache(userId);
+
   res.status(200).json({
     message: "avatar deleted successfully",
     user: formatUserResponse(updatedUser)
@@ -278,6 +301,14 @@ export const getUsers = catchAsync(async (req: any, res: any) => {
   const { page = 1, limit = 20, search } = req.query;
   const skip = (parseInt(page as string) - 1) * parseInt(limit as string);
 
+  // Try to get from cache first
+  const cacheKey = `users:${JSON.stringify({ page, limit, search })}`;
+  const cached = await redisService.get(cacheKey);
+  
+  if (cached) {
+    return res.status(200).json(cached);
+  }
+
   const filter: any = {};
   if (search) {
     filter.$or = [
@@ -304,7 +335,7 @@ export const getUsers = catchAsync(async (req: any, res: any) => {
     userLocation: user.userLocation
   }));
 
-  res.status(200).json({
+  const response = {
     users: userResponses,
     pagination: {
       page: parseInt(page as string),
@@ -312,11 +343,22 @@ export const getUsers = catchAsync(async (req: any, res: any) => {
       total,
       pages: Math.ceil(total / parseInt(limit as string))
     }
-  });
+  };
+
+  // Cache the response for 5 minutes
+  await redisService.set(cacheKey, response, 300);
+
+  res.status(200).json(response);
 });
 
 export const getUserById = catchAsync(async (req: any, res: any) => {
   const { userId } = req.params;
+
+  // Try to get from cache first
+  const cached = await redisService.getUser(userId);
+  if (cached) {
+    return res.status(200).json({ user: cached });
+  }
 
   const user = await User.findById(userId)
     .select('username email avatar role bio userLocation website socialLinks dateOfBirth phone isPrivate emailVerified');
@@ -325,8 +367,13 @@ export const getUserById = catchAsync(async (req: any, res: any) => {
     return res.status(404).json({ message: "user not found" });
   }
 
+  const userResponse = formatUserResponse(user);
+  
+  // Cache the user for 1 hour
+  await redisService.cacheUser(userId, userResponse);
+
   res.status(200).json({
-    user: formatUserResponse(user)
+    user: userResponse
   });
 });
 
@@ -335,6 +382,14 @@ export const searchUsers = catchAsync(async (req: any, res: any) => {
 
   if (!q) {
     return res.status(400).json({ message: "search query is required" });
+  }
+
+  // Try to get from cache first
+  const cacheKey = `search:users:${q}`;
+  const cached = await redisService.get(cacheKey);
+  
+  if (cached) {
+    return res.status(200).json(cached);
   }
 
   const users = await User.find({
@@ -356,7 +411,12 @@ export const searchUsers = catchAsync(async (req: any, res: any) => {
     userLocation: user.userLocation
   }));
 
-  res.status(200).json({
+  const response = {
     users: userResponses
-  });
+  };
+
+  // Cache the response for 3 minutes
+  await redisService.set(cacheKey, response, 180);
+
+  res.status(200).json(response);
 });

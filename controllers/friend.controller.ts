@@ -3,6 +3,7 @@ import { catchAsync } from '../utils/catchAsync'
 import { FriendRequest, Friendship } from '../models/friend.model'
 import User from '../models/user.model'
 import Notification from '../models/notification.model'
+import redisService from '../services/redis.service'
 import { 
   FriendRequestResponse, 
   FriendshipResponse, 
@@ -132,6 +133,10 @@ export const sendFriendRequest = catchAsync(async (req: any, res: Response) => {
 
   await notification.save()
 
+  // Invalidate user friend caches
+  await redisService.invalidateUserFriends(senderId.toString())
+  await redisService.invalidateUserFriends(receiverId.toString())
+
   // Send email notification
   
 
@@ -146,6 +151,14 @@ export const sendFriendRequest = catchAsync(async (req: any, res: Response) => {
 export const getFriendRequests = catchAsync(async (req: any, res: Response) => {
   const userId = req.user._id
   const { type = 'all' } = req.query // 'sent', 'received', or 'all'
+
+  // Try to get from cache first
+  const cacheKey = `user:${userId}:friendRequests:${type}`
+  const cached = await redisService.get(cacheKey)
+  
+  if (cached) {
+    return res.status(200).json(cached)
+  }
 
   let query: any = {}
   
@@ -164,10 +177,15 @@ export const getFriendRequests = catchAsync(async (req: any, res: Response) => {
     .populate('sender receiver', 'username email avatar')
     .sort({ createdAt: -1 })
 
-  res.status(200).json({
+  const response = {
     success: true,
     requests: requests.map(formatFriendRequestResponse)
-  })
+  }
+
+  // Cache the response for 5 minutes
+  await redisService.set(cacheKey, response, 300)
+
+  res.status(200).json(response)
 })
 
 // Respond to friend request
@@ -266,6 +284,11 @@ export const respondToFriendRequest = catchAsync(async (req: any, res: Response)
     })
     await notification.save()
 
+    // Invalidate friend caches for both users
+    await redisService.invalidateUserFriends(request.sender._id.toString())
+    await redisService.invalidateUserFriends(request.receiver._id.toString())
+    await redisService.invalidatePattern(`user:${request.sender._id}:friendRequests:*`)
+    await redisService.invalidatePattern(`user:${request.receiver._id}:friendRequests:*`)
    
   } else {
     // Create notification for sender about rejection
@@ -276,6 +299,10 @@ export const respondToFriendRequest = catchAsync(async (req: any, res: Response)
       message: `${(request.receiver as any).username} declined your friend request`
     })
     await notification.save()
+
+    // Invalidate friend request caches
+    await redisService.invalidatePattern(`user:${request.sender._id}:friendRequests:*`)
+    await redisService.invalidatePattern(`user:${request.receiver._id}:friendRequests:*`)
   }
 
   res.status(200).json({
@@ -289,20 +316,14 @@ export const respondToFriendRequest = catchAsync(async (req: any, res: Response)
 export const getFriends = catchAsync(async (req: any, res: Response) => {
   const userId = req.user._id
 
-  console.log(`\n=== Getting friends for user: ${userId} ===`)
-
-  // First, let's check all friendships in the database
-  const allFriendships = await Friendship.find().populate('user1 user2', 'username email avatar')
-  console.log(`Total friendships in database: ${allFriendships.length}`)
-  allFriendships.forEach((fs, index) => {
-    console.log(`All friendship ${index + 1}:`, {
-      id: fs._id,
-      user1: fs.user1._id.toString(),
-      user2: fs.user2._id.toString(),
-      user1Username: (fs.user1 as any).username,
-      user2Username: (fs.user2 as any).username
+  // Try to get from cache first
+  const cached = await redisService.getUserFriends(userId)
+  if (cached && cached.length > 0) {
+    return res.status(200).json({
+      success: true,
+      friends: cached
     })
-  })
+  }
 
   const friendships = await Friendship.find({
     $or: [
@@ -313,39 +334,12 @@ export const getFriends = catchAsync(async (req: any, res: Response) => {
     .populate('user1 user2', 'username email avatar')
     .sort({ createdAt: -1 })
 
-  console.log(`Found ${friendships.length} friendships for user ${userId}`)
-  
-  friendships.forEach((friendship, index) => {
-    console.log(`Friendship ${index + 1}:`, {
-      friendshipId: friendship._id,
-      user1: {
-        id: friendship.user1._id.toString(),
-        username: (friendship.user1 as any).username
-      },
-      user2: {
-        id: friendship.user2._id.toString(),
-        username: (friendship.user2 as any).username
-      },
-      currentUserIsUser1: friendship.user1._id.equals(userId),
-      currentUserIsUser2: friendship.user2._id.equals(userId)
-    })
-  })
-
   const formattedFriends = friendships
     .map(friendship => formatFriendshipResponse(friendship, userId))
     .filter(friendship => friendship.friend.id !== userId.toString()) // Filter out self-friendships
 
-  console.log(`Formatted friends for user ${userId}:`, formattedFriends.map(f => ({
-    id: f.friend.id,
-    username: f.friend.username
-  })))
-
-  // Additional check: let's see if the issue is with the filter
-  const beforeFilter = friendships.map(friendship => formatFriendshipResponse(friendship, userId))
-  console.log(`Before filtering for user ${userId}:`, beforeFilter.map(f => ({
-    id: f.friend.id,
-    username: f.friend.username
-  })))
+  // Cache the friends list for 30 minutes
+  await redisService.cacheUserFriends(userId, formattedFriends, 1800)
 
   res.status(200).json({
     success: true,
@@ -374,6 +368,10 @@ export const removeFriend = catchAsync(async (req: any, res: Response) => {
 
   await Friendship.findByIdAndDelete(friendship._id)
 
+  // Invalidate friend caches for both users
+  await redisService.invalidateUserFriends(userId)
+  await redisService.invalidateUserFriends(friendId)
+
   res.status(200).json({
     success: true,
     message: 'Friend removed successfully'
@@ -383,6 +381,14 @@ export const removeFriend = catchAsync(async (req: any, res: Response) => {
 // Get friend stats
 export const getFriendStats = catchAsync(async (req: any, res: Response) => {
   const userId = req.user._id
+
+  // Try to get from cache first
+  const cacheKey = `user:${userId}:friendStats`
+  const cached = await redisService.get(cacheKey)
+  
+  if (cached) {
+    return res.status(200).json(cached)
+  }
 
   const [totalFriends, pendingSentRequests, pendingReceivedRequests] = await Promise.all([
     Friendship.countDocuments({
@@ -407,16 +413,29 @@ export const getFriendStats = catchAsync(async (req: any, res: Response) => {
     pendingReceivedRequests
   }
 
-  res.status(200).json({
+  const response = {
     success: true,
     stats
-  })
+  }
+
+  // Cache the response for 5 minutes
+  await redisService.set(cacheKey, response, 300)
+
+  res.status(200).json(response)
 })
 
 // Search users for friend requests
 export const searchUsersForFriends = catchAsync(async (req: any, res: Response) => {
   const userId = req.user._id
   const { search = '', limit = 20 } = req.query
+
+  // Try to get from cache first
+  const cacheKey = `search:friends:${userId}:${search}:${limit}`
+  const cached = await redisService.get(cacheKey)
+  
+  if (cached) {
+    return res.status(200).json(cached)
+  }
 
   // Get current user's friends
   const friendships = await Friendship.find({
@@ -461,7 +480,7 @@ export const searchUsersForFriends = catchAsync(async (req: any, res: Response) 
     .select('username email avatar')
     .limit(parseInt(limit as string))
 
-  res.status(200).json({
+  const response = {
     success: true,
     users: users.map((user: any) => ({
       id: user._id,
@@ -469,5 +488,10 @@ export const searchUsersForFriends = catchAsync(async (req: any, res: Response) 
       email: user.email,
       avatar: user.avatar
     }))
-  })
+  }
+
+  // Cache the response for 3 minutes
+  await redisService.set(cacheKey, response, 180)
+
+  res.status(200).json(response)
 })

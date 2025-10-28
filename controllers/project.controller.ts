@@ -86,6 +86,21 @@ export const createProject = catchAsync(async (req: any, res: Response) => {
   await project.save()
   await project.populate('createdBy members.user', 'username email avatar role')
 
+  // Cache the project
+  await redisService.cacheProject((project._id as any).toString(), formatProjectResponse(project));
+
+  // Invalidate user project caches for creator
+  await redisService.invalidateUserProjects(userId);
+  await redisService.invalidatePattern(`user:${userId}:projects:*`);
+
+  // Invalidate user project caches for all members
+  if (projectData.members && projectData.members.length > 0) {
+    for (const memberId of projectData.members) {
+      await redisService.invalidateUserProjects(memberId);
+      await redisService.invalidatePattern(`user:${memberId}:projects:*`);
+    }
+  }
+
   // If project has a teamId, add it to the team's projects array
   if (project.teamId) {
     const Team = require('../models/team.model').Team
@@ -614,6 +629,28 @@ export const removeLink = catchAsync(async (req: any, res: Response) => {
     project: formatProjectResponse(project)
   })
 })
+
+// Clear project cache for debugging
+export const clearProjectCache = catchAsync(async (req: any, res: Response) => {
+  const userId = req.user._id
+  
+  try {
+    // Clear all project-related cache for the user
+    await redisService.invalidateUserProjects(userId);
+    await redisService.invalidatePattern(`user:${userId}:projects:*`);
+    
+    res.status(200).json({
+      success: true,
+      message: 'Project cache cleared successfully'
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Failed to clear project cache',
+      error: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+});
 
 // Get project statistics
 export const getProjectStats = catchAsync(async (req: any, res: Response) => {

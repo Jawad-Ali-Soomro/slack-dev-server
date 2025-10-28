@@ -1,6 +1,7 @@
-import { catchAsync } from "../middlewares";
+import { catchAsync, invalidateUserCache } from "../middlewares";
 import { User, Notification } from "../models";
 import { FollowRequest, UserFollowStats, FollowersResponse, FollowingResponse } from "../interfaces";
+import redisService from "../services/redis.service";
 
 export const followUser = catchAsync(async (req: any, res: any) => {
   const { userId }: FollowRequest = req.body;
@@ -42,6 +43,10 @@ export const followUser = catchAsync(async (req: any, res: any) => {
     type: "user_followed",
     message: `${req.user.username} started following you`,
   });
+
+  // Invalidate user caches
+  await invalidateUserCache(currentUserId.toString());
+  await invalidateUserCache(userId);
 
   // Populate user data for response
   const updatedCurrentUser = await User.findById(currentUserId)
@@ -106,6 +111,10 @@ export const unfollowUser = catchAsync(async (req: any, res: any) => {
     message: `${req.user.username} stopped following you`,
   });
 
+  // Invalidate user caches
+  await invalidateUserCache(currentUserId.toString());
+  await invalidateUserCache(userId);
+
   // Populate user data for response
   const updatedCurrentUser = await User.findById(currentUserId)
     .populate("following", "username avatar")
@@ -137,6 +146,14 @@ export const getFollowers = catchAsync(async (req: any, res: any) => {
   const page = parseInt(req.query.page as string) || 1;
   const limit = parseInt(req.query.limit as string) || 20;
   const skip = (page - 1) * limit;
+
+  // Try to get from cache first
+  const cacheKey = `user:${userId}:followers:${page}:${limit}`;
+  const cached = await redisService.get(cacheKey);
+  
+  if (cached) {
+    return res.status(200).json(cached);
+  }
 
   const user = await User.findById(userId)
     .populate({
@@ -171,6 +188,9 @@ export const getFollowers = catchAsync(async (req: any, res: any) => {
     }
   };
 
+  // Cache the response for 5 minutes
+  await redisService.set(cacheKey, followersResponse, 300);
+
   res.status(200).json(followersResponse);
 });
 
@@ -179,6 +199,14 @@ export const getFollowing = catchAsync(async (req: any, res: any) => {
   const page = parseInt(req.query.page as string) || 1;
   const limit = parseInt(req.query.limit as string) || 20;
   const skip = (page - 1) * limit;
+
+  // Try to get from cache first
+  const cacheKey = `user:${userId}:following:${page}:${limit}`;
+  const cached = await redisService.get(cacheKey);
+  
+  if (cached) {
+    return res.status(200).json(cached);
+  }
 
   const user = await User.findById(userId)
     .populate({
@@ -213,12 +241,23 @@ export const getFollowing = catchAsync(async (req: any, res: any) => {
     }
   };
 
+  // Cache the response for 5 minutes
+  await redisService.set(cacheKey, followingResponse, 300);
+
   res.status(200).json(followingResponse);
 });
 
 export const getUserFollowStats = catchAsync(async (req: any, res: any) => {
   const { userId } = req.params;
   const currentUserId = req.user._id;
+
+  // Try to get from cache first
+  const cacheKey = `user:${userId}:followStats:${currentUserId}`;
+  const cached = await redisService.get(cacheKey);
+  
+  if (cached) {
+    return res.status(200).json(cached);
+  }
 
   const user = await User.findById(userId)
     .populate("followers", "_id")
@@ -240,6 +279,9 @@ export const getUserFollowStats = catchAsync(async (req: any, res: any) => {
     followingCount: (user as any).following.length,
     isFollowing
   };
+
+  // Cache the response for 5 minutes
+  await redisService.set(cacheKey, stats, 300);
 
   res.status(200).json(stats);
 });

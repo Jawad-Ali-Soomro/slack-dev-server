@@ -1,2 +1,4 @@
 import { dbConnection } from "./db";
-export { dbConnection }
+import { redisConfig } from "./redis";
+
+export { dbConnection, redisConfig };

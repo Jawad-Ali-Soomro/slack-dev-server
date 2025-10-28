@@ -283,7 +283,36 @@ export const deletePullRequest = catchAsync(async (req: Request, res: Response) 
 // Issue Controllers
 export const createIssue = catchAsync(async (req: Request, res: Response) => {
   const userId = (req as any).user?.id
-  const { title, description, githubUrl, githubHash, repository, assignedTo, team, labels, priority, type, estimatedHours, dueDate } = req.body
+  const { title, description, githubUrl, githubHash } = req.body
+  let { repository, assignedTo, team, labels, priority, type, estimatedHours, dueDate } = req.body
+
+  // Normalize empty strings for ObjectId fields
+  if (assignedTo && typeof assignedTo === 'string' && assignedTo.trim() === '') assignedTo = undefined
+  if (team && typeof team === 'string' && team.trim() === '') team = undefined
+
+  // Resolve repository if not provided or empty string
+  if (!repository || (typeof repository === 'string' && repository.trim() === '')) {
+    if (githubUrl && typeof githubUrl === 'string') {
+      try {
+        // Expected issue URL: https://github.com/{owner}/{repo}/issues/{number}
+        const parts = githubUrl.split('/')
+        if (parts.length >= 5) {
+          const baseRepoUrl = `${parts[0]}//${parts[2]}/${parts[3]}/${parts[4]}`
+          const repoDoc = await GitHubRepo.findOne({ githubUrl: baseRepoUrl })
+          if (repoDoc) {
+            repository = repoDoc._id as any
+          }
+        }
+      } catch {}
+    }
+  }
+
+  if (!repository) {
+    return res.status(400).json({
+      success: false,
+      message: 'Repository is required for creating an issue. Provide a repository id or a valid githubUrl that can be resolved.'
+    })
+  }
 
   const issue = await GitHubIssue.create({
     title,
@@ -292,8 +321,8 @@ export const createIssue = catchAsync(async (req: Request, res: Response) => {
     githubHash,
     repository,
     createdBy: userId,
-    assignedTo: assignedTo && assignedTo.trim() !== '' ? assignedTo : undefined,
-    team: team && team.trim() !== '' ? team : undefined,
+    assignedTo,
+    team,
     labels: labels || [],
     priority: priority || 'medium',
     type: type || 'bug',

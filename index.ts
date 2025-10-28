@@ -10,6 +10,7 @@ import { dbConnection } from './config'
 import router from './routes'
 import cors from 'cors'
 import SocketService from './services/socketService'
+import redisService from './services/redis.service'
 const swaggerSpec = swaggerJSDoc(swaggerOptions);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 dotenv.config({
@@ -17,6 +18,13 @@ dotenv.config({
 })
 logger.info('server requested')
 dbConnection()
+
+// Initialize Redis connection
+redisService.ping().then(() => {
+  logger.info('Redis connection established')
+}).catch((error) => {
+  logger.error('Redis connection failed:', error)
+})
 process.on("uncaughtException", (err, next) => {
   logger.error(`uncaught exception: ${err.message}`);
   process.exit(1);

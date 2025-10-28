@@ -2,7 +2,8 @@ import { Request, Response } from 'express'
 import mongoose from 'mongoose'
 import { Team } from '../models/team.model'
 import User from '../models/user.model'
-import { catchAsync } from '../middlewares'
+import { catchAsync, invalidateUserCache } from '../middlewares'
+import redisService from '../services/redis.service'
 import { 
   CreateTeamRequest, 
   UpdateTeamRequest, 
@@ -61,6 +62,12 @@ export const createTeam = catchAsync(async (req: any, res: Response) => {
   await team.save()
   await team.populate('createdBy members.user', 'username email avatar role')
 
+  // Cache the team
+  await redisService.cacheTeam((team._id as any).toString(), formatTeamResponse(team));
+
+  // Invalidate user team caches
+  await redisService.invalidateUserTeams(userId);
+
   res.status(201).json({
     success: true,
     message: 'Team created successfully',
@@ -72,6 +79,14 @@ export const createTeam = catchAsync(async (req: any, res: Response) => {
 export const getTeams = catchAsync(async (req: any, res: Response) => {
   const userId = req.user._id
   const { isActive, search, page = 1, limit = 10 } = req.query
+
+  // Try to get from cache first
+  const cacheKey = `user:${userId}:teams:${JSON.stringify({ isActive, search, page, limit })}`
+  const cached = await redisService.get(cacheKey)
+  
+  if (cached) {
+    return res.status(200).json(cached)
+  }
 
   const query: any = {
     $or: [
@@ -109,7 +124,7 @@ export const getTeams = catchAsync(async (req: any, res: Response) => {
 
   const total = await Team.countDocuments(query)
 
-  res.status(200).json({
+  const response = {
     success: true,
     teams: teams.map(formatTeamResponse),
     pagination: {
@@ -118,13 +133,27 @@ export const getTeams = catchAsync(async (req: any, res: Response) => {
       total,
       pages: Math.ceil(total / limit)
     }
-  })
+  }
+
+  // Cache the response for 5 minutes
+  await redisService.set(cacheKey, response, 300)
+
+  res.status(200).json(response)
 })
 
 // Get team by ID
 export const getTeamById = catchAsync(async (req: any, res: Response) => {
   const { teamId } = req.params
   const userId = req.user._id
+
+  // Try to get from cache first
+  const cached = await redisService.getTeam(teamId)
+  if (cached) {
+    return res.status(200).json({
+      success: true,
+      team: cached
+    })
+  }
 
   const team = await Team.findOne({
     _id: teamId,
@@ -151,9 +180,14 @@ export const getTeamById = catchAsync(async (req: any, res: Response) => {
     })
   }
 
+  const teamResponse = formatTeamResponse(team)
+  
+  // Cache the team
+  await redisService.cacheTeam(teamId, teamResponse)
+
   res.status(200).json({
     success: true,
-    team: formatTeamResponse(team)
+    team: teamResponse
   })
 })
 
@@ -182,10 +216,19 @@ export const updateTeam = catchAsync(async (req: any, res: Response) => {
   await team.save()
   await team.populate('createdBy members.user', 'username email avatar role')
 
+  const teamResponse = formatTeamResponse(team)
+  
+  // Update cache
+  await redisService.cacheTeam(teamId, teamResponse)
+  
+  // Invalidate user team caches
+  await redisService.invalidateUserTeams(userId)
+  await redisService.invalidatePattern(`user:${userId}:teams:*`)
+
   res.status(200).json({
     success: true,
     message: 'Team updated successfully',
-    team: formatTeamResponse(team)
+    team: teamResponse
   })
 })
 
@@ -207,6 +250,11 @@ export const deleteTeam = catchAsync(async (req: any, res: Response) => {
   }
 
   await Team.findByIdAndDelete(teamId)
+
+  // Invalidate caches
+  await redisService.invalidateTeam(teamId)
+  await redisService.invalidateUserTeams(userId)
+  await redisService.invalidatePattern(`user:${userId}:teams:*`)
 
   res.status(200).json({
     success: true,
@@ -265,11 +313,19 @@ export const addMember = catchAsync(async (req: any, res: Response) => {
   await team.save()
   await team.populate('createdBy members.user', 'username email avatar role')
 
+  const teamResponse = formatTeamResponse(team)
+  
+  // Update cache
+  await redisService.cacheTeam(teamId, teamResponse)
+  
+  // Invalidate user team caches
+  await redisService.invalidateUserTeams(userId)
+  await redisService.invalidatePattern(`user:${userId}:teams:*`)
 
   res.status(200).json({
     success: true,
     message: 'Member added successfully',
-    team: formatTeamResponse(team)
+    team: teamResponse
   })
 })
 
@@ -309,10 +365,19 @@ export const removeMember = catchAsync(async (req: any, res: Response) => {
   await team.save()
   await team.populate('createdBy members.user', 'username email avatar role')
 
+  const teamResponse = formatTeamResponse(team)
+  
+  // Update cache
+  await redisService.cacheTeam(teamId, teamResponse)
+  
+  // Invalidate user team caches
+  await redisService.invalidateUserTeams(userId)
+  await redisService.invalidatePattern(`user:${userId}:teams:*`)
+
   res.status(200).json({
     success: true,
     message: 'Member removed successfully',
-    team: formatTeamResponse(team)
+    team: teamResponse
   })
 })
 
@@ -346,10 +411,19 @@ export const updateMemberRole = catchAsync(async (req: any, res: Response) => {
   await team.save()
   await team.populate('createdBy members.user', 'username email avatar role')
 
+  const teamResponse = formatTeamResponse(team)
+  
+  // Update cache
+  await redisService.cacheTeam(teamId, teamResponse)
+  
+  // Invalidate user team caches
+  await redisService.invalidateUserTeams(userId)
+  await redisService.invalidatePattern(`user:${userId}:teams:*`)
+
   res.status(200).json({
     success: true,
     message: 'Member role updated successfully',
-    team: formatTeamResponse(team)
+    team: teamResponse
   })
 })
 
