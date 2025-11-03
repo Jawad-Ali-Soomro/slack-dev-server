@@ -287,8 +287,8 @@ export const createIssue = catchAsync(async (req: Request, res: Response) => {
   let { repository, assignedTo, team, labels, priority, type, estimatedHours, dueDate } = req.body
 
   // Normalize empty strings for ObjectId fields
-  if (assignedTo && typeof assignedTo === 'string' && assignedTo.trim() === '') assignedTo = undefined
-  if (team && typeof team === 'string' && team.trim() === '') team = undefined
+  if (typeof assignedTo === 'string' && assignedTo.trim() === '') assignedTo = undefined
+  if (typeof team === 'string' && team.trim() === '') team = undefined
 
   // Resolve repository if not provided or empty string
   if (!repository || (typeof repository === 'string' && repository.trim() === '')) {
@@ -398,10 +398,10 @@ export const updateIssue = catchAsync(async (req: Request, res: Response) => {
   const updateData = req.body
 
   // Handle empty strings for ObjectId fields
-  if (updateData.assignedTo && updateData.assignedTo.trim() === '') {
+  if (typeof updateData.assignedTo === 'string' && updateData.assignedTo.trim() === '') {
     updateData.assignedTo = undefined
   }
-  if (updateData.team && updateData.team.trim() === '') {
+  if (typeof updateData.team === 'string' && updateData.team.trim() === '') {
     updateData.team = undefined
   }
 
