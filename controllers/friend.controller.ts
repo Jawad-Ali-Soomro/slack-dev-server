@@ -37,15 +37,6 @@ const formatFriendshipResponse = (friendship: any, currentUserId: any): Friendsh
   const isUser1 = friendship.user1._id.equals(currentUserId)
   const friend = isUser1 ? friendship.user2 : friendship.user1
   
-  console.log(`Formatting friendship ${friendship._id}:`, {
-    currentUserId: currentUserId.toString(),
-    user1Id: friendship.user1._id.toString(),
-    user2Id: friendship.user2._id.toString(),
-    isUser1,
-    friendId: friend._id.toString(),
-    friendUsername: (friend as any).username
-  })
-  
   return {
     id: friendship._id,
     friend: {
