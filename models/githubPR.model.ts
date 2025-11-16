@@ -54,7 +54,6 @@ const GitHubPRSchema = new Schema<IGitHubPR>({
   repository: {
     type: Schema.Types.ObjectId,
     ref: 'GitHubRepo',
-    required: true
   },
   createdBy: {
     type: Schema.Types.ObjectId,
@@ -92,7 +91,6 @@ const GitHubPRSchema = new Schema<IGitHubPR>({
 })
 
 // Index for efficient queries
-GitHubPRSchema.index({ repository: 1, status: 1 })
 GitHubPRSchema.index({ createdBy: 1, status: 1 })
 GitHubPRSchema.index({ assignedTo: 1, status: 1 })
 GitHubPRSchema.index({ team: 1, status: 1 })

@@ -60,7 +60,6 @@ const GitHubIssueSchema = new Schema<IGitHubIssue>({
   repository: {
     type: Schema.Types.ObjectId,
     ref: 'GitHubRepo',
-    required: true
   },
   createdBy: {
     type: Schema.Types.ObjectId,

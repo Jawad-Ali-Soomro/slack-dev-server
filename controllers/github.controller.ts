@@ -307,12 +307,7 @@ export const createIssue = catchAsync(async (req: Request, res: Response) => {
     }
   }
 
-  if (!repository) {
-    return res.status(400).json({
-      success: false,
-      message: 'Repository is required for creating an issue. Provide a repository id or a valid githubUrl that can be resolved.'
-    })
-  }
+  
 
   const issue = await GitHubIssue.create({
     title,
