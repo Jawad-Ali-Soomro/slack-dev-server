@@ -11,6 +11,12 @@ import router from './routes'
 import cors from 'cors'
 import SocketService from './services/socketService'
 import redisService from './services/redis.service'
+import { 
+  securityHeaders, 
+  sanitizeResponse, 
+  generalRateLimiter 
+} from './middlewares'
+
 const swaggerSpec = swaggerJSDoc(swaggerOptions);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 dotenv.config({
@@ -33,22 +39,38 @@ process.on("unhandledRejection", (err: Error, next) => {
   logger.error(`unhandled rejection: ${err.message}`);
   process.exit(1);
 })
+// Security headers - apply first
+app.use(securityHeaders);
+
+// Response sanitization
+app.use(sanitizeResponse);
+
+// CORS configuration
 app.use(cors({
-  origin: "*",
+  origin: process.env.FRONTEND_URL || "*",
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  exposedHeaders: ['Content-Type', 'Authorization'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  exposedHeaders: ['Content-Type', 'Authorization', 'X-RateLimit-Limit', 'X-RateLimit-Remaining', 'X-RateLimit-Reset'],
   preflightContinue: false,
   optionsSuccessStatus: 200,
 }))
 logger.info(`cors is running on ${process.env.FRONTEND_URL}`)
+
+// Static files
 app.use(express.static('public'))
 app.use('/profiles', express.static('uploads/profiles'))
 app.use('/projects', express.static('uploads/projects'))
 app.use('/uploads/posts', express.static('uploads/posts'))
-app.use(express.json())
-app.use(express.urlencoded({ extended: true }))
+
+// Body parsing
+app.use(express.json({ limit: '10mb' }))
+app.use(express.urlencoded({ extended: true, limit: '10mb' }))
+
+// General rate limiting for all API routes
+app.use('/api', generalRateLimiter);
+
+// API routes
 app.use("/api", router)
 
 // Initialize Socket.IO

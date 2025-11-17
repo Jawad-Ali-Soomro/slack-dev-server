@@ -89,17 +89,24 @@ export const createProject = catchAsync(async (req: any, res: Response) => {
   // Cache the project
   await redisService.cacheProject((project._id as any).toString(), formatProjectResponse(project));
 
-  // Invalidate user project caches for creator
-  await redisService.invalidateUserProjects(userId);
-  await redisService.invalidatePattern(`user:${userId}:projects:*`);
+  // Comprehensive cache invalidation for creator
+  await redisService.invalidateAllProjectCaches(userId);
 
   // Invalidate user project caches for all members
   if (projectData.members && projectData.members.length > 0) {
     for (const memberId of projectData.members) {
-      await redisService.invalidateUserProjects(memberId);
-      await redisService.invalidatePattern(`user:${memberId}:projects:*`);
+      await redisService.invalidateAllProjectCaches(memberId);
     }
   }
+
+  // Invalidate team cache if project belongs to a team
+  if (project.teamId) {
+    await redisService.invalidateTeam(project.teamId.toString());
+    await redisService.invalidatePattern(`user:*:teams*`);
+  }
+
+  // Invalidate all project list caches (for any user who might see this project)
+  await redisService.invalidatePattern(`cache:*projects*`);
 
   // If project has a teamId, add it to the team's projects array
   if (project.teamId) {
@@ -329,9 +336,27 @@ export const updateProject = catchAsync(async (req: any, res: Response) => {
   // Update cache
   await redisService.cacheProject(projectId, projectResponse)
   
-  // Invalidate user project caches
-  await redisService.invalidateUserProjects(userId)
-  await redisService.invalidatePattern(`user:${userId}:projects:*`)
+  // Comprehensive cache invalidation
+  await redisService.invalidateAllProjectCaches(userId)
+  
+  // Invalidate caches for all project members
+  if (project.members && project.members.length > 0) {
+    for (const member of project.members) {
+      const memberId = member.user?._id || member.user;
+      if (memberId) {
+        await redisService.invalidateAllProjectCaches(memberId)
+      }
+    }
+  }
+  
+  // Invalidate team cache if project belongs to a team
+  if (project.teamId) {
+    await redisService.invalidateTeam(project.teamId.toString())
+    await redisService.invalidatePattern(`user:*:teams*`)
+  }
+  
+  // Invalidate all project list caches
+  await redisService.invalidatePattern(`cache:*projects*`)
 
   res.status(200).json({
     success: true,
@@ -357,12 +382,30 @@ export const deleteProject = catchAsync(async (req: any, res: Response) => {
     })
   }
 
+  // Get project members before deletion for cache invalidation
+  const projectMembers = project.members?.map((m: any) => m.user?.toString() || m.user) || []
+  
   await Project.findByIdAndDelete(projectId)
 
-  // Invalidate caches
+  // Comprehensive cache invalidation
   await redisService.invalidateProject(projectId)
-  await redisService.invalidateUserProjects(userId)
-  await redisService.invalidatePattern(`user:${userId}:projects:*`)
+  await redisService.invalidateAllProjectCaches(userId)
+  
+  // Invalidate caches for all project members
+  for (const memberId of projectMembers) {
+    if (memberId) {
+      await redisService.invalidateAllProjectCaches(memberId)
+    }
+  }
+  
+  // Invalidate team cache if project belonged to a team
+  if (project.teamId) {
+    await redisService.invalidateTeam(project.teamId.toString())
+    await redisService.invalidatePattern(`user:*:teams*`)
+  }
+  
+  // Invalidate all project list caches
+  await redisService.invalidatePattern(`cache:*projects*`)
 
   res.status(200).json({
     success: true,
@@ -421,15 +464,38 @@ export const addMember = catchAsync(async (req: any, res: Response) => {
   await project.save()
   await project.populate('createdBy members.user', 'username email avatar role')
 
-  // Invalidate caches
-  await redisService.invalidateProject(projectId)
-  await redisService.invalidateUserProjects(userId)
-  await redisService.invalidatePattern(`user:${userId}:projects:*`)
+  const projectResponse = formatProjectResponse(project)
+  
+  // Update cache
+  await redisService.cacheProject(projectId, projectResponse)
+  
+  // Comprehensive cache invalidation
+  await redisService.invalidateAllProjectCaches(userId)
+  await redisService.invalidateAllProjectCaches(newMemberId)
+  
+  // Invalidate caches for all project members
+  if (project.members && project.members.length > 0) {
+    for (const member of project.members) {
+      const memberId = member.user?._id || member.user;
+      if (memberId) {
+        await redisService.invalidateAllProjectCaches(memberId)
+      }
+    }
+  }
+  
+  // Invalidate team cache if project belongs to a team
+  if (project.teamId) {
+    await redisService.invalidateTeam(project.teamId.toString())
+    await redisService.invalidatePattern(`user:*:teams*`)
+  }
+  
+  // Invalidate all project list caches
+  await redisService.invalidatePattern(`cache:*projects*`)
 
   res.status(200).json({
     success: true,
     message: 'Member added successfully',
-    project: formatProjectResponse(project)
+    project: projectResponse
   })
 })
 
@@ -469,15 +535,38 @@ export const removeMember = catchAsync(async (req: any, res: Response) => {
   await project.save()
   await project.populate('createdBy members.user', 'username email avatar role')
 
-  // Invalidate caches
-  await redisService.invalidateProject(projectId)
-  await redisService.invalidateUserProjects(userId)
-  await redisService.invalidatePattern(`user:${userId}:projects:*`)
+  const projectResponse = formatProjectResponse(project)
+  
+  // Update cache
+  await redisService.cacheProject(projectId, projectResponse)
+  
+  // Comprehensive cache invalidation
+  await redisService.invalidateAllProjectCaches(userId)
+  await redisService.invalidateAllProjectCaches(memberToRemove)
+  
+  // Invalidate caches for all project members
+  if (project.members && project.members.length > 0) {
+    for (const member of project.members) {
+      const memberId = member.user?._id || member.user;
+      if (memberId) {
+        await redisService.invalidateAllProjectCaches(memberId)
+      }
+    }
+  }
+  
+  // Invalidate team cache if project belongs to a team
+  if (project.teamId) {
+    await redisService.invalidateTeam(project.teamId.toString())
+    await redisService.invalidatePattern(`user:*:teams*`)
+  }
+  
+  // Invalidate all project list caches
+  await redisService.invalidatePattern(`cache:*projects*`)
 
   res.status(200).json({
     success: true,
     message: 'Member removed successfully',
-    project: formatProjectResponse(project)
+    project: projectResponse
   })
 })
 
@@ -511,15 +600,38 @@ export const updateMemberRole = catchAsync(async (req: any, res: Response) => {
   await project.save()
   await project.populate('createdBy members.user', 'username email avatar role')
 
-  // Invalidate caches
-  await redisService.invalidateProject(projectId)
-  await redisService.invalidateUserProjects(userId)
-  await redisService.invalidatePattern(`user:${userId}:projects:*`)
+  const projectResponse = formatProjectResponse(project)
+  
+  // Update cache
+  await redisService.cacheProject(projectId, projectResponse)
+  
+  // Comprehensive cache invalidation
+  await redisService.invalidateAllProjectCaches(userId)
+  await redisService.invalidateAllProjectCaches(memberId)
+  
+  // Invalidate caches for all project members
+  if (project.members && project.members.length > 0) {
+    for (const member of project.members) {
+      const memId = member.user?._id || member.user;
+      if (memId) {
+        await redisService.invalidateAllProjectCaches(memId)
+      }
+    }
+  }
+  
+  // Invalidate team cache if project belongs to a team
+  if (project.teamId) {
+    await redisService.invalidateTeam(project.teamId.toString())
+    await redisService.invalidatePattern(`user:*:teams*`)
+  }
+  
+  // Invalidate all project list caches
+  await redisService.invalidatePattern(`cache:*projects*`)
 
   res.status(200).json({
     success: true,
     message: 'Member role updated successfully',
-    project: formatProjectResponse(project)
+    project: projectResponse
   })
 })
 

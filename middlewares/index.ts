@@ -9,6 +9,16 @@ import {
   invalidateUserCache, 
   invalidateCachePattern 
 } from "./redisCache";
+import {
+  rateLimiter,
+  generalRateLimiter,
+  authRateLimiter,
+  strictRateLimiter
+} from "./rateLimiter";
+import {
+  securityHeaders,
+  sanitizeResponse
+} from "./securityHeaders";
 
 export { 
   catchAsync, 
@@ -20,5 +30,11 @@ export {
   dashboardCache, 
   searchCache, 
   invalidateUserCache, 
-  invalidateCachePattern 
+  invalidateCachePattern,
+  rateLimiter,
+  generalRateLimiter,
+  authRateLimiter,
+  strictRateLimiter,
+  securityHeaders,
+  sanitizeResponse
 }

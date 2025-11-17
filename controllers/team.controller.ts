@@ -65,8 +65,18 @@ export const createTeam = catchAsync(async (req: any, res: Response) => {
   // Cache the team
   await redisService.cacheTeam((team._id as any).toString(), formatTeamResponse(team));
 
-  // Invalidate user team caches
-  await redisService.invalidateUserTeams(userId);
+  // Comprehensive cache invalidation for creator
+  await redisService.invalidateAllTeamCaches(userId);
+
+  // Invalidate user team caches for all members
+  if (teamData.members && teamData.members.length > 0) {
+    for (const memberId of teamData.members) {
+      await redisService.invalidateAllTeamCaches(memberId);
+    }
+  }
+
+  // Invalidate all team list caches
+  await redisService.invalidatePattern(`cache:*teams*`);
 
   res.status(201).json({
     success: true,
@@ -221,9 +231,21 @@ export const updateTeam = catchAsync(async (req: any, res: Response) => {
   // Update cache
   await redisService.cacheTeam(teamId, teamResponse)
   
-  // Invalidate user team caches
-  await redisService.invalidateUserTeams(userId)
-  await redisService.invalidatePattern(`user:${userId}:teams:*`)
+  // Comprehensive cache invalidation
+  await redisService.invalidateAllTeamCaches(userId)
+  
+  // Invalidate caches for all team members
+  if (team.members && team.members.length > 0) {
+    for (const member of team.members) {
+      const memberId = member.user?._id || member.user;
+      if (memberId) {
+        await redisService.invalidateAllTeamCaches(memberId)
+      }
+    }
+  }
+  
+  // Invalidate all team list caches
+  await redisService.invalidatePattern(`cache:*teams*`)
 
   res.status(200).json({
     success: true,
@@ -249,12 +271,24 @@ export const deleteTeam = catchAsync(async (req: any, res: Response) => {
     })
   }
 
+  // Get team members before deletion for cache invalidation
+  const teamMembers = team.members?.map((m: any) => m.user?.toString() || m.user) || []
+  
   await Team.findByIdAndDelete(teamId)
 
-  // Invalidate caches
+  // Comprehensive cache invalidation
   await redisService.invalidateTeam(teamId)
-  await redisService.invalidateUserTeams(userId)
-  await redisService.invalidatePattern(`user:${userId}:teams:*`)
+  await redisService.invalidateAllTeamCaches(userId)
+  
+  // Invalidate caches for all team members
+  for (const memberId of teamMembers) {
+    if (memberId) {
+      await redisService.invalidateAllTeamCaches(memberId)
+    }
+  }
+  
+  // Invalidate all team list caches
+  await redisService.invalidatePattern(`cache:*teams*`)
 
   res.status(200).json({
     success: true,
@@ -318,9 +352,22 @@ export const addMember = catchAsync(async (req: any, res: Response) => {
   // Update cache
   await redisService.cacheTeam(teamId, teamResponse)
   
-  // Invalidate user team caches
-  await redisService.invalidateUserTeams(userId)
-  await redisService.invalidatePattern(`user:${userId}:teams:*`)
+  // Comprehensive cache invalidation
+  await redisService.invalidateAllTeamCaches(userId)
+  await redisService.invalidateAllTeamCaches(newMemberId)
+  
+  // Invalidate caches for all team members
+  if (team.members && team.members.length > 0) {
+    for (const member of team.members) {
+      const memberId = member.user?._id || member.user;
+      if (memberId) {
+        await redisService.invalidateAllTeamCaches(memberId)
+      }
+    }
+  }
+  
+  // Invalidate all team list caches
+  await redisService.invalidatePattern(`cache:*teams*`)
 
   res.status(200).json({
     success: true,
@@ -370,9 +417,22 @@ export const removeMember = catchAsync(async (req: any, res: Response) => {
   // Update cache
   await redisService.cacheTeam(teamId, teamResponse)
   
-  // Invalidate user team caches
-  await redisService.invalidateUserTeams(userId)
-  await redisService.invalidatePattern(`user:${userId}:teams:*`)
+  // Comprehensive cache invalidation
+  await redisService.invalidateAllTeamCaches(userId)
+  await redisService.invalidateAllTeamCaches(memberToRemove)
+  
+  // Invalidate caches for all team members
+  if (team.members && team.members.length > 0) {
+    for (const member of team.members) {
+      const memberId = member.user?._id || member.user;
+      if (memberId) {
+        await redisService.invalidateAllTeamCaches(memberId)
+      }
+    }
+  }
+  
+  // Invalidate all team list caches
+  await redisService.invalidatePattern(`cache:*teams*`)
 
   res.status(200).json({
     success: true,
@@ -416,9 +476,22 @@ export const updateMemberRole = catchAsync(async (req: any, res: Response) => {
   // Update cache
   await redisService.cacheTeam(teamId, teamResponse)
   
-  // Invalidate user team caches
-  await redisService.invalidateUserTeams(userId)
-  await redisService.invalidatePattern(`user:${userId}:teams:*`)
+  // Comprehensive cache invalidation
+  await redisService.invalidateAllTeamCaches(userId)
+  await redisService.invalidateAllTeamCaches(memberId)
+  
+  // Invalidate caches for all team members
+  if (team.members && team.members.length > 0) {
+    for (const member of team.members) {
+      const memId = member.user?._id || member.user;
+      if (memId) {
+        await redisService.invalidateAllTeamCaches(memId)
+      }
+    }
+  }
+  
+  // Invalidate all team list caches
+  await redisService.invalidatePattern(`cache:*teams*`)
 
   res.status(200).json({
     success: true,

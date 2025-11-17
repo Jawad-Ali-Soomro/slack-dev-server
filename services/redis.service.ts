@@ -146,9 +146,72 @@ class RedisService {
   }
 
   async invalidatePattern(pattern: string): Promise<void> {
-    const keys = await this.client.keys(pattern);
-    if (keys.length > 0) {
-      await this.client.del(...keys);
+    try {
+      const keys = await this.client.keys(pattern);
+      if (keys.length > 0) {
+        // Delete in batches to avoid blocking Redis
+        const batchSize = 100;
+        for (let i = 0; i < keys.length; i += batchSize) {
+          const batch = keys.slice(i, i + batchSize);
+          await this.client.del(...batch);
+        }
+        logger.info(`Invalidated ${keys.length} cache keys matching pattern: ${pattern}`);
+      }
+    } catch (error) {
+      logger.error(`Error invalidating pattern ${pattern}:`, error);
+      throw error;
+    }
+  }
+
+  /**
+   * Comprehensive cache invalidation for projects
+   * Invalidates all project-related caches for a user
+   */
+  async invalidateAllProjectCaches(userId: string | any): Promise<void> {
+    const userIdStr = userId?.toString() || userId;
+    try {
+      // Invalidate user project list caches (all query variations)
+      await this.invalidatePattern(`user:${userIdStr}:projects*`);
+      
+      // Invalidate user project cache
+      await this.invalidateUserProjects(userIdStr);
+      
+      // Invalidate dashboard cache
+      await this.invalidateDashboardData(userIdStr);
+      
+      // Invalidate user details cache (contains projects)
+      await this.invalidatePattern(`user:${userIdStr}:details*`);
+      await this.invalidatePattern(`cache:*user:${userIdStr}*`);
+      
+      logger.info(`Invalidated all project caches for user: ${userIdStr}`);
+    } catch (error) {
+      logger.error(`Error invalidating project caches for user ${userIdStr}:`, error);
+    }
+  }
+
+  /**
+   * Comprehensive cache invalidation for teams
+   * Invalidates all team-related caches for a user
+   */
+  async invalidateAllTeamCaches(userId: string | any): Promise<void> {
+    const userIdStr = userId?.toString() || userId;
+    try {
+      // Invalidate user team list caches (all query variations)
+      await this.invalidatePattern(`user:${userIdStr}:teams*`);
+      
+      // Invalidate user team cache
+      await this.invalidateUserTeams(userIdStr);
+      
+      // Invalidate dashboard cache
+      await this.invalidateDashboardData(userIdStr);
+      
+      // Invalidate user details cache (contains teams)
+      await this.invalidatePattern(`user:${userIdStr}:details*`);
+      await this.invalidatePattern(`cache:*user:${userIdStr}*`);
+      
+      logger.info(`Invalidated all team caches for user: ${userIdStr}`);
+    } catch (error) {
+      logger.error(`Error invalidating team caches for user ${userIdStr}:`, error);
     }
   }
 
@@ -263,6 +326,58 @@ class RedisService {
 
   async invalidateUserFollowing(userId: string): Promise<void> {
     await this.del(`user:${userId}:following`);
+  }
+
+  // Rate limiting methods
+  async increment(key: string): Promise<number> {
+    try {
+      return await this.client.incr(key);
+    } catch (error) {
+      logger.error('Redis increment error:', error);
+      throw error;
+    }
+  }
+
+  async decrement(key: string): Promise<number> {
+    try {
+      return await this.client.decr(key);
+    } catch (error) {
+      logger.error('Redis decrement error:', error);
+      throw error;
+    }
+  }
+
+  async getTtl(key: string): Promise<number> {
+    try {
+      return await this.client.ttl(key);
+    } catch (error) {
+      logger.error('Redis TTL error:', error);
+      return -1;
+    }
+  }
+
+  // Set string value (for rate limiting)
+  async setString(key: string, value: string, ttl?: number): Promise<void> {
+    try {
+      if (ttl) {
+        await this.client.setex(key, ttl, value);
+      } else {
+        await this.client.set(key, value);
+      }
+    } catch (error) {
+      logger.error('Redis setString error:', error);
+      throw error;
+    }
+  }
+
+  // Get string value (for rate limiting)
+  async getString(key: string): Promise<string | null> {
+    try {
+      return await this.client.get(key);
+    } catch (error) {
+      logger.error('Redis getString error:', error);
+      return null;
+    }
   }
 
   // Health check

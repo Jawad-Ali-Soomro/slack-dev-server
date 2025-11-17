@@ -1,7 +1,7 @@
 import express from 'express'
 const authRouter = express.Router()
 import { register, login, verifyEmail, resendOtp, forgotPassword, resetPassword, getProfile } from '../controllers/auth.controller'
-import { authenticate } from '../middlewares'
+import { authenticate, authRateLimiter } from '../middlewares'
 
 /**
  * @openapi
@@ -32,7 +32,8 @@ import { authenticate } from '../middlewares'
  *       400:
  *         description: Email already in use
  */
-authRouter.post('/register', register)
+// Apply strict rate limiting to all authentication endpoints
+authRouter.post('/register', authRateLimiter, register)
 
 /**
  * @openapi
@@ -60,7 +61,7 @@ authRouter.post('/register', register)
  *       401:
  *         description: Invalid credentials or email not verified
  */
-authRouter.post('/login', login)
+authRouter.post('/login', authRateLimiter, login)
 
 /**
  * @openapi
@@ -88,7 +89,7 @@ authRouter.post('/login', login)
  *       400:
  *         description: Invalid or expired verification code
  */
-authRouter.post('/verify-email', verifyEmail)
+authRouter.post('/verify-email', authRateLimiter, verifyEmail)
 
 /**
  * @openapi
@@ -115,7 +116,7 @@ authRouter.post('/verify-email', verifyEmail)
  *       400:
  *         description: Email already verified
  */
-authRouter.post('/resend-otp', resendOtp)
+authRouter.post('/resend-otp', authRateLimiter, resendOtp)
 
 /**
  * @openapi
@@ -140,7 +141,7 @@ authRouter.post('/resend-otp', resendOtp)
  *       404:
  *         description: User not found
  */
-authRouter.post('/forgot-password', forgotPassword)
+authRouter.post('/forgot-password', authRateLimiter, forgotPassword)
 
 /**
  * @openapi
@@ -171,7 +172,7 @@ authRouter.post('/forgot-password', forgotPassword)
  *       400:
  *         description: Invalid or expired reset code
  */
-authRouter.post('/reset-password', resetPassword)
+authRouter.post('/reset-password', authRateLimiter, resetPassword)
 
 /**
  * @openapi

@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 import { User } from '../models';
 import { logger } from '../helpers';
 import { SocketUser } from '../interfaces';
+import { decryptToken } from '../middlewares/token';
 
 class SocketService {
   private io: SocketIOServer;
@@ -157,22 +158,33 @@ class SocketService {
 
   private async authenticateSocket(socket: any, next: any): Promise<void> {
     try {
-      const token = socket.handshake.auth.token || socket.handshake.headers.authorization?.split(' ')[1];
+      const encryptedToken = socket.handshake.auth.token || socket.handshake.headers.authorization?.split(' ')[1];
       
       logger.info('Socket authentication attempt:', {
-        hasToken: !!token,
+        hasToken: !!encryptedToken,
         authToken: !!socket.handshake.auth.token,
         headerToken: !!socket.handshake.headers.authorization
       });
       
-      if (!token) {
+      if (!encryptedToken) {
         logger.error('Socket authentication failed: No token provided');
         return next(new Error('Authentication error: No token provided'));
       }
 
-      const decoded = jwt.verify(token, process.env.JWT_SECRET || 'your-secret-key') as any;
+      // Step 1: Decrypt the token
+      let jwtToken: string;
+      try {
+        jwtToken = decryptToken(encryptedToken);
+      } catch (decryptError) {
+        logger.warn('Socket token decryption failed:', decryptError);
+        return next(new Error('Authentication error: Invalid token format'));
+      }
+
+      // Step 2: Verify JWT token
+      const decoded = jwt.verify(jwtToken, process.env.JWT_SECRET || 'default_secret') as any;
       logger.info('Token decoded successfully:', { userId: decoded.id });
       
+      // Step 3: Verify user exists
       const user = await User.findById(decoded.id).select('username email avatar');
       
       if (!user) {
@@ -189,9 +201,19 @@ class SocketService {
       
       logger.info('Socket authentication successful:', { userId: user._id, username: user.username });
       next();
-    } catch (error) {
+    } catch (error: any) {
       logger.error('Socket authentication error:', error);
-      next(new Error('Authentication error: Invalid token'));
+      
+      // Handle specific JWT errors
+      if (error.name === 'TokenExpiredError') {
+        return next(new Error('Authentication error: Token expired'));
+      }
+      
+      if (error.name === 'JsonWebTokenError') {
+        return next(new Error('Authentication error: Invalid token'));
+      }
+      
+      return next(new Error('Authentication error: Invalid token'));
     }
   }
 
