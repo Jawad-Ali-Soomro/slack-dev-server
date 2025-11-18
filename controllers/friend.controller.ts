@@ -127,6 +127,10 @@ export const sendFriendRequest = catchAsync(async (req: any, res: Response) => {
   // Invalidate user friend caches
   await redisService.invalidateUserFriends(senderId.toString())
   await redisService.invalidateUserFriends(receiverId.toString())
+  await redisService.invalidateFriendRequests(senderId.toString())
+  await redisService.invalidateFriendRequests(receiverId.toString())
+  await redisService.invalidateFriendStats(senderId.toString())
+  await redisService.invalidateFriendStats(receiverId.toString())
 
   // Send email notification
   
@@ -278,8 +282,10 @@ export const respondToFriendRequest = catchAsync(async (req: any, res: Response)
     // Invalidate friend caches for both users
     await redisService.invalidateUserFriends(request.sender._id.toString())
     await redisService.invalidateUserFriends(request.receiver._id.toString())
-    await redisService.invalidatePattern(`user:${request.sender._id}:friendRequests:*`)
-    await redisService.invalidatePattern(`user:${request.receiver._id}:friendRequests:*`)
+    await redisService.invalidateFriendRequests(request.sender._id.toString())
+    await redisService.invalidateFriendRequests(request.receiver._id.toString())
+    await redisService.invalidateFriendStats(request.sender._id.toString())
+    await redisService.invalidateFriendStats(request.receiver._id.toString())
    
   } else {
     // Create notification for sender about rejection
@@ -292,8 +298,10 @@ export const respondToFriendRequest = catchAsync(async (req: any, res: Response)
     await notification.save()
 
     // Invalidate friend request caches
-    await redisService.invalidatePattern(`user:${request.sender._id}:friendRequests:*`)
-    await redisService.invalidatePattern(`user:${request.receiver._id}:friendRequests:*`)
+    await redisService.invalidateFriendRequests(request.sender._id.toString())
+    await redisService.invalidateFriendRequests(request.receiver._id.toString())
+    await redisService.invalidateFriendStats(request.sender._id.toString())
+    await redisService.invalidateFriendStats(request.receiver._id.toString())
   }
 
   res.status(200).json({

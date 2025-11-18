@@ -291,6 +291,15 @@ class RedisService {
   }
 
   // Friend cache methods
+  async invalidateFriendRequests(userId: string): Promise<void> {
+    await this.invalidatePattern(`user:${userId}:friendRequests:*`);
+  }
+
+  async invalidateFriendStats(userId: string): Promise<void> {
+    await this.del(`user:${userId}:friendStats`);
+  }
+
+  // Friend cache methods
   async cacheUserFriends(userId: string, friends: any[], ttl: number = 1800): Promise<void> {
     await this.set(`user:${userId}:friends`, friends, ttl);
   }

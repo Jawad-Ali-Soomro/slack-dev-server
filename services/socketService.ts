@@ -171,13 +171,13 @@ class SocketService {
         return next(new Error('Authentication error: No token provided'));
       }
 
-      // Step 1: Decrypt the token
-      let jwtToken: string;
+      // Step 1: Decrypt the token (fall back to raw token if already plain JWT)
+      let jwtToken: string = encryptedToken;
       try {
         jwtToken = decryptToken(encryptedToken);
       } catch (decryptError) {
-        logger.warn('Socket token decryption failed:', decryptError);
-        return next(new Error('Authentication error: Invalid token format'));
+        logger.warn('Socket token decryption failed, attempting raw token verification:', decryptError);
+        // Fallback: if token already plain JWT (legacy clients), continue with original token
       }
 
       // Step 2: Verify JWT token

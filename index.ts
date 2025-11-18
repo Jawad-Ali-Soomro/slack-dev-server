@@ -13,8 +13,7 @@ import SocketService from './services/socketService'
 import redisService from './services/redis.service'
 import { 
   securityHeaders, 
-  sanitizeResponse, 
-  generalRateLimiter 
+  sanitizeResponse 
 } from './middlewares'
 
 const swaggerSpec = swaggerJSDoc(swaggerOptions);
@@ -67,9 +66,6 @@ app.use('/uploads/posts', express.static('uploads/posts'))
 app.use(express.json({ limit: '10mb' }))
 app.use(express.urlencoded({ extended: true, limit: '10mb' }))
 
-// General rate limiting for all API routes
-app.use('/api', generalRateLimiter);
-
 // API routes
 app.use("/api", router)
 
@@ -81,6 +77,5 @@ const socketService = new SocketService(server);
 
 const PORT = process.env.PORT || 5000;
 server.listen(PORT, () => {
-  console.log(`🚀 Server is running on port ${PORT}`)
-  console.log(`🔌 Socket.IO server ready for connections`)
+  console.log(`server is running & socket is ready for connections`)
 })
