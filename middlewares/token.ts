@@ -57,7 +57,7 @@ function encrypt(text: string): string {
 /**
  * Decrypt text using AES-256-CBC
  */
-function decrypt(text: string): string {
+export function decrypt(text: string): string {
   try {
     const textParts = text.split(':');
     if (textParts.length !== 2) {
@@ -78,14 +78,6 @@ function decrypt(text: string): string {
     throw error;
   }
 }
-
-/**
- * Decrypt and verify token (for use in socket authentication)
- * Exported for use in socket service
- */
-export const decryptToken = (encryptedToken: string): string => {
-  return decrypt(encryptedToken);
-};
 
 /**
  * Generate token with double encryption

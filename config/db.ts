@@ -1,8 +1,10 @@
 import { logger } from "../helpers";
 import mongoose from "mongoose";
+import dotenv from "dotenv";
+dotenv.config({ path: './config/.env' });
 
 export const dbConnection = () => {
-  const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/core-stack'
+  const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/slack-dev'
   mongoose
     .connect(mongoUri)
     .then(() => {

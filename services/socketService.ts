@@ -4,7 +4,7 @@ import jwt from 'jsonwebtoken';
 import { User } from '../models';
 import { logger } from '../helpers';
 import { SocketUser } from '../interfaces';
-import { decryptToken } from '../middlewares/token';
+import { decrypt } from '../middlewares/token';
 
 class SocketService {
   private io: SocketIOServer;
@@ -174,7 +174,7 @@ class SocketService {
       // Step 1: Decrypt the token (fall back to raw token if already plain JWT)
       let jwtToken: string = encryptedToken;
       try {
-        jwtToken = decryptToken(encryptedToken);
+        jwtToken = decrypt(encryptedToken);
       } catch (decryptError) {
         logger.warn('Socket token decryption failed, attempting raw token verification:', decryptError);
         // Fallback: if token already plain JWT (legacy clients), continue with original token
