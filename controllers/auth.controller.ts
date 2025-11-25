@@ -1,4 +1,4 @@
-import { catchAsync, generateToken } from "../middlewares";
+import { catchAsync, generateToken, invalidateCachePattern } from "../middlewares";
 import jwt from "jsonwebtoken";
 import { IUser, UserResponse } from "../interfaces";
 import { User } from "../models";
@@ -56,11 +56,23 @@ export const register = catchAsync(async (req: any, res: any) => {
     }]
   })
   try {
+    // Ensure role is set to 'user' by default (prevent role manipulation during registration)
+    const userData = { ...req.body };
+    if (!userData.role || userData.role !== 'user') {
+      userData.role = 'user';
+    }
+    
     const user = await User.create({
-      ...req.body,
+      ...userData,
       emailVerificationToken,
       emailVerificationTokenExpires
     });
+
+    await Promise.all([
+      invalidateCachePattern('admin:users:*'),
+      invalidateCachePattern('cache:*users*'),
+      invalidateCachePattern('search:users:*')
+    ]);
     const token = generateToken({ id: user._id });
     res.status(201).json({
       message: "user registered successfully",

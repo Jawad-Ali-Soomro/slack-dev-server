@@ -13,24 +13,29 @@ import {
 } from '../interfaces/friend.interfaces'
 
 // Helper function to format friend request response
-const formatFriendRequestResponse = (request: any): FriendRequestResponse => ({
-  id: request._id,
-  sender: {
-    id: request.sender._id,
-    username: request.sender.username,
-    email: request.sender.email,
-    avatar: request.sender.avatar
-  },
-  receiver: {
-    id: request.receiver._id,
-    username: request.receiver.username,
-    email: request.receiver.email,
-    avatar: request.receiver.avatar
-  },
-  status: request.status,
-  createdAt: request.createdAt,
-  updatedAt: request.updatedAt
-})
+const formatFriendRequestResponse = (request: any): FriendRequestResponse => {
+  const sender = request?.sender || {}
+  const receiver = request?.receiver || {}
+
+  return {
+    id: request?._id,
+    sender: {
+      id: sender?._id || null,
+      username: sender?.username || 'Unknown User',
+      email: sender?.email || '',
+      avatar: sender?.avatar || null
+    },
+    receiver: {
+      id: receiver?._id || null,
+      username: receiver?.username || 'Unknown User',
+      email: receiver?.email || '',
+      avatar: receiver?.avatar || null
+    },
+    status: request?.status,
+    createdAt: request?.createdAt,
+    updatedAt: request?.updatedAt
+  }
+}
 
 // Helper function to format friendship response
 const formatFriendshipResponse = (friendship: any, currentUserId: any): FriendshipResponse => {

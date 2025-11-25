@@ -4,6 +4,7 @@ import { Team } from '../models/team.model'
 import User from '../models/user.model'
 import { catchAsync, invalidateUserCache } from '../middlewares'
 import redisService from '../services/redis.service'
+import { Role } from '../interfaces'
 import { 
   CreateTeamRequest, 
   UpdateTeamRequest, 
@@ -88,6 +89,7 @@ export const createTeam = catchAsync(async (req: any, res: Response) => {
 // Get all teams for a user
 export const getTeams = catchAsync(async (req: any, res: Response) => {
   const userId = req.user._id
+  const userRole = req.user.role as Role
   const { isActive, search, page = 1, limit = 10 } = req.query
 
   // Try to get from cache first
@@ -98,8 +100,24 @@ export const getTeams = catchAsync(async (req: any, res: Response) => {
     return res.status(200).json(cached)
   }
 
-  const query: any = {
-    $or: [
+  // Build query based on role
+  // Superadmin can see all teams
+  // Admin can only see teams they created
+  // Regular users can see teams they created or are members of
+  const query: any = {}
+  
+  if (userRole === Role.Superadmin) {
+    // Superadmin can see all teams - no restriction
+    query.$or = [
+      { createdBy: userId },
+      { 'members.user': userId }
+    ]
+  } else if (userRole === Role.Admin) {
+    // Admin can only see teams they created
+    query.createdBy = userId
+  } else {
+    // Regular users can see teams they created or are members of
+    query.$or = [
       { createdBy: userId },
       { 'members.user': userId }
     ]
@@ -155,6 +173,7 @@ export const getTeams = catchAsync(async (req: any, res: Response) => {
 export const getTeamById = catchAsync(async (req: any, res: Response) => {
   const { teamId } = req.params
   const userId = req.user._id
+  const userRole = req.user.role as Role
 
   // Try to get from cache first
   const cached = await redisService.getTeam(teamId)
@@ -165,13 +184,23 @@ export const getTeamById = catchAsync(async (req: any, res: Response) => {
     })
   }
 
-  const team = await Team.findOne({
-    _id: teamId,
-    $or: [
+  // Build query based on role
+  const query: any = { _id: teamId }
+  
+  if (userRole === Role.Superadmin) {
+    // Superadmin can access any team
+  } else if (userRole === Role.Admin) {
+    // Admin can only access teams they created
+    query.createdBy = userId
+  } else {
+    // Regular users can access teams they created or are members of
+    query.$or = [
       { createdBy: userId },
       { 'members.user': userId }
     ]
-  })
+  }
+
+  const team = await Team.findOne(query)
     .populate('createdBy', 'username email avatar role')
     .populate('members.user', 'username email avatar role')
     .populate({
@@ -205,15 +234,26 @@ export const getTeamById = catchAsync(async (req: any, res: Response) => {
 export const updateTeam = catchAsync(async (req: any, res: Response) => {
   const { teamId } = req.params
   const userId = req.user._id
+  const userRole = req.user.role as Role
   const updateData: UpdateTeamRequest = req.body
 
-  const team = await Team.findOne({
-    _id: teamId,
-    $or: [
+  // Build query based on role
+  const query: any = { _id: teamId }
+  
+  if (userRole === Role.Superadmin) {
+    // Superadmin can update any team
+  } else if (userRole === Role.Admin) {
+    // Admin can only update teams they created
+    query.createdBy = userId
+  } else {
+    // Regular users can update teams they created or are admin/owner members of
+    query.$or = [
       { createdBy: userId },
       { 'members.user': { $in: [userId], $elemMatch: { role: { $in: ['owner', 'admin'] } } } }
     ]
-  })
+  }
+
+  const team = await Team.findOne(query)
 
   if (!team) {
     return res.status(404).json({
@@ -258,11 +298,19 @@ export const updateTeam = catchAsync(async (req: any, res: Response) => {
 export const deleteTeam = catchAsync(async (req: any, res: Response) => {
   const { teamId } = req.params
   const userId = req.user._id
+  const userRole = req.user.role as Role
 
-  const team = await Team.findOne({
-    _id: teamId,
-    createdBy: userId
-  })
+  // Build query based on role
+  const query: any = { _id: teamId }
+  
+  if (userRole === Role.Superadmin) {
+    // Superadmin can delete any team
+  } else {
+    // Only team creator can delete (admin or regular user)
+    query.createdBy = userId
+  }
+
+  const team = await Team.findOne(query)
 
   if (!team) {
     return res.status(404).json({
@@ -300,15 +348,26 @@ export const deleteTeam = catchAsync(async (req: any, res: Response) => {
 export const addMember = catchAsync(async (req: any, res: Response) => {
   const { teamId } = req.params
   const userId = req.user._id
+  const userRole = req.user.role as Role
   const { userId: newMemberId, role }: AddTeamMemberRequest = req.body
 
-  const team = await Team.findOne({
-    _id: teamId,
-    $or: [
+  // Build query based on role
+  const query: any = { _id: teamId }
+  
+  if (userRole === Role.Superadmin) {
+    // Superadmin can add members to any team
+  } else if (userRole === Role.Admin) {
+    // Admin can only add members to teams they created
+    query.createdBy = userId
+  } else {
+    // Regular users can add members to teams they created or are admin/owner members of
+    query.$or = [
       { createdBy: userId },
       { 'members.user': { $in: [userId], $elemMatch: { role: { $in: ['owner', 'admin'] } } } }
     ]
-  })
+  }
+
+  const team = await Team.findOne(query)
 
   if (!team) {
     return res.status(404).json({
@@ -380,15 +439,26 @@ export const addMember = catchAsync(async (req: any, res: Response) => {
 export const removeMember = catchAsync(async (req: any, res: Response) => {
   const { teamId } = req.params
   const userId = req.user._id
+  const userRole = req.user.role as Role
   const { userId: memberToRemove }: RemoveTeamMemberRequest = req.body
 
-  const team = await Team.findOne({
-    _id: teamId,
-    $or: [
+  // Build query based on role
+  const query: any = { _id: teamId }
+  
+  if (userRole === Role.Superadmin) {
+    // Superadmin can remove members from any team
+  } else if (userRole === Role.Admin) {
+    // Admin can only remove members from teams they created
+    query.createdBy = userId
+  } else {
+    // Regular users can remove members from teams they created or are admin/owner members of
+    query.$or = [
       { createdBy: userId },
       { 'members.user': { $in: [userId], $elemMatch: { role: { $in: ['owner', 'admin'] } } } }
     ]
-  })
+  }
+
+  const team = await Team.findOne(query)
 
   if (!team) {
     return res.status(404).json({
@@ -445,12 +515,20 @@ export const removeMember = catchAsync(async (req: any, res: Response) => {
 export const updateMemberRole = catchAsync(async (req: any, res: Response) => {
   const { teamId } = req.params
   const userId = req.user._id
+  const userRole = req.user.role as Role
   const { userId: memberId, role }: UpdateTeamMemberRoleRequest = req.body
 
-  const team = await Team.findOne({
-    _id: teamId,
-    createdBy: userId // Only owner can update roles
-  })
+  // Build query based on role
+  const query: any = { _id: teamId }
+  
+  if (userRole === Role.Superadmin) {
+    // Superadmin can update member roles in any team
+  } else {
+    // Only team creator can update member roles (admin or regular user)
+    query.createdBy = userId
+  }
+
+  const team = await Team.findOne(query)
 
   if (!team) {
     return res.status(404).json({
@@ -503,13 +581,29 @@ export const updateMemberRole = catchAsync(async (req: any, res: Response) => {
 // Get team statistics
 export const getTeamStats = catchAsync(async (req: any, res: Response) => {
   const userId = req.user._id
+  const userRole = req.user.role as Role
 
-  const teams = await Team.find({
-    $or: [
+  // Build query based on role
+  const query: any = {}
+  
+  if (userRole === Role.Superadmin) {
+    // Superadmin can see stats for all teams
+    query.$or = [
       { createdBy: userId },
       { 'members.user': userId }
     ]
-  })
+  } else if (userRole === Role.Admin) {
+    // Admin can only see stats for teams they created
+    query.createdBy = userId
+  } else {
+    // Regular users can see stats for teams they created or are members of
+    query.$or = [
+      { createdBy: userId },
+      { 'members.user': userId }
+    ]
+  }
+
+  const teams = await Team.find(query)
 
   const stats: TeamStatsResponse = {
     totalTeams: teams.length,
@@ -536,15 +630,26 @@ export const getTeamStats = catchAsync(async (req: any, res: Response) => {
 // Get team members for assignment dropdowns
 export const getTeamMembers = catchAsync(async (req: any, res: Response) => {
   const userId = req.user._id
+  const userRole = req.user.role as Role
   const { teamId } = req.params
 
-  const team = await Team.findOne({
-    _id: teamId,
-    $or: [
+  // Build query based on role
+  const query: any = { _id: teamId }
+  
+  if (userRole === Role.Superadmin) {
+    // Superadmin can access members of any team
+  } else if (userRole === Role.Admin) {
+    // Admin can only access members of teams they created
+    query.createdBy = userId
+  } else {
+    // Regular users can access members of teams they created or are members of
+    query.$or = [
       { createdBy: userId },
       { 'members.user': userId }
     ]
-  })
+  }
+
+  const team = await Team.findOne(query)
     .populate('members.user', 'username email avatar role')
 
   if (!team) {

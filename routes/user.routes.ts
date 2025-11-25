@@ -1,7 +1,7 @@
 import express from 'express'
 const userRouter = express.Router()
-import { updateProfile, uploadAvatar, deleteAvatar, changePassword, getUsers, getUserById, searchUsers, getProfile, getUserDetails } from '../controllers/user.controller'
-import { authenticate, upload } from '../middlewares'
+import { updateProfile, uploadAvatar, deleteAvatar, changePassword, getUsers, getUserById, searchUsers, getProfile, getUserDetails, assignUserRole, getAllUsers, deleteUser, updateUserVerification } from '../controllers/user.controller'
+import { authenticate, upload, requireSuperadmin, requireAdmin } from '../middlewares'
 
 /**
  * @openapi
@@ -272,5 +272,139 @@ userRouter.get('/:userId', authenticate, getUserById)
  *         description: User not found
  */
 userRouter.get('/:userId/details', authenticate, getUserDetails)
+
+/**
+ * Superadmin routes for user management
+ */
+/**
+ * @openapi
+ * /api/user/admin/users:
+ *   get:
+ *     summary: Get all users (Superadmin/Admin only)
+ *     tags:
+ *       - Admin
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 20
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: role
+ *         schema:
+ *           type: string
+ *           enum: [user, admin, superadmin]
+ *     responses:
+ *       200:
+ *         description: List of users
+ *       403:
+ *         description: Access denied
+ */
+userRouter.get('/admin/users', authenticate, requireAdmin, getAllUsers)
+
+/**
+ * @openapi
+ * /api/user/admin/{userId}/role:
+ *   put:
+ *     summary: Assign role to user (Superadmin only)
+ *     tags:
+ *       - Admin
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               role:
+ *                 type: string
+ *                 enum: [user, admin]
+ *                 example: admin
+ *             required:
+ *               - role
+ *     responses:
+ *       200:
+ *         description: Role assigned successfully
+ *       403:
+ *         description: Access denied
+ */
+userRouter.put('/admin/:userId/role', authenticate, requireSuperadmin, assignUserRole)
+
+/**
+ * @openapi
+ * /api/user/admin/{userId}/verification:
+ *   put:
+ *     summary: Update user email verification (Admin/Superadmin)
+ *     tags:
+ *       - Admin
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               emailVerified:
+ *                 type: boolean
+ *                 example: true
+ *             required:
+ *               - emailVerified
+ *     responses:
+ *       200:
+ *         description: Status updated successfully
+ *       403:
+ *         description: Access denied
+ */
+userRouter.put('/admin/:userId/verification', authenticate, requireAdmin, updateUserVerification)
+
+/**
+ * @openapi
+ * /api/user/admin/{userId}:
+ *   delete:
+ *     summary: Delete user (Superadmin only)
+ *     tags:
+ *       - Admin
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: User deleted successfully
+ *       403:
+ *         description: Access denied
+ */
+userRouter.delete('/admin/:userId', authenticate, requireSuperadmin, deleteUser)
 
 export default userRouter

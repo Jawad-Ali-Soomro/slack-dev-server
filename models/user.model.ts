@@ -8,7 +8,8 @@ const UserSchema = new Schema<IUser>({
   password: { type: String, required: true },
   role: {
     type: String,
-    enum: Role
+    enum: Role,
+    default: Role.User
   },
   emailVerificationToken: {
     type: String

@@ -19,6 +19,12 @@ import {
   securityHeaders,
   sanitizeResponse
 } from "./securityHeaders";
+import {
+  authorize,
+  requireSuperadmin,
+  requireAdmin,
+  canManageTeam
+} from "./authorize";
 
 export { 
   catchAsync, 
@@ -36,5 +42,9 @@ export {
   authRateLimiter,
   strictRateLimiter,
   securityHeaders,
-  sanitizeResponse
+  sanitizeResponse,
+  authorize,
+  requireSuperadmin,
+  requireAdmin,
+  canManageTeam
 }

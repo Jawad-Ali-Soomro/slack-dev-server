@@ -1,9 +1,10 @@
 import { catchAsync, invalidateUserCache } from "../middlewares";
 import { User } from "../models";
-import { UpdateProfileRequest, ChangePasswordRequest, UserResponse, IUser } from "../interfaces";
+import { UpdateProfileRequest, ChangePasswordRequest, UserResponse, IUser, Role } from "../interfaces";
 import redisService from "../services/redis.service";
 import path from "path";
 import fs from "fs";
+import { Team } from "../models/team.model";
 
 const formatUserResponse = (user: IUser): UserResponse => ({
   id: user._id,
@@ -22,6 +23,31 @@ const formatUserResponse = (user: IUser): UserResponse => ({
   followersCount: user.followers?.length || 0,
   followingCount: user.following?.length || 0
 });
+
+const invalidateUserListingCaches = async () => {
+  await Promise.all([
+    redisService.invalidatePattern('admin:users:*'),
+    redisService.invalidatePattern('cache:*users*'),
+    redisService.invalidatePattern('search:users:*')
+  ]);
+};
+
+const getAdminScopedUserIds = async (adminId: string) => {
+  const teams = await Team.find({ createdBy: adminId }).select('members createdBy');
+  const idSet = new Set<string>([adminId]);
+
+  teams.forEach(team => {
+    idSet.add(team.createdBy.toString());
+    team.members.forEach(member => idSet.add(member.user.toString()));
+  });
+
+  return Array.from(idSet);
+};
+
+const isUserWithinAdminScope = async (adminId: string, targetUserId: string) => {
+  const scopedIds = await getAdminScopedUserIds(adminId);
+  return scopedIds.includes(targetUserId);
+};
 
 export const getProfile = catchAsync(async (req: any, res: any) => {
   const user = req.user;
@@ -419,4 +445,287 @@ export const searchUsers = catchAsync(async (req: any, res: any) => {
   await redisService.set(cacheKey, response, 180);
 
   res.status(200).json(response);
+});
+
+/**
+ * Superadmin: Assign role to a user
+ * Only superadmin can assign roles (admin or user)
+ */
+export const assignUserRole = catchAsync(async (req: any, res: any) => {
+  const { userId } = req.params;
+  const { role } = req.body;
+  const currentUser = req.user;
+
+  // Verify current user is superadmin
+  if (currentUser.role !== Role.Superadmin) {
+    return res.status(403).json({
+      success: false,
+      message: 'Only superadmin can assign user roles'
+    });
+  }
+
+  // Validate role
+  if (!role || !Object.values(Role).includes(role)) {
+    return res.status(400).json({
+      success: false,
+      message: 'Invalid role. Must be one of: user, admin, superadmin'
+    });
+  }
+
+  // Prevent changing superadmin role (security measure)
+  const targetUser = await User.findById(userId);
+  if (!targetUser) {
+    return res.status(404).json({
+      success: false,
+      message: 'User not found'
+    });
+  }
+
+  // Prevent assigning superadmin role (only one superadmin or manual assignment)
+  if (role === Role.Superadmin) {
+    return res.status(403).json({
+      success: false,
+      message: 'Cannot assign superadmin role through API. This must be done manually.'
+    });
+  }
+
+  // Prevent removing superadmin role
+  if (targetUser.role === Role.Superadmin && role !== Role.Superadmin) {
+    return res.status(403).json({
+      success: false,
+      message: 'Cannot change superadmin role'
+    });
+  }
+
+  // Update user role
+  targetUser.role = role as Role;
+  await targetUser.save();
+
+  // Invalidate caches
+  await invalidateUserCache(userId);
+  await invalidateUserListingCaches();
+
+  res.status(200).json({
+    success: true,
+    message: `User role updated to ${role} successfully`,
+    user: formatUserResponse(targetUser)
+  });
+});
+
+export const updateUserVerification = catchAsync(async (req: any, res: any) => {
+  const { userId } = req.params;
+  const { emailVerified } = req.body;
+  const currentUser = req.user;
+
+  if (currentUser.role !== Role.Superadmin && currentUser.role !== Role.Admin) {
+    return res.status(403).json({
+      success: false,
+      message: 'Only admin or superadmin can update email verification'
+    });
+  }
+
+  if (emailVerified === undefined || emailVerified === null ||
+    (typeof emailVerified !== 'boolean' && emailVerified !== 'true' && emailVerified !== 'false')) {
+    return res.status(400).json({
+      success: false,
+      message: 'Invalid emailVerified value. Must be true or false.'
+    });
+  }
+
+  const targetUser = await User.findById(userId);
+  if (!targetUser) {
+    return res.status(404).json({
+      success: false,
+      message: 'User not found'
+    });
+  }
+
+  if (currentUser.role === Role.Admin) {
+    const inScope = await isUserWithinAdminScope(currentUser._id.toString(), userId);
+    if (!inScope) {
+      return res.status(403).json({
+        success: false,
+        message: 'Admins can only update verification for their team members.'
+      });
+    }
+
+    if (targetUser.role === Role.Superadmin) {
+      return res.status(403).json({
+        success: false,
+        message: 'Admins cannot modify superadmin verification status.'
+      });
+    }
+  }
+
+  const normalizedValue = typeof emailVerified === 'boolean' ? emailVerified : emailVerified === 'true';
+
+  if (targetUser.emailVerified === normalizedValue) {
+    return res.status(200).json({
+      success: true,
+      message: 'Email verification status unchanged',
+      user: formatUserResponse(targetUser)
+    });
+  }
+
+  targetUser.emailVerified = normalizedValue;
+  await targetUser.save();
+
+  await invalidateUserCache(userId);
+  await invalidateUserListingCaches();
+
+  res.status(200).json({
+    success: true,
+    message: `Email verification status updated successfully`,
+    user: formatUserResponse(targetUser)
+  });
+});
+
+/**
+ * Superadmin: Get all users with role filtering
+ * Superadmin can see all users
+ * Admin can see users in their teams
+ */
+export const getAllUsers = catchAsync(async (req: any, res: any) => {
+  const currentUser = req.user;
+  const { page = 1, limit = 20, search, role } = req.query;
+  const skip = (parseInt(page as string) - 1) * parseInt(limit as string);
+
+  // Build filter based on current user role
+  let filter: any = {};
+
+  if (currentUser.role === Role.Superadmin) {
+    // Superadmin can see all users
+    if (search) {
+      filter.$or = [
+        { username: { $regex: search, $options: 'i' } },
+        { email: { $regex: search, $options: 'i' } }
+      ];
+    }
+    if (role) {
+      filter.role = role;
+    }
+  } else if (currentUser.role === Role.Admin) {
+    // Admin can only see users in their teams
+    const teams = await Team.find({ createdBy: currentUser._id });
+    const teamMemberIds = teams.flatMap(team => 
+      team.members.map(member => member.user.toString())
+    );
+    
+    // Include the admin themselves
+    teamMemberIds.push(currentUser._id.toString());
+    
+    filter._id = { $in: teamMemberIds };
+    
+    if (search) {
+      filter.$and = [
+        {
+          $or: [
+            { username: { $regex: search, $options: 'i' } },
+            { email: { $regex: search, $options: 'i' } }
+          ]
+        }
+      ];
+    }
+  } else {
+    return res.status(403).json({
+      success: false,
+      message: 'Access denied. Admin or superadmin role required.'
+    });
+  }
+
+  // Try to get from cache first
+  const cacheKey = `admin:users:${JSON.stringify({ page, limit, search, role, userRole: currentUser.role })}`;
+  const cached = await redisService.get(cacheKey);
+  
+  if (cached) {
+    return res.status(200).json(cached);
+  }
+
+  const users = await User.find(filter)
+    .select('username email avatar role bio userLocation emailVerified createdAt')
+    .sort({ createdAt: -1 })
+    .skip(skip)
+    .limit(parseInt(limit as string));
+
+  const total = await User.countDocuments(filter);
+
+  const userResponses = users.map(user => ({
+    id: user._id.toString(),
+    username: user.username,
+    email: user.email,
+    avatar: user.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.username)}&background=random&color=fff&size=128`,
+    role: user.role,
+    bio: user.bio,
+    userLocation: user.userLocation,
+    emailVerified: user.emailVerified,
+    createdAt: user.createdAt
+  }));
+
+  const response = {
+    success: true,
+    users: userResponses,
+    pagination: {
+      page: parseInt(page as string),
+      limit: parseInt(limit as string),
+      total,
+      pages: Math.ceil(total / parseInt(limit as string))
+    }
+  };
+
+  // Cache the response for 5 minutes
+  await redisService.set(cacheKey, response, 300);
+
+  res.status(200).json(response);
+});
+
+/**
+ * Superadmin: Delete a user
+ * Only superadmin can delete users
+ */
+export const deleteUser = catchAsync(async (req: any, res: any) => {
+  const { userId } = req.params;
+  const currentUser = req.user;
+
+  // Verify current user is superadmin
+  if (currentUser.role !== Role.Superadmin) {
+    return res.status(403).json({
+      success: false,
+      message: 'Only superadmin can delete users'
+    });
+  }
+
+  // Prevent self-deletion
+  if (currentUser._id.toString() === userId) {
+    return res.status(400).json({
+      success: false,
+      message: 'Cannot delete your own account'
+    });
+  }
+
+  const user = await User.findById(userId);
+  if (!user) {
+    return res.status(404).json({
+      success: false,
+      message: 'User not found'
+    });
+  }
+
+  // Prevent deleting superadmin
+  if (user.role === Role.Superadmin) {
+    return res.status(403).json({
+      success: false,
+      message: 'Cannot delete superadmin account'
+    });
+  }
+
+  await User.findByIdAndDelete(userId);
+
+  // Invalidate caches
+  await invalidateUserCache(userId);
+  await invalidateUserListingCaches();
+
+  res.status(200).json({
+    success: true,
+    message: 'User deleted successfully'
+  });
 });
