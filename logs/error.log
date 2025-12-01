@@ -1,1 +1,43 @@
 2025-09-17 10:35:10 error: unhandled rejection: Missing credentials for "PLAIN" ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.1.105"]}
+2025-11-27 12:43:32 error: Redis connection failed: Stream isn't writeable and enableOfflineQueue options is false ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:43:35 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:43:35 error: Socket authentication error: jwt malformed ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:43:40 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:43:40 error: Socket authentication error: jwt malformed ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:43:45 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:43:45 error: Socket authentication error: jwt malformed ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:43:50 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:43:50 error: Socket authentication error: jwt malformed ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:43:55 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:43:55 error: Socket authentication error: jwt malformed ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:44:00 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:44:00 error: Socket authentication error: jwt malformed ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:44:05 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:44:05 error: Socket authentication error: jwt malformed ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:44:10 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:44:10 error: Socket authentication error: jwt malformed ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:44:15 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:44:15 error: Socket authentication error: jwt malformed ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:44:20 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:44:20 error: Socket authentication error: jwt malformed ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:44:25 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:44:25 error: Socket authentication error: jwt malformed ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:44:30 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:44:30 error: Socket authentication error: jwt malformed ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:44:35 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:44:35 error: Socket authentication error: jwt malformed ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:44:40 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:44:40 error: Socket authentication error: jwt malformed ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:44:45 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:44:45 error: Socket authentication error: jwt malformed ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:44:50 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:44:50 error: Socket authentication error: jwt malformed ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:44:55 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:44:55 error: Socket authentication error: jwt malformed ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:45:00 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:45:00 error: Socket authentication error: jwt malformed ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:45:05 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:45:05 error: Socket authentication error: jwt malformed ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:45:59 error: Redis connection failed: Stream isn't writeable and enableOfflineQueue options is false ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-29 12:50:57 error: Redis connection failed: Stream isn't writeable and enableOfflineQueue options is false ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.100.71"]}
+2025-11-29 12:51:13 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.100.71"]}

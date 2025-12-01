@@ -11,9 +11,9 @@ import friendRouter from './friend.routes'
 import chatRouter from './chat.routes'
 import postRouter from './post.routes'
 import uploadRouter from './upload.routes'
-import githubRouter from './github.routes'
 import permissionsRouter from './permissions.routes'
 import healthRouter from './health.routes'
+import exploreRouter from './explore.routes'
 const router = express.Router()
 
 router.use("/auth", authRouter)
@@ -29,7 +29,7 @@ router.use("/friends", friendRouter)
 router.use("/chat", chatRouter)
 router.use("/posts", postRouter)
 router.use("/upload", uploadRouter)
-router.use("/github", githubRouter)
+router.use("/explore", exploreRouter)
 router.use("/permissions", permissionsRouter)
 router.use("/health", healthRouter)
 

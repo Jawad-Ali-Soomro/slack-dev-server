@@ -213,7 +213,6 @@ class ChatService {
       if (socketService) {
         socketService.emitNewMessage(chatId, messageResponse);
         const chatResponse = this.formatChatResponse(chat, userId);
-        console.log('Emitting chat update with participants:', chatResponse.participants);
         socketService.emitChatUpdate(chatId, chatResponse);
       }
 

@@ -288,3 +288,134 @@
 2025-09-20 09:32:45 info: server requested ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.100.71"]}
 2025-09-20 09:32:45 info: cors is running on http://locahost:5177 ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.100.71"]}
 2025-09-20 09:32:45 info: connected database ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.100.71"]}
+2025-11-27 12:43:28 warn: ENCRYPTION_KEY not set in environment. Using generated key (not recommended for production) ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:43:32 info: server requested ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:43:32 info: cors is running on undefined ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:43:32 error: Redis connection failed: Stream isn't writeable and enableOfflineQueue options is false ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:43:32 info: Redis connected successfully ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:43:32 info: connected database ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:43:35 info: Socket authentication attempt: ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:43:35 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:43:35 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:43:35 error: Socket authentication error: jwt malformed ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:43:40 info: Socket authentication attempt: ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:43:40 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:43:40 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:43:40 error: Socket authentication error: jwt malformed ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:43:45 info: Socket authentication attempt: ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:43:45 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:43:45 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:43:45 error: Socket authentication error: jwt malformed ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:43:50 info: Socket authentication attempt: ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:43:50 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:43:50 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:43:50 error: Socket authentication error: jwt malformed ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:43:55 info: Socket authentication attempt: ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:43:55 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:43:55 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:43:55 error: Socket authentication error: jwt malformed ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:44:00 info: Socket authentication attempt: ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:44:00 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:44:00 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:44:00 error: Socket authentication error: jwt malformed ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:44:05 info: Socket authentication attempt: ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:44:05 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:44:05 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:44:05 error: Socket authentication error: jwt malformed ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:44:10 info: Socket authentication attempt: ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:44:10 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:44:10 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:44:10 error: Socket authentication error: jwt malformed ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:44:15 info: Socket authentication attempt: ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:44:15 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:44:15 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:44:15 error: Socket authentication error: jwt malformed ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:44:19 info: Socket authentication attempt: ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:44:19 info: Token decoded successfully: ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:44:19 info: Socket authentication successful: ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:44:19 info: User Jawad Soomro connected with socket MmooeBTfJC8l0MqVAAAT ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:44:20 info: Socket authentication attempt: ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:44:20 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:44:20 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:44:20 error: Socket authentication error: jwt malformed ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:44:25 info: Socket authentication attempt: ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:44:25 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:44:25 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:44:25 error: Socket authentication error: jwt malformed ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:44:30 info: Socket authentication attempt: ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:44:30 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:44:30 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:44:30 error: Socket authentication error: jwt malformed ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:44:35 info: Socket authentication attempt: ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:44:35 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:44:35 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:44:35 error: Socket authentication error: jwt malformed ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:44:40 info: Socket authentication attempt: ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:44:40 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:44:40 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:44:40 error: Socket authentication error: jwt malformed ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:44:45 info: Socket authentication attempt: ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:44:45 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:44:45 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:44:45 error: Socket authentication error: jwt malformed ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:44:48 info: User 692557c8f3c81c3e0ee7d6a2 joined chat 6928016f5f5fdcdb320b3b01 ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:44:48 info: Invalidated 1 cache keys matching pattern: chat:6928016f5f5fdcdb320b3b01:messages:* ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:44:50 info: Socket authentication attempt: ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:44:50 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:44:50 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:44:50 error: Socket authentication error: jwt malformed ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:44:54 info: Creating notifications for recipients: ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:44:55 info: Socket authentication attempt: ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:44:55 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:44:55 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:44:55 error: Socket authentication error: jwt malformed ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:45:00 info: Socket authentication attempt: ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:45:00 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:45:00 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:45:00 error: Socket authentication error: jwt malformed ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:45:05 info: Socket authentication attempt: ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:45:05 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:45:05 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:45:05 error: Socket authentication error: jwt malformed ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:45:08 warn: Redis FLUSHALL executed - entire cache cleared ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:45:08 info: User Jawad Soomro disconnected ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:45:54 warn: ENCRYPTION_KEY not set in environment. Using generated key (not recommended for production) ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:45:59 info: server requested ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:45:59 info: cors is running on undefined ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:45:59 error: Redis connection failed: Stream isn't writeable and enableOfflineQueue options is false ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:45:59 info: Redis connected successfully ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:45:59 info: connected database ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:46:20 info: Socket authentication attempt: ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:46:20 info: Token decoded successfully: ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:46:20 info: Socket authentication successful: ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:46:20 info: User Fawad Soomro connected with socket DYIzuU6USJX6DGKCAAAB ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:46:22 info: Invalidated 1 cache keys matching pattern: user:69271fe6ca15c41473ced9aa:notifications:* ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:46:24 info: User 69271fe6ca15c41473ced9aa joined chat 6928016f5f5fdcdb320b3b01 ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:46:24 info: Invalidated 1 cache keys matching pattern: chat:6928016f5f5fdcdb320b3b01:messages:* ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:46:24 info: Invalidated 1 cache keys matching pattern: chat:6928016f5f5fdcdb320b3b01:messages:* ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:52:00 warn: Redis FLUSHALL executed - entire cache cleared ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:52:00 info: User Fawad Soomro disconnected ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:55:47 info: Socket authentication attempt: ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:55:47 info: Token decoded successfully: ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:55:47 info: Socket authentication successful: ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:55:47 info: User Jawad Soomro connected with socket tsCw2pNfCg__tJCpAAAD ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:57:52 info: Invalidated 1 cache keys matching pattern: user:692557c8f3c81c3e0ee7d6a2:notifications:* ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:57:55 info: User 692557c8f3c81c3e0ee7d6a2 joined chat 6928016f5f5fdcdb320b3b01 ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:57:55 info: Invalidated 1 cache keys matching pattern: chat:6928016f5f5fdcdb320b3b01:messages:* ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:57:56 info: User 692557c8f3c81c3e0ee7d6a2 joined chat 6925cdee97b8aa129304a2f6 ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 12:57:56 info: Invalidated 1 cache keys matching pattern: chat:6925cdee97b8aa129304a2f6:messages:* ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 13:05:30 info: Invalidated 1 cache keys matching pattern: user:692557c8f3c81c3e0ee7d6a2:projects:* ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-27 13:05:30 info: Invalidated 1 cache keys matching pattern: tasks:* ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.59"]}
+2025-11-29 12:50:53 warn: ENCRYPTION_KEY not set in environment. Using generated key (not recommended for production) ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.100.71"]}
+2025-11-29 12:50:57 info: server requested ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.100.71"]}
+2025-11-29 12:50:57 info: cors is running on undefined ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.100.71"]}
+2025-11-29 12:50:57 error: Redis connection failed: Stream isn't writeable and enableOfflineQueue options is false ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.100.71"]}
+2025-11-29 12:50:57 info: Redis connected successfully ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.100.71"]}
+2025-11-29 12:50:57 info: connected database ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.100.71"]}
+2025-11-29 12:51:13 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.100.71"]}
+2025-11-29 12:51:13 warn: Token decryption failed: error:1C800064:Provider routines::bad decrypt ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.100.71"]}
+2025-11-29 12:52:17 info: Socket authentication attempt: ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.100.71"]}
+2025-11-29 12:52:17 info: Token decoded successfully: ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.100.71"]}
+2025-11-29 12:52:18 info: Socket authentication successful: ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.100.71"]}
+2025-11-29 12:52:18 info: User Jawad Soomro connected with socket oEQzk8oR1GakNg6QAAAB ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.100.71"]}
+2025-11-30 09:02:24 info: User Jawad Soomro disconnected ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.100.71"]}

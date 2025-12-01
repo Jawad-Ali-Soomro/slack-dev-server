@@ -6,6 +6,7 @@ import { generateOtp, sendMail } from "../utils";
 import { buildOtpEmail, buildResetPasswordEmail } from "../templates";
 import path from "path";
 import dotenv from "dotenv";
+import redisService from "../services/redis.service";
 dotenv.config({
   path: "../config/.env"
 });
@@ -258,6 +259,11 @@ export const resetPassword = catchAsync(async (req: any, res: any) => {
   user.passwordResetTokenExpires = undefined;
   await user.save();
   res.status(200).json({ message: "password reset successfully" });
+});
+
+export const logout = catchAsync(async (_req: any, res: any) => {
+  await redisService.flushAll();
+  res.status(200).json({ success: true, message: 'logout successful' });
 });
 
 export const getProfile = catchAsync(async (req: any, res: any) => {

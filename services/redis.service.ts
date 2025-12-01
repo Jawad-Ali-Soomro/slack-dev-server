@@ -389,6 +389,17 @@ class RedisService {
     }
   }
 
+  // Flush entire cache (use with caution)
+  async flushAll(): Promise<void> {
+    try {
+      await this.client.flushall();
+      logger.warn('Redis FLUSHALL executed - entire cache cleared');
+    } catch (error) {
+      logger.error('Redis flushAll error:', error);
+      throw error;
+    }
+  }
+
   // Health check
   async ping(): Promise<string> {
     return await this.client.ping();

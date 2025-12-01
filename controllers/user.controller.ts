@@ -84,15 +84,16 @@ export const getUserDetails = catchAsync(async (req: any, res: any) => {
   const Meeting = (await import('../models/meeting.model')).default;
   const { Team } = await import('../models/team.model');
 
-  // Find projects where user is creator or member
+  // Find projects where user is creator or member, but exclude team projects
   const projects = await Project.find({
     $or: [
       { createdBy: userId },
       { 'members.user': userId }
-    ]
+    ],
+    teamId: { $exists: false } // Exclude team projects
   })
   .populate('createdBy', 'username avatar')
-  .select('name description logo status priority progress createdAt members')
+  .select('name description logo status priority progress createdAt members teamId')
   .sort({ createdAt: -1 });
 
   // Find tasks where user is assignee or assigner

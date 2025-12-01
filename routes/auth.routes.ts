@@ -1,6 +1,6 @@
 import express from 'express'
 const authRouter = express.Router()
-import { register, login, verifyEmail, resendOtp, forgotPassword, resetPassword, getProfile } from '../controllers/auth.controller'
+import { register, login, verifyEmail, resendOtp, forgotPassword, resetPassword, getProfile, logout } from '../controllers/auth.controller'
 import { authenticate, authRateLimiter } from '../middlewares'
 
 /**
@@ -190,5 +190,6 @@ authRouter.post('/reset-password', authRateLimiter, resetPassword)
  *         description: Unauthorized
  */
 authRouter.get('/profile', authenticate, getProfile)
+authRouter.post('/logout', authenticate, logout)
 
 export default authRouter
