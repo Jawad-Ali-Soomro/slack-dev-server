@@ -10,7 +10,8 @@ import {
   reassignMeeting,
   updateAttendees,
   deleteMeeting, 
-  getMeetingStats 
+  getMeetingStats,
+  createZoomMeeting
 } from '../controllers/enhanced.meeting.controller'
 import { authenticate } from '../middlewares'
 
@@ -40,6 +41,54 @@ import { authenticate } from '../middlewares'
  *         description: AssignedTo user not found
  */
 meetingRouter.post('/', authenticate, createMeeting)
+
+/**
+ * @openapi
+ * /api/meetings/zoom:
+ *   post:
+ *     summary: Create a video meeting (Jitsi Meet - no credentials required, or Zoom if configured)
+ *     tags:
+ *       - Meetings
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               topic:
+ *                 type: string
+ *                 description: Meeting topic/title
+ *               startTime:
+ *                 type: string
+ *                 format: date-time
+ *                 description: Meeting start time in ISO 8601 format (optional)
+ *               duration:
+ *                 type: integer
+ *                 description: Meeting duration in minutes
+ *                 default: 60
+ *               agenda:
+ *                 type: string
+ *                 description: Meeting agenda/description
+ *               timezone:
+ *                 type: string
+ *                 description: Timezone (default: UTC)
+ *                 default: UTC
+ *             required:
+ *               - topic
+ *     responses:
+ *       201:
+ *         description: Video meeting created successfully
+ *       400:
+ *         description: Bad request
+ *       401:
+ *         description: Unauthorized
+ *       500:
+ *         description: Failed to create video meeting
+ */
+meetingRouter.post('/zoom', authenticate, createZoomMeeting)
 
 /**
  * @openapi

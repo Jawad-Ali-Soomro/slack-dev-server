@@ -2,6 +2,7 @@ import { catchAsync } from "../middlewares";
 import { Meeting, User, Notification } from "../models";
 import { CreateMeetingRequest, UpdateMeetingRequest, MeetingResponse, MeetingStatus, MeetingType } from "../interfaces";
 import redisService from "../services/redis.service";
+import videoMeetingService from "../services/zoomService";
 
 const formatMeetingResponse = (meeting: any): MeetingResponse => ({
   id: meeting._id.toString(),
@@ -115,6 +116,39 @@ export const createMeeting = catchAsync(async (req: any, res: any) => {
     message: "Meeting created and assigned successfully",
     meeting: formatMeetingResponse(meeting)
   });
+});
+
+// Create video meeting (Jitsi Meet or Zoom)
+export const createZoomMeeting = catchAsync(async (req: any, res: any) => {
+  const { topic, startTime, duration, agenda, timezone } = req.body;
+
+  if (!topic) {
+    return res.status(400).json({ message: "Meeting topic is required" });
+  }
+
+  try {
+    const meeting = await videoMeetingService.createScheduledMeeting(
+      topic,
+      startTime,
+      duration || 60,
+      agenda,
+      timezone || 'UTC'
+    );
+
+    res.status(201).json({
+      message: "Video meeting created successfully",
+      meeting: {
+        joinUrl: meeting.joinUrl,
+        startUrl: meeting.startUrl,
+        meetingId: meeting.meetingId,
+        password: meeting.password
+      }
+    });
+  } catch (error: any) {
+    res.status(500).json({
+      message: error.message || "Failed to create video meeting"
+    });
+  }
 });
 
 // Get meetings with Redis caching
