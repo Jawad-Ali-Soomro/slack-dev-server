@@ -9,5 +9,6 @@ import CodeSession from "./codeSession.model";
 import { Permissions } from "./permissions.model";
 import { PublicProject } from "./publicProject.model";
 import { Purchase } from "./purchase.model";
+import { Note } from "./note.model";
 
-export { User, Task, Meeting, Notification, Project, Chat, Message, CodeSession, Permissions, PublicProject, Purchase };
+export { User, Task, Meeting, Notification, Project, Chat, Message, CodeSession, Permissions, PublicProject, Purchase, Note };

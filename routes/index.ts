@@ -14,6 +14,7 @@ import uploadRouter from './upload.routes'
 import permissionsRouter from './permissions.routes'
 import healthRouter from './health.routes'
 import exploreRouter from './explore.routes'
+import noteRouter from './note.routes'
 const router = express.Router()
 
 router.use("/auth", authRouter)
@@ -32,5 +33,6 @@ router.use("/upload", uploadRouter)
 router.use("/explore", exploreRouter)
 router.use("/permissions", permissionsRouter)
 router.use("/health", healthRouter)
+router.use("/notes", noteRouter)
 
 export default router

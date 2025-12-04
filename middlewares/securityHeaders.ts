@@ -25,7 +25,17 @@ export const securityHeaders = (req: Request, res: Response, next: NextFunction)
   // Content Security Policy
   res.setHeader(
     'Content-Security-Policy',
-    "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self'"
+    "default-src 'self'; " +
+    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://m.stripe.network " +
+    "'sha256-3pRnM6RDgF14MWFkvx4uteJg4lut04LUeWOimQRHoI8=' " +
+    "'sha256-e357n1PxCJ8d03/QCSKaHFmHF1JADyvSHdSfshxM494=' " +
+    "'sha256-5DA+a07wxWmEka9IdoWjSPVHb17Cp5284/lJzfbl8KA=' " +
+    "'sha256-/5Guo2nzv5n/w6ukZpOBZOtTJBJPSkJ6mhHpnBgm3Ls='; " +
+    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
+    "img-src 'self' data: https: blob:; " +
+    "font-src 'self' data: https://fonts.gstatic.com; " +
+    "connect-src 'self' https://api.stripe.com https://m.stripe.network ws: wss:; " +
+    "frame-src https://js.stripe.com https://hooks.stripe.com"
   );
 
   // Referrer Policy
