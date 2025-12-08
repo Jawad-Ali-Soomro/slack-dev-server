@@ -1007,3 +1007,48 @@
 2025-12-04 11:20:58 info: Token decoded successfully: ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.1.111"]}
 2025-12-04 11:20:58 info: Socket authentication successful: ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.1.111"]}
 2025-12-04 11:20:58 info: User Jawad Soomro connected with socket F41yiYqOtK-vI80nAAAj ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.1.111"]}
+2025-12-05 11:25:55 warn: ENCRYPTION_KEY not set in environment. Using generated key (not recommended for production) ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.63"]}
+2025-12-05 11:25:56 info: No Zoom credentials found. Using Jitsi Meet (no credentials required). ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.63"]}
+2025-12-05 11:25:58 info: server requested ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.63"]}
+2025-12-05 11:25:58 info: cors is running on undefined ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.63"]}
+2025-12-05 11:25:58 error: Redis connection failed: Stream isn't writeable and enableOfflineQueue options is false ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.63"]}
+2025-12-05 11:25:58 info: Redis connected successfully ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.63"]}
+2025-12-05 11:25:58 info: connected database ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.63"]}
+2025-12-05 11:26:10 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.63"]}
+2025-12-05 11:26:10 warn: Token decryption failed: error:1C800064:Provider routines::bad decrypt ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.63"]}
+2025-12-05 11:26:24 info: Socket authentication attempt: ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.63"]}
+2025-12-05 11:26:24 info: Token decoded successfully: ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.63"]}
+2025-12-05 11:26:24 info: Socket authentication successful: ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.63"]}
+2025-12-05 11:26:24 info: User Jawad Soomro connected with socket 34uafhWfZ4X5PFvSAAAB ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.63"]}
+2025-12-05 11:46:54 warn: Redis FLUSHALL executed - entire cache cleared ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.63"]}
+2025-12-05 11:46:54 info: User Jawad Soomro disconnected ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.63"]}
+2025-12-07 10:37:34 warn: ENCRYPTION_KEY not set in environment. Using generated key (not recommended for production) ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.100.71"]}
+2025-12-07 10:37:35 info: No Zoom credentials found. Using Jitsi Meet (no credentials required). ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.100.71"]}
+2025-12-07 10:37:37 info: server requested ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.100.71"]}
+2025-12-07 10:37:37 info: cors is running on undefined ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.100.71"]}
+2025-12-07 10:37:37 error: Redis connection failed: Stream isn't writeable and enableOfflineQueue options is false ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.100.71"]}
+2025-12-07 10:37:37 info: Redis connected successfully ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.100.71"]}
+2025-12-07 10:37:37 info: connected database ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.100.71"]}
+2025-12-07 10:38:04 info: Socket authentication attempt: ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.100.71"]}
+2025-12-07 10:38:04 info: Token decoded successfully: ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.100.71"]}
+2025-12-07 10:38:04 info: Socket authentication successful: ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.100.71"]}
+2025-12-07 10:38:04 info: User Jawad Soomro connected with socket KA0Aubo2q4huYlidAAAB ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.100.71"]}
+2025-12-07 10:38:08 info: Invalidated 1 cache keys matching pattern: user:692557c8f3c81c3e0ee7d6a2:notifications:* ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.100.71"]}
+2025-12-07 10:55:13 info: User 692557c8f3c81c3e0ee7d6a2 joined chat 6925cdee97b8aa129304a2f6 ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.100.71"]}
+2025-12-07 10:55:13 info: Invalidated 1 cache keys matching pattern: chat:6925cdee97b8aa129304a2f6:messages:* ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.100.71"]}
+2025-12-07 10:55:13 info: User 692557c8f3c81c3e0ee7d6a2 joined chat 6928016f5f5fdcdb320b3b01 ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.100.71"]}
+2025-12-07 10:55:14 info: Invalidated 1 cache keys matching pattern: chat:6928016f5f5fdcdb320b3b01:messages:* ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.100.71"]}
+2025-12-07 10:55:15 info: User Jawad Soomro disconnected ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.100.71"]}
+2025-12-08 12:14:18 warn: ENCRYPTION_KEY not set in environment. Using generated key (not recommended for production) ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.63"]}
+2025-12-08 12:14:19 info: No Zoom credentials found. Using Jitsi Meet (no credentials required). ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.63"]}
+2025-12-08 12:14:21 info: server requested ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.63"]}
+2025-12-08 12:14:21 info: cors is running on undefined ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.63"]}
+2025-12-08 12:14:21 error: Redis connection failed: Stream isn't writeable and enableOfflineQueue options is false ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.63"]}
+2025-12-08 12:14:21 info: Redis connected successfully ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.63"]}
+2025-12-08 12:14:21 info: connected database ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.63"]}
+2025-12-08 12:14:31 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.63"]}
+2025-12-08 12:14:31 warn: Token decryption failed: error:1C800064:Provider routines::bad decrypt ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.63"]}
+2025-12-08 12:14:39 info: Socket authentication attempt: ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.63"]}
+2025-12-08 12:14:39 info: Token decoded successfully: ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.63"]}
+2025-12-08 12:14:39 info: Socket authentication successful: ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.63"]}
+2025-12-08 12:14:39 info: User Jawad Soomro connected with socket qOjqu5upSKKeRTAhAAAB ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.63"]}
