@@ -12,7 +12,7 @@ import {
 import {
   rateLimiter,
   generalRateLimiter,
-  // authRateLimiter,
+  authRateLimiter,
   strictRateLimiter
 } from "./rateLimiter";
 import {
@@ -39,7 +39,7 @@ export {
   invalidateCachePattern,
   rateLimiter,
   generalRateLimiter,
-  // authRateLimiter,
+  authRateLimiter,
   strictRateLimiter,
   securityHeaders,
   sanitizeResponse,

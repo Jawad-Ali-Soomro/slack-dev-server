@@ -1169,3 +1169,458 @@
 2025-12-09 16:07:29 info: User Fawad connected with socket vP43qYjBtdskgmwGAAAF ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
 2025-12-09 16:07:31 info: Invalidated 1 cache keys matching pattern: user:69378475e9283f721ea3478e:notifications:* ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
 2025-12-09 16:07:33 info: Invalidated 2 cache keys matching pattern: tasks:* ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:43:59 warn: ENCRYPTION_KEY not set in environment. Using generated key (not recommended for production) ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:43:59 info: No Zoom credentials found. Using Jitsi Meet (no credentials required). ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:44:01 info: server requested ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:44:01 info: cors is running on undefined ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:44:01 error: Redis connection failed: Stream isn't writeable and enableOfflineQueue options is false ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:44:01 info: Redis connected successfully ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:44:01 info: connected database ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:44:02 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:44:02 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:44:02 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:44:02 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:44:03 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:44:03 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:44:03 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:44:03 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:44:07 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:44:07 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:44:07 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:44:07 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:44:13 warn: ENCRYPTION_KEY not set in environment. Using generated key (not recommended for production) ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:44:13 info: No Zoom credentials found. Using Jitsi Meet (no credentials required). ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:44:15 info: server requested ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:44:15 info: cors is running on undefined ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:44:15 error: Redis connection failed: Stream isn't writeable and enableOfflineQueue options is false ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:44:15 info: Redis connected successfully ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:44:15 info: connected database ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:44:19 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:44:19 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:44:19 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:44:19 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:44:20 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:44:20 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:44:20 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:44:20 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:44:24 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:44:24 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:44:24 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:44:24 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:44:25 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:44:25 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:44:25 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:44:25 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:44:29 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:44:29 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:44:29 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:44:29 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:44:30 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:44:30 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:44:30 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:44:30 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:44:34 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:44:34 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:44:34 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:44:34 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:44:35 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:44:35 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:44:35 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:44:35 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:44:39 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:44:39 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:44:39 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:44:39 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:44:40 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:44:40 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:44:40 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:44:40 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:44:44 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:44:44 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:44:44 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:44:44 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:44:45 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:44:45 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:44:45 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:44:45 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:44:53 warn: ENCRYPTION_KEY not set in environment. Using generated key (not recommended for production) ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:44:54 info: No Zoom credentials found. Using Jitsi Meet (no credentials required). ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:44:56 info: server requested ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:44:56 info: cors is running on undefined ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:44:56 error: Redis connection failed: Stream isn't writeable and enableOfflineQueue options is false ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:44:56 info: Redis connected successfully ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:44:56 info: connected database ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:44:58 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:44:58 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:44:58 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:44:58 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:44:59 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:44:59 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:44:59 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:44:59 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:03 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:03 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:03 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:03 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:04 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:04 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:04 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:04 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:08 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:08 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:08 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:08 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:09 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:09 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:09 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:09 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:14 warn: ENCRYPTION_KEY not set in environment. Using generated key (not recommended for production) ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:15 info: No Zoom credentials found. Using Jitsi Meet (no credentials required). ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:16 info: server requested ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:16 info: cors is running on undefined ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:16 error: Redis connection failed: Stream isn't writeable and enableOfflineQueue options is false ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:16 info: Redis connected successfully ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:16 info: connected database ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:16 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:16 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:16 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:16 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:18 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:18 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:18 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:18 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:19 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:19 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:19 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:19 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:21 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:21 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:21 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:21 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:23 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:23 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:23 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:23 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:24 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:24 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:24 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:24 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:26 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:26 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:26 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:26 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:29 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:29 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:29 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:29 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:30 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:30 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:30 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:30 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:31 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:31 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:31 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:31 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:34 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:34 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:34 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:34 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:35 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:35 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:35 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:35 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:36 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:36 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:36 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:36 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:39 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:39 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:39 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:39 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:40 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:40 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:40 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:40 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:41 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:41 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:41 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:41 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:44 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:44 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:44 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:44 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:45 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:45 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:45 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:45 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:46 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:46 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:46 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:46 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:49 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:49 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:49 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:49 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:50 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:50 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:50 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:50 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:51 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:51 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:51 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:51 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:54 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:54 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:54 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:54 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:55 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:55 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:55 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:55 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:56 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:56 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:56 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:56 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:59 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:59 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:59 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:45:59 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:46:00 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:46:00 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:46:00 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:46:00 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:46:01 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:46:01 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:46:01 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:46:01 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:46:04 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:46:04 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:46:04 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:46:04 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:46:05 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:46:05 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:46:05 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:46:05 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:46:06 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:46:06 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:46:06 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:46:06 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:46:09 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:46:09 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:46:09 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:46:09 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:46:10 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:46:10 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:46:10 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:46:10 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:46:11 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:46:11 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:46:11 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:46:11 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:46:14 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:46:14 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:46:14 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:46:14 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:46:23 warn: ENCRYPTION_KEY not set in environment. Using generated key (not recommended for production) ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:46:23 info: No Zoom credentials found. Using Jitsi Meet (no credentials required). ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:46:25 info: server requested ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:46:25 info: cors is running on undefined ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:46:25 error: Redis connection failed: Stream isn't writeable and enableOfflineQueue options is false ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:46:25 info: Redis connected successfully ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:46:25 info: connected database ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:46:27 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:46:27 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:46:27 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:46:27 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:46:32 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:46:32 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:46:32 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:46:32 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:46:37 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:46:37 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:46:37 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:46:37 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:46:42 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:46:42 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:46:42 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:46:42 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:46:47 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:46:47 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:46:47 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:46:47 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:46:52 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:46:52 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:46:52 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:46:52 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:46:57 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:46:57 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:46:57 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:46:57 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:47:02 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:47:02 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:47:02 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:47:02 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:47:07 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:47:07 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:47:07 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:47:07 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:47:12 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:47:12 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:47:12 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:47:12 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:47:17 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:47:17 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:47:17 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:47:17 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:47:22 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:47:22 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:47:22 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:47:22 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:47:27 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:47:27 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:47:27 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:47:27 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:47:32 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:47:32 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:47:32 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:47:32 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:47:37 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:47:37 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:47:37 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:47:37 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:47:42 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:47:42 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:47:42 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:47:42 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:47:47 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:47:47 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:47:47 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:47:47 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:47:52 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:47:52 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:47:52 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:47:52 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:47:57 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:47:57 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:47:57 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:47:57 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:48:02 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:48:02 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:48:02 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:48:02 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:48:07 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:48:07 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:48:07 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:48:07 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:48:12 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:48:12 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:48:12 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:48:12 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:48:17 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:48:17 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:48:17 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:48:17 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:48:22 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:48:22 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:48:22 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:48:22 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:48:27 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:48:27 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:48:27 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:48:27 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:48:32 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:48:32 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:48:32 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:48:32 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:48:37 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:48:37 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:48:37 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:48:37 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:48:42 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:48:42 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:48:42 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:48:42 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:48:47 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:48:47 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:48:47 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:48:47 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:48:52 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:48:52 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:48:52 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:48:52 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:48:57 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:48:57 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:48:57 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:48:57 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:49:02 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:49:02 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:49:02 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:49:02 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:49:07 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:49:07 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:49:07 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:49:07 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:49:12 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:49:12 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:49:12 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:49:12 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:49:17 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:49:17 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:49:17 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:49:17 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:49:22 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:49:22 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:49:22 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:49:22 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:49:27 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:49:27 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:49:27 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:49:27 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:49:32 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:49:32 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:49:32 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:49:32 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:49:37 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:49:37 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:49:37 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:49:37 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:49:42 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:49:42 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:49:42 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:49:42 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:49:47 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:49:47 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:49:47 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:49:48 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:49:53 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:49:53 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:49:53 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:49:53 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:49:58 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:49:58 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:49:58 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:49:58 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:50:03 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:50:03 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:50:03 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:50:03 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:50:08 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:50:08 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:50:08 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:50:08 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:50:13 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:50:13 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:50:13 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:50:13 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:50:18 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:50:18 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:50:18 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:50:18 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:50:23 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:50:23 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:50:23 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:50:23 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:50:28 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:50:28 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:50:28 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:50:28 error: Socket authentication error: jwt malformed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
