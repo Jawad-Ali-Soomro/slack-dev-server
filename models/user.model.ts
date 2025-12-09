@@ -88,8 +88,16 @@ const UserSchema = new Schema<IUser>({
 });
 
 UserSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) return next();
-  this.password = await bcrypt.hash(this.password, 10);
+  // Normalize email to lowercase
+  if (this.isModified("email") && this.email) {
+    this.email = this.email.toLowerCase().trim();
+  }
+  
+  // Hash password if modified
+  if (this.isModified("password")) {
+    this.password = await bcrypt.hash(this.password, 10);
+  }
+  
   next();
 });
 

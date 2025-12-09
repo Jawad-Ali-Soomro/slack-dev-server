@@ -1,7 +1,7 @@
 import express from 'express'
 const authRouter = express.Router()
 import { register, login, verifyEmail, resendOtp, forgotPassword, resetPassword, getProfile, logout } from '../controllers/auth.controller'
-import { authenticate, authRateLimiter } from '../middlewares'
+import { authenticate } from '../middlewares'
 
 /**
  * @openapi
@@ -33,7 +33,7 @@ import { authenticate, authRateLimiter } from '../middlewares'
  *         description: Email already in use
  */
 // Apply strict rate limiting to all authentication endpoints
-authRouter.post('/register', authRateLimiter, register)
+authRouter.post('/register', register)
 
 /**
  * @openapi
@@ -61,7 +61,7 @@ authRouter.post('/register', authRateLimiter, register)
  *       401:
  *         description: Invalid credentials or email not verified
  */
-authRouter.post('/login', authRateLimiter, login)
+authRouter.post('/login', login)
 
 /**
  * @openapi
@@ -89,7 +89,7 @@ authRouter.post('/login', authRateLimiter, login)
  *       400:
  *         description: Invalid or expired verification code
  */
-authRouter.post('/verify-email', authRateLimiter, verifyEmail)
+authRouter.post('/verify-email', verifyEmail)
 
 /**
  * @openapi
@@ -116,7 +116,7 @@ authRouter.post('/verify-email', authRateLimiter, verifyEmail)
  *       400:
  *         description: Email already verified
  */
-authRouter.post('/resend-otp', authRateLimiter, resendOtp)
+authRouter.post('/resend-otp', resendOtp)
 
 /**
  * @openapi
@@ -141,7 +141,7 @@ authRouter.post('/resend-otp', authRateLimiter, resendOtp)
  *       404:
  *         description: User not found
  */
-authRouter.post('/forgot-password', authRateLimiter, forgotPassword)
+authRouter.post('/forgot-password', forgotPassword)
 
 /**
  * @openapi
@@ -172,7 +172,7 @@ authRouter.post('/forgot-password', authRateLimiter, forgotPassword)
  *       400:
  *         description: Invalid or expired reset code
  */
-authRouter.post('/reset-password', authRateLimiter, resetPassword)
+authRouter.post('/reset-password', resetPassword)
 
 /**
  * @openapi

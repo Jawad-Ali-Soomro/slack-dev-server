@@ -25,11 +25,20 @@ const formatUserResponse = (user: IUser): UserResponse => ({
 
 export const register = catchAsync(async (req: any, res: any) => {
   const { email, username } = req.body;
-  const findUserByEmail = await User.findOne({ email });
+  
+  // Normalize email to lowercase and trim whitespace
+  const normalizedEmail = email?.toLowerCase().trim();
+  const trimmedUsername = username?.trim();
+  
+  if (!normalizedEmail || !trimmedUsername) {
+    return res.status(400).json({ message: "email and username are required" });
+  }
+  
+  const findUserByEmail = await User.findOne({ email: normalizedEmail });
   if (findUserByEmail) {
     return res.status(400).json({ message: "email already in use" });
   }
-  const findUserByUsername = await User.findOne({ username });
+  const findUserByUsername = await User.findOne({ username: trimmedUsername });
   if (findUserByUsername) {
     return res.status(400).json({ message: "username already taken" });
   }
@@ -62,6 +71,10 @@ export const register = catchAsync(async (req: any, res: any) => {
     if (!userData.role || userData.role !== 'user') {
       userData.role = 'user';
     }
+    
+    // Use normalized email and trimmed username
+    userData.email = normalizedEmail;
+    userData.username = trimmedUsername;
     
     const user = await User.create({
       ...userData,
@@ -97,8 +110,17 @@ export const register = catchAsync(async (req: any, res: any) => {
 
 export const login = catchAsync(async (req: any, res: any) => {
   const { email, password } = req.body;
-  const user = await User.findOne({ email });
-  if (!user || !(await user.comparePassword(password))) {
+  
+  // Normalize email to lowercase and trim whitespace
+  const normalizedEmail = email?.toLowerCase().trim();
+  const trimmedPassword = password?.trim();
+  
+  if (!normalizedEmail || !trimmedPassword) {
+    return res.status(400).json({ message: "email and password are required" });
+  }
+  
+  const user = await User.findOne({ email: normalizedEmail });
+  if (!user || !(await user.comparePassword(trimmedPassword))) {
     return res.status(401).json({ message: "invalid credentials" });
   }
   if (!user.emailVerified) {
@@ -124,7 +146,7 @@ export const login = catchAsync(async (req: any, res: any) => {
   
     sendMail({
       subject: "Verify Email - Login Attempt",
-      to: email,
+      to: normalizedEmail,
       text,
       html,
       attachments: [{
@@ -153,8 +175,12 @@ export const login = catchAsync(async (req: any, res: any) => {
 
 export const verifyEmail = catchAsync(async (req: any, res: any) => {
   const { email, otp } = req.body;
+  const normalizedEmail = email?.toLowerCase().trim();
+  if (!normalizedEmail || !otp) {
+    return res.status(400).json({ message: "email and otp are required" });
+  }
   const user = await User.findOne({ 
-    email,
+    email: normalizedEmail,
     emailVerificationToken: otp,
     emailVerificationTokenExpires: { $gt: new Date() }
   });
@@ -170,7 +196,11 @@ export const verifyEmail = catchAsync(async (req: any, res: any) => {
 
 export const resendOtp = catchAsync(async (req: any, res: any) => {
   const { email } = req.body;
-  const user = await User.findOne({ email });
+  const normalizedEmail = email?.toLowerCase().trim();
+  if (!normalizedEmail) {
+    return res.status(400).json({ message: "email is required" });
+  }
+  const user = await User.findOne({ email: normalizedEmail });
   if (!user) {
     return res.status(404).json({ message: "user not found" });
   }
@@ -198,7 +228,7 @@ export const resendOtp = catchAsync(async (req: any, res: any) => {
 
   sendMail({
     subject: "Verify Email - New Code",
-    to: email,
+    to: normalizedEmail,
     text,
     html,
     attachments: [{
@@ -213,7 +243,11 @@ export const resendOtp = catchAsync(async (req: any, res: any) => {
 
 export const forgotPassword = catchAsync(async (req: any, res: any) => {
   const { email } = req.body;
-  const user = await User.findOne({ email });
+  const normalizedEmail = email?.toLowerCase().trim();
+  if (!normalizedEmail) {
+    return res.status(400).json({ message: "email is required" });
+  }
+  const user = await User.findOne({ email: normalizedEmail });
   if (!user) {
     return res.status(404).json({ message: "user not found" });
   }
@@ -232,7 +266,7 @@ export const forgotPassword = catchAsync(async (req: any, res: any) => {
   });
   sendMail({
     subject: "Reset Password",
-    to: email,
+    to: normalizedEmail,
     text,
     html,
     attachments: [{
@@ -246,8 +280,12 @@ export const forgotPassword = catchAsync(async (req: any, res: any) => {
 
 export const resetPassword = catchAsync(async (req: any, res: any) => {
   const { email, otp, newPassword } = req.body;
+  const normalizedEmail = email?.toLowerCase().trim();
+  if (!normalizedEmail || !otp || !newPassword) {
+    return res.status(400).json({ message: "email, otp, and newPassword are required" });
+  }
   const user = await User.findOne({ 
-    email,
+    email: normalizedEmail,
     passwordResetToken: otp,
     passwordResetTokenExpires: { $gt: new Date() }
   });

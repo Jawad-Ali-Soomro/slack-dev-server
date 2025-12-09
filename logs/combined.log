@@ -1054,3 +1054,89 @@
 2025-12-08 12:14:39 info: Token decoded successfully: ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.63"]}
 2025-12-08 12:14:39 info: Socket authentication successful: ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.63"]}
 2025-12-08 12:14:39 info: User Jawad Soomro connected with socket qOjqu5upSKKeRTAhAAAB ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.63"]}
+2025-12-09 14:48:02 warn: ENCRYPTION_KEY not set in environment. Using generated key (not recommended for production) ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 14:48:03 info: No Zoom credentials found. Using Jitsi Meet (no credentials required). ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 14:48:04 info: server requested ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 14:48:04 info: cors is running on undefined ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 14:48:04 error: Redis connection failed: Stream isn't writeable and enableOfflineQueue options is false ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 14:48:04 info: Redis connected successfully ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 14:48:04 info: connected database ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 14:50:41 warn: ENCRYPTION_KEY not set in environment. Using generated key (not recommended for production) ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 14:50:42 info: No Zoom credentials found. Using Jitsi Meet (no credentials required). ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 14:50:43 info: server requested ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 14:50:43 info: cors is running on undefined ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 14:50:43 error: Redis connection failed: Stream isn't writeable and enableOfflineQueue options is false ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 14:50:43 info: Redis connected successfully ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 14:50:43 info: connected database ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 14:50:48 warn: Rate limit exceeded for ip:::ffff:127.0.0.1 on POST /login ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 14:50:52 warn: Rate limit exceeded for ip:::ffff:127.0.0.1 on POST /login ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 14:51:04 warn: Rate limit exceeded for ip:::ffff:127.0.0.1 on POST /login ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 14:51:36 warn: Rate limit exceeded for ip:::ffff:127.0.0.1 on POST /login ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 14:53:04 warn: ENCRYPTION_KEY not set in environment. Using generated key (not recommended for production) ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 14:53:05 info: No Zoom credentials found. Using Jitsi Meet (no credentials required). ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 14:53:05 info: server requested ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 14:53:06 info: cors is running on undefined ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 14:53:06 error: Redis connection failed: Stream isn't writeable and enableOfflineQueue options is false ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 14:53:06 info: Redis connected successfully ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 14:53:06 info: connected database ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 14:56:50 warn: ENCRYPTION_KEY not set in environment. Using generated key (not recommended for production) ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 14:56:51 info: No Zoom credentials found. Using Jitsi Meet (no credentials required). ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 14:56:52 info: server requested ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 14:56:52 info: cors is running on undefined ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 14:56:52 error: Redis connection failed: Stream isn't writeable and enableOfflineQueue options is false ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 14:56:52 info: Redis connected successfully ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 14:56:52 info: connected database ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 14:56:58 warn: ENCRYPTION_KEY not set in environment. Using generated key (not recommended for production) ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 14:56:59 info: No Zoom credentials found. Using Jitsi Meet (no credentials required). ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 14:57:00 info: server requested ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 14:57:00 info: cors is running on undefined ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 14:57:00 error: Redis connection failed: Stream isn't writeable and enableOfflineQueue options is false ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 14:57:00 info: Redis connected successfully ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 14:57:00 info: connected database ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 14:59:00 warn: ENCRYPTION_KEY not set in environment. Using generated key (not recommended for production) ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 14:59:01 info: No Zoom credentials found. Using Jitsi Meet (no credentials required). ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 14:59:02 info: server requested ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 14:59:02 info: cors is running on undefined ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 14:59:02 error: Redis connection failed: Stream isn't writeable and enableOfflineQueue options is false ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 14:59:02 info: Redis connected successfully ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 14:59:02 info: connected database ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 14:59:07 warn: ENCRYPTION_KEY not set in environment. Using generated key (not recommended for production) ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 14:59:08 info: No Zoom credentials found. Using Jitsi Meet (no credentials required). ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 14:59:09 info: server requested ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 14:59:09 info: cors is running on undefined ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 14:59:09 error: Redis connection failed: Stream isn't writeable and enableOfflineQueue options is false ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 14:59:09 info: Redis connected successfully ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 14:59:09 info: connected database ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 14:59:20 warn: ENCRYPTION_KEY not set in environment. Using generated key (not recommended for production) ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 14:59:20 info: No Zoom credentials found. Using Jitsi Meet (no credentials required). ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 14:59:22 info: server requested ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 14:59:22 info: cors is running on undefined ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 14:59:22 error: Redis connection failed: Stream isn't writeable and enableOfflineQueue options is false ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 14:59:22 info: Redis connected successfully ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 14:59:22 info: connected database ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 14:59:26 warn: ENCRYPTION_KEY not set in environment. Using generated key (not recommended for production) ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 14:59:26 info: No Zoom credentials found. Using Jitsi Meet (no credentials required). ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 14:59:27 info: server requested ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 14:59:27 info: cors is running on undefined ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 14:59:27 error: Redis connection failed: Stream isn't writeable and enableOfflineQueue options is false ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 14:59:27 info: Redis connected successfully ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 14:59:27 info: connected database ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 14:59:30 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 14:59:30 info: Token decoded successfully: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 14:59:30 info: Socket authentication successful: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 14:59:30 info: User Jawad connected with socket RZS2Lf5tidO52YFgAAAB ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 15:00:37 info: Created Jitsi Meet room: new-meeting-completed-483e8c16 for topic: New Meeting Completed ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 15:00:44 info: Invalidated 2 cache keys matching pattern: user:6936f3a8c2a198320d921c3e:projects:* ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 15:00:44 info: Invalidated 2 cache keys matching pattern: meetings:* ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 15:00:47 warn: Redis FLUSHALL executed - entire cache cleared ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 15:00:47 info: User Jawad disconnected ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 15:01:03 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 15:01:03 info: Token decoded successfully: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 15:01:03 info: Socket authentication successful: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 15:01:03 info: User Fawad connected with socket rZ0AY21_0MzUN-VAAAAD ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 15:01:14 info: Invalidated 2 cache keys matching pattern: meetings:* ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 15:03:50 info: Invalidated 3 cache keys matching pattern: user:69378475e9283f721ea3478e:projects* ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 15:03:50 info: Invalidated all project caches for user: 69378475e9283f721ea3478e ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 15:03:50 info: Invalidated all project caches for user: 6936f3a8c2a198320d921c3e ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 15:03:50 info: Invalidated 1 cache keys matching pattern: user:*:teams* ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 15:04:56 info: Invalidated 1 cache keys matching pattern: user:69378475e9283f721ea3478e:notifications:* ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}

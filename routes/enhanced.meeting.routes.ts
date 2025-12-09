@@ -74,7 +74,7 @@ meetingRouter.post('/', authenticate, createMeeting)
  *                 description: Meeting agenda/description
  *               timezone:
  *                 type: string
- *                 description: Timezone (default: UTC)
+ *                 description: "Timezone (default: UTC)"
  *                 default: UTC
  *             required:
  *               - topic

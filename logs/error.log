@@ -133,3 +133,12 @@
 2025-12-07 10:37:37 error: Redis connection failed: Stream isn't writeable and enableOfflineQueue options is false ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.100.71"]}
 2025-12-08 12:14:21 error: Redis connection failed: Stream isn't writeable and enableOfflineQueue options is false ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.63"]}
 2025-12-08 12:14:31 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: mr-developer ~ network address: {"wlp2s0":["192.168.225.63"]}
+2025-12-09 14:48:04 error: Redis connection failed: Stream isn't writeable and enableOfflineQueue options is false ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 14:50:43 error: Redis connection failed: Stream isn't writeable and enableOfflineQueue options is false ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 14:53:06 error: Redis connection failed: Stream isn't writeable and enableOfflineQueue options is false ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 14:56:52 error: Redis connection failed: Stream isn't writeable and enableOfflineQueue options is false ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 14:57:00 error: Redis connection failed: Stream isn't writeable and enableOfflineQueue options is false ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 14:59:02 error: Redis connection failed: Stream isn't writeable and enableOfflineQueue options is false ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 14:59:09 error: Redis connection failed: Stream isn't writeable and enableOfflineQueue options is false ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 14:59:22 error: Redis connection failed: Stream isn't writeable and enableOfflineQueue options is false ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 14:59:27 error: Redis connection failed: Stream isn't writeable and enableOfflineQueue options is false ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
