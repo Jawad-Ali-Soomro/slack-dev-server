@@ -1138,3 +1138,34 @@
 2025-12-09 15:03:50 info: Invalidated all project caches for user: 6936f3a8c2a198320d921c3e ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
 2025-12-09 15:03:50 info: Invalidated 1 cache keys matching pattern: user:*:teams* ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
 2025-12-09 15:04:56 info: Invalidated 1 cache keys matching pattern: user:69378475e9283f721ea3478e:notifications:* ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 15:58:05 warn: ENCRYPTION_KEY not set in environment. Using generated key (not recommended for production) ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 15:58:05 info: No Zoom credentials found. Using Jitsi Meet (no credentials required). ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 15:58:06 info: server requested ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 15:58:06 info: cors is running on undefined ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 15:58:06 error: Redis connection failed: Stream isn't writeable and enableOfflineQueue options is false ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 15:58:06 info: Redis connected successfully ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 15:58:06 info: connected database ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:04:03 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:04:03 info: Token decoded successfully: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:04:03 info: Socket authentication successful: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:04:03 info: User Fawad connected with socket 0CchxmRlu20MjUHgAAAB ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:05:01 info: Invalidated 2 cache keys matching pattern: user:69378475e9283f721ea3478e:projects:* ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:05:01 info: Invalidated 2 cache keys matching pattern: tasks:* ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:05:17 warn: Redis FLUSHALL executed - entire cache cleared ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:05:17 info: User Fawad disconnected ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:05:29 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:05:29 info: Token decoded successfully: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:05:29 info: Socket authentication successful: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:05:29 info: User Jawad connected with socket 0eLBlruww8qd801XAAAD ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:05:37 info: Invalidated 1 cache keys matching pattern: user:6936f3a8c2a198320d921c3e:notifications:* ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:05:41 info: Invalidated 2 cache keys matching pattern: tasks:* ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:07:20 info: Invalidated 2 cache keys matching pattern: user:6936f3a8c2a198320d921c3e:projects:* ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:07:20 info: Invalidated 2 cache keys matching pattern: tasks:* ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:07:24 warn: Redis FLUSHALL executed - entire cache cleared ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:07:24 info: User Jawad disconnected ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:07:29 info: Socket authentication attempt: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:07:29 info: Token decoded successfully: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:07:29 info: Socket authentication successful: ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:07:29 info: User Fawad connected with socket vP43qYjBtdskgmwGAAAF ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:07:31 info: Invalidated 1 cache keys matching pattern: user:69378475e9283f721ea3478e:notifications:* ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-09 16:07:33 info: Invalidated 2 cache keys matching pattern: tasks:* ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
