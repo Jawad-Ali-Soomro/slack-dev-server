@@ -27,7 +27,7 @@ export const getChallenges = catchAsync(async (req: any, res: Response) => {
   }
 
   const challenges = await Challenge.find(filter)
-    .select('-solution') // Don't send solution in list
+    .select('-solution -answer') // Don't send solution and answer in list
     .populate('createdBy', 'username avatar')
     .sort({ createdAt: -1 })
     .skip(skip)
@@ -80,10 +80,13 @@ export const getChallengeById = catchAsync(async (req: any, res: Response) => {
     }
   );
 
-  // Don't send creator's solution unless user has completed it or is the creator
+  // Don't send creator's solution and answer unless user has completed it or is the creator
   const challengeData: any = challenge.toObject();
-  if (!isCompleted && challenge.createdBy._id.toString() !== userId.toString()) {
+  const isCreator = challenge.createdBy._id.toString() === userId.toString();
+  
+  if (!isCompleted && !isCreator) {
     delete challengeData.solution;
+    delete challengeData.answer; // Remove answer for security - users shouldn't see the expected answer
   }
 
   res.status(200).json({
@@ -140,10 +143,13 @@ export const createChallenge = catchAsync(async (req: any, res: Response) => {
   const populatedChallenge = await Challenge.findById(challenge._id)
     .populate('createdBy', 'username avatar');
 
+  // Only creator can see the answer they just created
+  const challengeData: any = populatedChallenge?.toObject();
+  
   res.status(201).json({
     success: true,
     message: 'Challenge created successfully',
-    challenge: populatedChallenge
+    challenge: challengeData // Creator can see answer since they created it
   });
 });
 
@@ -342,7 +348,7 @@ export const getMyChallenges = catchAsync(async (req: any, res: Response) => {
   const userId = req.user._id;
 
   const challenges = await Challenge.find({ completedBy: userId })
-    .select('-solution')
+    .select('-solution -answer') // Don't send solution and answer for security
     .populate('createdBy', 'username avatar')
     .sort({ createdAt: -1 });
 
