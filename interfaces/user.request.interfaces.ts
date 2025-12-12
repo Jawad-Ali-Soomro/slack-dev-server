@@ -42,6 +42,15 @@ export interface UserResponse {
   followersCount?: number;
   followingCount?: number;
   emailVerified?: boolean;
+  awards?: Array<{
+    awardId: string;
+    name: string;
+    icon: string;
+    description: string;
+    pointsRequired: number;
+    earnedAt: Date;
+  }>;
+  totalChallengePoints?: number;
   createdAt?: Date;
   updatedAt?: Date;
 }

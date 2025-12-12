@@ -30,6 +30,15 @@ export interface IUser extends Document {
   following?: mongoose.Types.ObjectId[];
   projects?: mongoose.Types.ObjectId[];
   teams?: mongoose.Types.ObjectId[];
+  awards?: Array<{
+    awardId: string;
+    name: string;
+    icon: string;
+    description: string;
+    pointsRequired: number;
+    earnedAt: Date;
+  }>;
+  totalChallengePoints?: number;
   createdAt?: Date;
   updatedAt?: Date;
 }

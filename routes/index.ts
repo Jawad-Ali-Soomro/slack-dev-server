@@ -15,6 +15,8 @@ import permissionsRouter from './permissions.routes'
 import healthRouter from './health.routes'
 import exploreRouter from './explore.routes'
 import noteRouter from './note.routes'
+import challengeRouter from './challenge.routes'
+import awardRouter from './award.routes'
 const router = express.Router()
 
 router.use("/auth", authRouter)
@@ -34,5 +36,7 @@ router.use("/explore", exploreRouter)
 router.use("/permissions", permissionsRouter)
 router.use("/health", healthRouter)
 router.use("/notes", noteRouter)
+router.use("/challenges", challengeRouter)
+router.use("/awards", awardRouter)
 
 export default router

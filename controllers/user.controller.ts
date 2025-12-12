@@ -21,7 +21,9 @@ const formatUserResponse = (user: IUser): UserResponse => ({
   isPrivate: user.isPrivate,
   emailVerified: user.emailVerified,
   followersCount: user.followers?.length || 0,
-  followingCount: user.following?.length || 0
+  followingCount: user.following?.length || 0,
+  awards: (user as any).awards || [],
+  totalChallengePoints: (user as any).totalChallengePoints || 0
 });
 
 const invalidateUserListingCaches = async () => {
@@ -60,16 +62,21 @@ export const getUserDetails = catchAsync(async (req: any, res: any) => {
   const { userId } = req.params;
   const currentUserId = req.user._id;
 
-  // Try to get from cache first
+  // Try to get from cache first (but skip cache for awards to get fresh data)
   const cacheKey = `user:${userId}:details`;
-  const cached = await redisService.get(cacheKey);
-  
-  if (cached) {
-    return res.status(200).json(cached);
-  }
+  // Skip cache to ensure fresh awards data
+  // const cached = await redisService.get(cacheKey);
+  // if (cached) {
+  //   return res.status(200).json(cached);
+  // }
 
-  // Get basic user details
+  // Get basic user details including awards
   const user = await User.findById(userId);
+  
+  // Log for debugging
+  console.log('User awards:', user?.awards);
+  console.log('User totalChallengePoints:', user?.totalChallengePoints);
+  console.log('User object:', user ? JSON.stringify(user.toObject(), null, 2) : 'null');
 
   if (!user) {
     return res.status(404).json({
@@ -176,13 +183,53 @@ export const getUserDetails = catchAsync(async (req: any, res: any) => {
     createdAt: meeting.createdAt
   }));
 
+  // Get awards from user object
+  const userAwards = user?.awards || [];
+  
+  // Always calculate points from challenges to ensure accuracy
+  const { Challenge } = await import('../models/challenge.model');
+  const allChallenges = await Challenge.find({ 'userSolutions.userId': userId });
+  let calculatedPoints = 0;
+  
+  allChallenges.forEach((ch: any) => {
+    const userSolution = ch.userSolutions?.find(
+      (sol: any) => {
+        const solUserId = typeof sol.userId === 'object' && sol.userId._id 
+          ? sol.userId._id.toString() 
+          : sol.userId.toString();
+        return solUserId === userId.toString();
+      }
+    );
+    if (userSolution && userSolution.isCorrect) {
+      calculatedPoints += userSolution.pointsEarned || 0;
+    }
+  });
+  
+  // Use calculated points (always accurate)
+  const userPoints = calculatedPoints;
+  
+  // Update user's totalChallengePoints if calculated value is different
+  if (calculatedPoints !== (user?.totalChallengePoints || 0)) {
+    await User.findByIdAndUpdate(userId, { totalChallengePoints: calculatedPoints });
+  }
+  
+  console.log('Raw user awards:', userAwards);
+  console.log('Stored user points:', user?.totalChallengePoints);
+  console.log('Calculated user points:', calculatedPoints);
+  console.log('Final user points to return:', userPoints);
+  
   const userResponse = {
-    ...formatUserResponse(user),
+    ...formatUserResponse(user as any),
     projects: formattedProjects,
     teams: formattedTeams,
     tasks: formattedTasks,
-    meetings: formattedMeetings
+    meetings: formattedMeetings,
+    awards: userAwards,
+    totalChallengePoints: userPoints
   };
+  
+  console.log('Final userResponse awards:', userResponse.awards);
+  console.log('Final userResponse totalChallengePoints:', userResponse.totalChallengePoints);
 
   const response = {
     success: true,
@@ -388,7 +435,7 @@ export const getUserById = catchAsync(async (req: any, res: any) => {
   }
 
   const user = await User.findById(userId)
-    .select('username email avatar role bio userLocation website socialLinks dateOfBirth phone isPrivate emailVerified');
+    .select('username email avatar role bio userLocation website socialLinks dateOfBirth phone isPrivate emailVerified awards totalChallengePoints');
   
   if (!user) {
     return res.status(404).json({ message: "user not found" });

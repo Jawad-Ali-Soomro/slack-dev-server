@@ -8,6 +8,6 @@
     "strict": true,
     "skipLibCheck": true
   },
-  "include": ["index.ts", "helpers/**/*", "config/**/*", "routes/**/*", "services/**/*"],
+  "include": ["index.ts", "helpers/**/*", "config/**/*", "routes/**/*", "services/**/*", "scripts/**/*"],
   "exclude": ["node_modules"]
 }
