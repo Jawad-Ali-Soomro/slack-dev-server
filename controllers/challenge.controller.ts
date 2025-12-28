@@ -251,6 +251,12 @@ export const submitSolution = catchAsync(async (req: any, res: Response) => {
     return res.status(404).json({ message: 'Challenge not found' });
   }
 
+  // Check if user is the creator - they cannot solve their own challenge
+  const isCreator = challenge.createdBy.toString() === userId.toString();
+  if (isCreator) {
+    return res.status(403).json({ message: 'You cannot solve challenges that you created yourself' });
+  }
+
   // Check if already completed
   const isAlreadyCompleted = challenge.completedBy?.some(
     (userIdObj: any) => {

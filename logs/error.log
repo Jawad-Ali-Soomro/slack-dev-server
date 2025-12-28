@@ -1416,3 +1416,12 @@
 2025-12-12 19:56:29 error: Redis connection failed: Stream isn't writeable and enableOfflineQueue options is false ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.100.173"]}
 2025-12-12 19:56:35 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.100.173"]}
 2025-12-12 20:16:20 error: Redis connection failed: Stream isn't writeable and enableOfflineQueue options is false ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.100.173"]}
+2025-12-14 20:40:12 error: Redis connection failed: Stream isn't writeable and enableOfflineQueue options is false ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.100.173"]}
+2025-12-14 20:40:29 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.100.173"]}
+2025-12-14 20:49:51 error: Redis connection failed: Stream isn't writeable and enableOfflineQueue options is false ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.100.173"]}
+2025-12-14 20:51:11 error: Redis connection failed: Stream isn't writeable and enableOfflineQueue options is false ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.100.173"]}
+2025-12-14 20:53:18 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.100.173"]}
+2025-12-15 12:41:49 error: Redis connection failed: Stream isn't writeable and enableOfflineQueue options is false ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-15 12:43:35 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
+2025-12-28 20:48:05 error: Redis connection failed: Stream isn't writeable and enableOfflineQueue options is false ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.100.173"]}
+2025-12-28 20:48:20 error: Decryption error: Invalid encrypted text format ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.100.173"]}
