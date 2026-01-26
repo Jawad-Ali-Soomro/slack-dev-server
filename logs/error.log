@@ -1425,3 +1425,73 @@
 2025-12-15 12:43:35 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.1.105"]}
 2025-12-28 20:48:05 error: Redis connection failed: Stream isn't writeable and enableOfflineQueue options is false ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.100.173"]}
 2025-12-28 20:48:20 error: Decryption error: Invalid encrypted text format ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.100.173"]}
+2026-01-25 15:16:06 error: Redis connection failed: Stream isn't writeable and enableOfflineQueue options is false ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:16:11 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:16:11 error: Socket authentication error: jwt malformed ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:16:16 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:16:16 error: Socket authentication error: jwt malformed ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:16:21 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:16:21 error: Socket authentication error: jwt malformed ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:16:26 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:16:26 error: Socket authentication error: jwt malformed ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:16:31 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:16:31 error: Socket authentication error: jwt malformed ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:16:36 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:16:36 error: Socket authentication error: jwt malformed ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:16:41 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:16:41 error: Socket authentication error: jwt malformed ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:16:46 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:16:46 error: Socket authentication error: jwt malformed ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:16:51 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:16:51 error: Socket authentication error: jwt malformed ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:16:56 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:16:56 error: Socket authentication error: jwt malformed ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:17:01 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:17:01 error: Socket authentication error: jwt malformed ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:17:06 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:17:06 error: Socket authentication error: jwt malformed ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:17:11 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:17:11 error: Socket authentication error: jwt malformed ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:17:16 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:17:16 error: Socket authentication error: jwt malformed ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:17:21 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:17:21 error: Socket authentication error: jwt malformed ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:17:26 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:17:26 error: Socket authentication error: jwt malformed ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:17:36 error: Redis connection failed: Stream isn't writeable and enableOfflineQueue options is false ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:17:38 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:17:38 error: Socket authentication error: jwt malformed ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:17:39 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:17:39 error: Socket authentication error: jwt malformed ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:17:43 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:17:43 error: Socket authentication error: jwt malformed ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:17:50 error: Redis connection failed: Stream isn't writeable and enableOfflineQueue options is false ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:17:55 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:17:55 error: Socket authentication error: jwt malformed ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:18:01 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:18:01 error: Socket authentication error: jwt malformed ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:18:09 error: Redis connection failed: Stream isn't writeable and enableOfflineQueue options is false ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:18:10 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:18:10 error: Socket authentication error: jwt malformed ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:18:12 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:18:12 error: Socket authentication error: jwt malformed ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:18:13 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:18:13 error: Socket authentication error: jwt malformed ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:18:15 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:18:15 error: Socket authentication error: jwt malformed ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:18:17 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:18:17 error: Socket authentication error: jwt malformed ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:18:17 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:18:17 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:18:18 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:18:18 error: Socket authentication error: jwt malformed ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:18:19 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:22:24 error: Redis connection failed: Stream isn't writeable and enableOfflineQueue options is false ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:22:33 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:22:33 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:22:39 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:28:42 error: Redis connection failed: Stream isn't writeable and enableOfflineQueue options is false ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 18:13:18 error: Redis connection failed: Stream isn't writeable and enableOfflineQueue options is false ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 18:13:32 error: Redis connection failed: Stream isn't writeable and enableOfflineQueue options is false ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-26 11:35:23 error: Redis connection failed: Stream isn't writeable and enableOfflineQueue options is false ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.1.106"]}
+2026-01-26 11:46:19 error: Redis connection failed: Stream isn't writeable and enableOfflineQueue options is false ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.1.106"]}

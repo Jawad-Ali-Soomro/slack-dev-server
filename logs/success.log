@@ -4530,3 +4530,299 @@
 2025-12-28 20:48:25 info: User Jawad connected with socket MmYzpiarLyHjPRjHAAAB ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.100.173"]}
 2025-12-28 20:49:36 info: User 6936f3a8c2a198320d921c3e joined chat 6937bd57977ed2795ec86395 ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.100.173"]}
 2025-12-28 20:49:36 info: Invalidated 1 cache keys matching pattern: chat:6937bd57977ed2795ec86395:messages:* ~ host: jawad-HP-Pavilion-Laptop-14t-dv000 ~ network address: {"wlp0s20f3":["192.168.100.173"]}
+2026-01-25 15:16:04 warn: ENCRYPTION_KEY not set in environment. Using generated key (not recommended for production) ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:16:05 info: No Zoom credentials found. Using Jitsi Meet (no credentials required). ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:16:06 info: server requested ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:16:06 info: cors is running on undefined ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:16:06 error: Redis connection failed: Stream isn't writeable and enableOfflineQueue options is false ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:16:06 info: Redis connected successfully ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:16:06 info: connected database ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:16:11 info: Socket authentication attempt: ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:16:11 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:16:11 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:16:11 error: Socket authentication error: jwt malformed ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:16:16 info: Socket authentication attempt: ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:16:16 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:16:16 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:16:16 error: Socket authentication error: jwt malformed ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:16:21 info: Socket authentication attempt: ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:16:21 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:16:21 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:16:21 error: Socket authentication error: jwt malformed ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:16:26 info: Socket authentication attempt: ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:16:26 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:16:26 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:16:26 error: Socket authentication error: jwt malformed ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:16:31 info: Socket authentication attempt: ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:16:31 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:16:31 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:16:31 error: Socket authentication error: jwt malformed ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:16:36 info: Socket authentication attempt: ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:16:36 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:16:36 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:16:36 error: Socket authentication error: jwt malformed ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:16:41 info: Socket authentication attempt: ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:16:41 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:16:41 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:16:41 error: Socket authentication error: jwt malformed ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:16:46 info: Socket authentication attempt: ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:16:46 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:16:46 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:16:46 error: Socket authentication error: jwt malformed ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:16:51 info: Socket authentication attempt: ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:16:51 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:16:51 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:16:51 error: Socket authentication error: jwt malformed ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:16:56 info: Socket authentication attempt: ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:16:56 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:16:56 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:16:56 error: Socket authentication error: jwt malformed ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:17:01 info: Socket authentication attempt: ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:17:01 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:17:01 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:17:01 error: Socket authentication error: jwt malformed ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:17:06 info: Socket authentication attempt: ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:17:06 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:17:06 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:17:06 error: Socket authentication error: jwt malformed ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:17:11 info: Socket authentication attempt: ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:17:11 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:17:11 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:17:11 error: Socket authentication error: jwt malformed ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:17:16 info: Socket authentication attempt: ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:17:16 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:17:16 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:17:16 error: Socket authentication error: jwt malformed ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:17:21 info: Socket authentication attempt: ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:17:21 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:17:21 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:17:21 error: Socket authentication error: jwt malformed ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:17:26 info: Socket authentication attempt: ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:17:26 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:17:26 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:17:26 error: Socket authentication error: jwt malformed ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:17:34 warn: ENCRYPTION_KEY not set in environment. Using generated key (not recommended for production) ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:17:35 info: No Zoom credentials found. Using Jitsi Meet (no credentials required). ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:17:36 info: server requested ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:17:36 info: cors is running on undefined ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:17:36 error: Redis connection failed: Stream isn't writeable and enableOfflineQueue options is false ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:17:36 info: Redis connected successfully ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:17:36 info: connected database ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:17:38 info: Socket authentication attempt: ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:17:38 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:17:38 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:17:38 error: Socket authentication error: jwt malformed ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:17:39 info: Socket authentication attempt: ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:17:39 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:17:39 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:17:39 error: Socket authentication error: jwt malformed ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:17:43 info: Socket authentication attempt: ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:17:43 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:17:43 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:17:43 error: Socket authentication error: jwt malformed ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:17:48 warn: ENCRYPTION_KEY not set in environment. Using generated key (not recommended for production) ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:17:49 info: No Zoom credentials found. Using Jitsi Meet (no credentials required). ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:17:50 info: server requested ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:17:50 info: cors is running on undefined ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:17:50 error: Redis connection failed: Stream isn't writeable and enableOfflineQueue options is false ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:17:50 info: Redis connected successfully ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:17:50 info: connected database ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:17:55 info: Socket authentication attempt: ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:17:55 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:17:55 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:17:55 error: Socket authentication error: jwt malformed ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:18:01 info: Socket authentication attempt: ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:18:01 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:18:01 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:18:01 error: Socket authentication error: jwt malformed ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:18:07 warn: ENCRYPTION_KEY not set in environment. Using generated key (not recommended for production) ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:18:08 info: No Zoom credentials found. Using Jitsi Meet (no credentials required). ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:18:09 info: server requested ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:18:09 info: cors is running on undefined ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:18:09 error: Redis connection failed: Stream isn't writeable and enableOfflineQueue options is false ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:18:09 info: Redis connected successfully ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:18:09 info: connected database ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:18:10 info: Socket authentication attempt: ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:18:10 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:18:10 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:18:10 error: Socket authentication error: jwt malformed ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:18:12 info: Socket authentication attempt: ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:18:12 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:18:12 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:18:12 error: Socket authentication error: jwt malformed ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:18:13 info: Socket authentication attempt: ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:18:13 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:18:13 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:18:13 error: Socket authentication error: jwt malformed ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:18:15 info: Socket authentication attempt: ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:18:15 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:18:15 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:18:15 error: Socket authentication error: jwt malformed ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:18:17 info: Socket authentication attempt: ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:18:17 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:18:17 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:18:17 error: Socket authentication error: jwt malformed ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:18:17 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:18:17 warn: Token decryption failed: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:18:17 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:18:17 warn: Token decryption failed: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:18:18 info: Socket authentication attempt: ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:18:18 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:18:18 warn: Socket token decryption failed, attempting raw token verification: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:18:18 error: Socket authentication error: jwt malformed ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:18:19 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:18:19 warn: Token decryption failed: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:18:27 info: Socket authentication attempt: ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:18:27 info: Token decoded successfully: ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:18:27 info: Socket authentication successful: ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:18:27 info: User Jawad connected with socket mAH2iqBZYtzSxHN-AAAN ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:19:07 info: User Jawad disconnected ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:19:08 info: Socket authentication attempt: ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:19:08 info: Token decoded successfully: ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:19:08 info: Socket authentication successful: ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:19:08 info: User Jawad connected with socket O1LEYtnuvQoG88l5AAAP ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:22:23 info: No Zoom credentials found. Using Jitsi Meet (no credentials required). ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:22:24 info: server requested ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:22:24 info: cors is running on undefined ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:22:24 error: Redis connection failed: Stream isn't writeable and enableOfflineQueue options is false ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:22:24 info: Redis connected successfully ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:22:24 info: connected database ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:22:33 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:22:33 warn: Token decryption failed: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:22:33 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:22:33 warn: Token decryption failed: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:22:39 error: Decryption error: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:22:39 warn: Token decryption failed: error:1C800064:Provider routines::bad decrypt ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:22:58 info: Invalidated cache pattern: admin:users:* ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:22:58 info: Invalidated cache pattern: cache:*users* ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:22:58 info: Invalidated cache pattern: search:users:* ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:23:52 info: Socket authentication attempt: ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:23:52 info: Token decoded successfully: ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:23:52 info: Socket authentication successful: ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:23:52 info: User Fawad Soomro connected with socket h2jRMWlMIuRIblTEAAAB ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:24:02 info: Invalidated 1 cache keys matching pattern: user:6975ef02be1aaac158adaaca:friendRequests:* ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:24:02 info: User Fawad Soomro disconnected ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:24:02 info: Socket authentication attempt: ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:24:02 info: Token decoded successfully: ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:24:02 info: Socket authentication successful: ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:24:02 info: User Fawad Soomro connected with socket Fjdz9_wlv4zPI6_MAAAD ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:24:05 warn: Redis FLUSHALL executed - entire cache cleared ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:24:05 info: User Fawad Soomro disconnected ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:24:12 info: Socket authentication attempt: ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:24:12 info: Token decoded successfully: ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:24:12 info: Socket authentication successful: ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:24:12 info: User Jawad connected with socket aGykpSTNWSTYw9TxAAAF ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:24:21 info: Invalidated 1 cache keys matching pattern: user:6975ebca251926bd8c50d3a6:friendRequests:* ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:24:33 warn: Redis FLUSHALL executed - entire cache cleared ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:24:33 info: User Jawad disconnected ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:25:05 info: Socket authentication attempt: ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:25:05 info: Token decoded successfully: ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:25:05 info: Socket authentication successful: ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:25:05 info: User Jawad connected with socket alv0kvP3bEtdHAbrAAAH ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:25:23 info: User Jawad disconnected ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:25:24 info: Socket authentication attempt: ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:25:24 info: Token decoded successfully: ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:25:24 info: Socket authentication successful: ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:25:24 info: User Jawad connected with socket urn_bXCywx762NnLAAAJ ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:25:53 info: Invalidated 1 cache keys matching pattern: user:6975ebca251926bd8c50d3a6:teams* ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:25:53 info: Invalidated all team caches for user: 6975ebca251926bd8c50d3a6 ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:25:59 info: Invalidated all team caches for user: 6975ebca251926bd8c50d3a6 ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:25:59 info: Invalidated all team caches for user: 6975ef02be1aaac158adaaca ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:25:59 info: Invalidated all team caches for user: 6975ebca251926bd8c50d3a6 ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:25:59 info: Invalidated all team caches for user: 6975ef02be1aaac158adaaca ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:26:07 info: User Jawad disconnected ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:26:07 info: Socket authentication attempt: ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:26:07 info: Token decoded successfully: ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:26:07 info: Socket authentication successful: ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:26:07 info: User Jawad connected with socket XkrOQ9LQVO6sxfluAAAL ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:26:36 info: User Jawad disconnected ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:26:36 info: Socket authentication attempt: ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:26:36 info: Token decoded successfully: ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:26:36 info: Socket authentication successful: ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:26:36 info: User Jawad connected with socket x4X6r9KYQDEgf0iJAAAN ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:27:01 info: User Jawad disconnected ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:27:02 info: Socket authentication attempt: ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:27:02 info: Token decoded successfully: ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:27:02 info: Socket authentication successful: ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:27:02 info: User Jawad connected with socket iXBju5Ja9hleIEDgAAAP ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:28:40 info: No Zoom credentials found. Using Jitsi Meet (no credentials required). ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:28:42 info: server requested ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:28:42 info: cors is running on undefined ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:28:42 error: Redis connection failed: Stream isn't writeable and enableOfflineQueue options is false ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:28:42 info: Redis connected successfully ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:28:42 info: connected database ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:28:42 info: Socket authentication attempt: ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:28:42 info: Token decoded successfully: ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:28:42 info: Socket authentication successful: ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 15:28:42 info: User Jawad connected with socket -INhVEITJ_ix6uARAAAB ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 16:25:00 info: Invalidated 1 cache keys matching pattern: tasks:* ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 16:25:57 info: Created Jitsi Meet room: meeting-for-task-e62a11c1 for topic: Meeting For Task! ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 16:26:02 info: Invalidated 2 cache keys matching pattern: meetings:* ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 16:28:56 info: Invalidated 2 cache keys matching pattern: tasks:* ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 17:57:31 warn: Redis FLUSHALL executed - entire cache cleared ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 17:57:31 info: User Jawad disconnected ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 17:57:35 info: Socket authentication attempt: ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 17:57:35 info: Token decoded successfully: ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 17:57:35 info: Socket authentication successful: ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 17:57:35 info: User Fawad Soomro connected with socket S_0aqEAwVNJfq5zgAAAD ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 17:57:37 info: Invalidated 1 cache keys matching pattern: user:6975ef02be1aaac158adaaca:notifications:* ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 17:57:37 info: Invalidated 1 cache keys matching pattern: user:6975ef02be1aaac158adaaca:notifications:* ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 18:11:59 warn: Redis FLUSHALL executed - entire cache cleared ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 18:11:59 info: User Fawad Soomro disconnected ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 18:12:03 info: Socket authentication attempt: ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 18:12:03 info: Token decoded successfully: ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 18:12:03 info: Socket authentication successful: ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 18:12:03 info: User Jawad connected with socket fA8gndTku3jVGiDUAAAF ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 18:12:23 info: User Jawad disconnected ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 18:13:16 info: No Zoom credentials found. Using Jitsi Meet (no credentials required). ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 18:13:18 info: server requested ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 18:13:18 info: cors is running on undefined ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 18:13:18 error: Redis connection failed: Stream isn't writeable and enableOfflineQueue options is false ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 18:13:18 info: Redis connected successfully ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 18:13:18 info: connected database ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 18:13:30 info: No Zoom credentials found. Using Jitsi Meet (no credentials required). ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 18:13:32 info: server requested ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 18:13:32 info: cors is running on undefined ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 18:13:32 error: Redis connection failed: Stream isn't writeable and enableOfflineQueue options is false ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 18:13:32 info: Redis connected successfully ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-25 18:13:32 info: connected database ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.100.184"]}
+2026-01-26 11:35:22 info: No Zoom credentials found. Using Jitsi Meet (no credentials required). ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.1.106"]}
+2026-01-26 11:35:23 info: server requested ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.1.106"]}
+2026-01-26 11:35:23 info: cors is running on undefined ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.1.106"]}
+2026-01-26 11:35:23 error: Redis connection failed: Stream isn't writeable and enableOfflineQueue options is false ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.1.106"]}
+2026-01-26 11:35:23 info: Redis connected successfully ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.1.106"]}
+2026-01-26 11:35:23 info: connected database ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.1.106"]}
+2026-01-26 11:36:18 info: Socket authentication attempt: ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.1.106"]}
+2026-01-26 11:36:18 info: Token decoded successfully: ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.1.106"]}
+2026-01-26 11:36:18 info: Socket authentication successful: ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.1.106"]}
+2026-01-26 11:36:18 info: User Jawad connected with socket MvGlHkkiMRYi-OISAAAB ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.1.106"]}
+2026-01-26 11:37:39 warn: Redis FLUSHALL executed - entire cache cleared ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.1.106"]}
+2026-01-26 11:37:39 info: User Jawad disconnected ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.1.106"]}
+2026-01-26 11:37:43 info: Socket authentication attempt: ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.1.106"]}
+2026-01-26 11:37:43 info: Token decoded successfully: ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.1.106"]}
+2026-01-26 11:37:43 info: Socket authentication successful: ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.1.106"]}
+2026-01-26 11:37:43 info: User Jawad connected with socket S3WT60x4Kf3w-677AAAD ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.1.106"]}
+2026-01-26 11:38:35 info: User Jawad disconnected ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.1.106"]}
+2026-01-26 11:38:35 info: Socket authentication attempt: ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.1.106"]}
+2026-01-26 11:38:35 info: Token decoded successfully: ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.1.106"]}
+2026-01-26 11:38:36 info: Socket authentication successful: ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.1.106"]}
+2026-01-26 11:38:36 info: User Jawad connected with socket xkpqXGrckJxUH7vnAAAF ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.1.106"]}
+2026-01-26 11:40:13 info: Invalidated 1 cache keys matching pattern: user:6975ebca251926bd8c50d3a6:notifications:* ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.1.106"]}
+2026-01-26 11:46:19 info: No Zoom credentials found. Using Jitsi Meet (no credentials required). ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.1.106"]}
+2026-01-26 11:46:19 info: server requested ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.1.106"]}
+2026-01-26 11:46:19 info: cors is running on undefined ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.1.106"]}
+2026-01-26 11:46:19 error: Redis connection failed: Stream isn't writeable and enableOfflineQueue options is false ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.1.106"]}
+2026-01-26 11:46:19 info: Redis connected successfully ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.1.106"]}
+2026-01-26 11:46:19 info: connected database ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.1.106"]}
+2026-01-26 11:46:29 info: Socket authentication attempt: ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.1.106"]}
+2026-01-26 11:46:29 info: Token decoded successfully: ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.1.106"]}
+2026-01-26 11:46:29 info: Socket authentication successful: ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.1.106"]}
+2026-01-26 11:46:29 info: User Jawad connected with socket B5SK_oMe4L4wcGoyAAAB ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.1.106"]}
+2026-01-26 12:09:26 warn: Redis FLUSHALL executed - entire cache cleared ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.1.106"]}
+2026-01-26 12:09:26 info: User Jawad disconnected ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.1.106"]}
+2026-01-26 12:09:29 info: Socket authentication attempt: ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.1.106"]}
+2026-01-26 12:09:29 info: Token decoded successfully: ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.1.106"]}
+2026-01-26 12:09:29 info: Socket authentication successful: ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.1.106"]}
+2026-01-26 12:09:29 info: User Fawad Soomro connected with socket sr6MZVZ2WsNfiL1oAAAD ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.1.106"]}
+2026-01-26 12:10:05 warn: Redis FLUSHALL executed - entire cache cleared ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.1.106"]}
+2026-01-26 12:10:05 info: User Fawad Soomro disconnected ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.1.106"]}

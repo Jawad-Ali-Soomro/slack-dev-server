@@ -61,21 +61,9 @@ export const getProfile = catchAsync(async (req: any, res: any) => {
 export const getUserDetails = catchAsync(async (req: any, res: any) => {
   const { userId } = req.params;
   const currentUserId = req.user._id;
-
-  // Try to get from cache first (but skip cache for awards to get fresh data)
   const cacheKey = `user:${userId}:details`;
-  // Skip cache to ensure fresh awards data
-  // const cached = await redisService.get(cacheKey);
-  // if (cached) {
-  //   return res.status(200).json(cached);
-  // }
-
-  // Get basic user details including awards
   const user = await User.findById(userId);
   
-  // Log for debugging
-  console.log('User awards:', user?.awards);
-  console.log('User totalChallengePoints:', user?.totalChallengePoints);
   console.log('User object:', user ? JSON.stringify(user.toObject(), null, 2) : 'null');
 
   if (!user) {
@@ -213,10 +201,6 @@ export const getUserDetails = catchAsync(async (req: any, res: any) => {
     await User.findByIdAndUpdate(userId, { totalChallengePoints: calculatedPoints });
   }
   
-  console.log('Raw user awards:', userAwards);
-  console.log('Stored user points:', user?.totalChallengePoints);
-  console.log('Calculated user points:', calculatedPoints);
-  console.log('Final user points to return:', userPoints);
   
   const userResponse = {
     ...formatUserResponse(user as any),

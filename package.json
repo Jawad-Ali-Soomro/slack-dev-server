@@ -5,7 +5,7 @@
   "main": "index.ts",
   "scripts": {
     "start": "tsc && node dist/index.js",
-    "dev": "nodemon index.ts",
+    "dev": "tsx --watch index.ts",
     "build": "tsc",
     "vercel-build": "echo 'Building for Vercel...'",
     "seed:challenges": "ts-node scripts/seedChallenges.ts"
@@ -31,6 +31,7 @@
     "swagger": "^0.7.5",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",
+    "tsx": "^4.21.0",
     "winston": "^3.17.0"
   },
   "devDependencies": {

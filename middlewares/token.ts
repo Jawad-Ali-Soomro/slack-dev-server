@@ -3,27 +3,20 @@ import crypto from 'crypto';
 import { User } from '../models';
 import { logger } from '../helpers';
 
-// Encryption keys - should be in environment variables
-// AES-256 requires a 32-byte key (64 hex characters)
 function getEncryptionKey(): Buffer {
   let key = process.env.ENCRYPTION_KEY;
   
   if (!key) {
-    // Generate a random key if not provided (for development only)
     key = crypto.randomBytes(32).toString('hex');
     logger.warn('ENCRYPTION_KEY not set in environment. Using generated key (not recommended for production)');
   }
   
-  // Ensure key is exactly 64 hex characters (32 bytes)
   if (key.length < 64) {
-    // Pad with zeros if too short
     key = key.padEnd(64, '0');
   } else if (key.length > 64) {
-    // Truncate if too long
     key = key.slice(0, 64);
   }
   
-  // Validate hex format
   if (!/^[0-9a-fA-F]+$/.test(key)) {
     throw new Error('ENCRYPTION_KEY must be a valid hex string');
   }
@@ -34,9 +27,6 @@ function getEncryptionKey(): Buffer {
 const ENCRYPTION_KEY_BUFFER = getEncryptionKey();
 const IV_LENGTH = 16; // For AES, this is always 16
 
-/**
- * Encrypt text using AES-256-CBC
- */
 function encrypt(text: string): string {
   try {
     const iv = crypto.randomBytes(IV_LENGTH);
@@ -54,9 +44,6 @@ function encrypt(text: string): string {
   }
 }
 
-/**
- * Decrypt text using AES-256-CBC
- */
 export function decrypt(text: string): string {
   try {
     const textParts = text.split(':');
@@ -79,11 +66,6 @@ export function decrypt(text: string): string {
   }
 }
 
-/**
- * Generate token with double encryption
- * First: JWT token
- * Second: AES encryption of JWT token
- */
 export const generateToken = (
   payload: string | object | Buffer,
   expiresIn: string | number = '1d'
@@ -91,13 +73,11 @@ export const generateToken = (
   try {
     const secret: Secret = process.env.JWT_SECRET || 'default_secret';
     
-    // Step 1: Generate JWT token
     const signOptions: SignOptions = { 
       expiresIn: expiresIn as any
     };
     const jwtToken = jwt.sign(payload as object, secret, signOptions);
     
-    // Step 2: Encrypt the JWT token with AES-256-CBC
     const encryptedToken = encrypt(jwtToken);
     
     return encryptedToken;
@@ -107,11 +87,6 @@ export const generateToken = (
   }
 };
 
-/**
- * Authenticate middleware with double decryption
- * First: Decrypt AES encryption
- * Second: Verify JWT token
- */
 export const authenticate = async (req: any, res: any, next: any) => {
   try {
     const encryptedToken = req.header('Authorization')?.replace('Bearer ', '');
@@ -123,7 +98,6 @@ export const authenticate = async (req: any, res: any, next: any) => {
       });
     }
 
-    // Step 1: Decrypt the token
     let jwtToken: string;
     try {
       jwtToken = decrypt(encryptedToken);
@@ -135,10 +109,8 @@ export const authenticate = async (req: any, res: any, next: any) => {
       });
     }
 
-    // Step 2: Verify JWT token
     const decoded: any = jwt.verify(jwtToken, process.env.JWT_SECRET || 'default_secret');
     
-    // Step 3: Verify user exists
     const user = await User.findById(decoded.id);
     
     if (!user) {
@@ -148,7 +120,6 @@ export const authenticate = async (req: any, res: any, next: any) => {
       });
     }
 
-    // Attach user to request
     req.user = user;
     next();
   } catch (error: any) {
