@@ -1,4 +1,4 @@
-// logger.ts
+
 import winston from "winston";
 import path from "path";
 import fs from "fs";
@@ -11,13 +11,11 @@ dotenv.config({ path: "./config/.env" });
 
 const LOG_ENABLED = process.env.LOG_ENABLED === "true";
 
-// --- LOG DIRECTORY ---
 const logDirectory = path.join(__dirname, "../logs");
 if (LOG_ENABLED && !fs.existsSync(logDirectory)) {
   fs.mkdirSync(logDirectory);
 }
 
-// --- NETWORK INFO ---
 function getNetworkInfo() {
   const nets = networkInterfaces();
   const results: { [name: string]: string[] } = {};
@@ -36,7 +34,6 @@ function getNetworkInfo() {
 const hostname = os.hostname();
 const networkInfo = getNetworkInfo();
 
-// --- CUSTOM COLORS FOR WINSTON LEVELS ---
 const customColors = {
   error: "red",
   warn: "yellow",
@@ -48,7 +45,6 @@ const customColors = {
 
 winston.addColors(customColors);
 
-// --- MULTI-LINE COLORFUL FORMAT ---
 const consoleFormat = winston.format.printf((info) => {
   const timestamp = colors.gray(String(info.timestamp));
   const level =
@@ -110,7 +106,6 @@ export const logger = winston.createLogger({
   transports,
 });
 
-// --- EXPRESS REQUEST LOGGER ---
 import { Request, Response, NextFunction } from "express";
 
 export const requestLogger = (req: Request, res: Response, next: NextFunction) => {

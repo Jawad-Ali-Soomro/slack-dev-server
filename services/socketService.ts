@@ -88,7 +88,6 @@ class SocketService {
         });
       });
 
-      // Code Collaboration Events
       socket.on('join_session', (data: { sessionId: string }) => {
         socket.join(`session:${data.sessionId}`);
         logger.info(`User ${user.id} joined code session ${data.sessionId}`);
@@ -171,20 +170,17 @@ class SocketService {
         return next(new Error('Authentication error: No token provided'));
       }
 
-      // Step 1: Decrypt the token (fall back to raw token if already plain JWT)
       let jwtToken: string = encryptedToken;
       try {
         jwtToken = decrypt(encryptedToken);
       } catch (decryptError) {
         logger.warn('Socket token decryption failed, attempting raw token verification:', decryptError);
-        // Fallback: if token already plain JWT (legacy clients), continue with original token
+
       }
 
-      // Step 2: Verify JWT token
       const decoded = jwt.verify(jwtToken, process.env.JWT_SECRET || 'default_secret') as any;
       logger.info('Token decoded successfully:', { userId: decoded.id });
-      
-      // Step 3: Verify user exists
+
       const user = await User.findById(decoded.id).select('username email avatar');
       
       if (!user) {
@@ -203,8 +199,7 @@ class SocketService {
       next();
     } catch (error: any) {
       logger.error('Socket authentication error:', error);
-      
-      // Handle specific JWT errors
+
       if (error.name === 'TokenExpiredError') {
         return next(new Error('Authentication error: Token expired'));
       }
@@ -264,7 +259,6 @@ class SocketService {
     this.emitToChat(chatId, 'chat_updated', chat);
   }
 
-  // Code Collaboration Methods
   public emitToSession(sessionId: string, event: string, data: any): void {
     this.io.to(`session:${sessionId}`).emit(event, data);
   }

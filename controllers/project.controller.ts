@@ -21,7 +21,6 @@ import {
 import path from 'path'
 import fs from 'fs'
 
-// Helper function to format project response
 const formatProjectResponse = (project: any): ProjectResponse => ({
   id: project._id,
   name: project.name,
@@ -46,7 +45,6 @@ const formatProjectResponse = (project: any): ProjectResponse => ({
   updatedAt: project.updatedAt
 })
 
-// Create a new project
 export const createProject = catchAsync(async (req: any, res: Response) => {
   const userId = req.user._id
   const projectData: CreateProjectRequest = req.body
@@ -58,7 +56,6 @@ export const createProject = catchAsync(async (req: any, res: Response) => {
     }
   }
 
-  // Create project
   const project = new Project({
     ...projectData,
     createdBy: userId,
@@ -71,7 +68,6 @@ export const createProject = catchAsync(async (req: any, res: Response) => {
     ]
   })
 
-  // Add additional members if provided
   if (projectData.members && projectData.members.length > 0) {
     const additionalMembers = await User.find({ _id: { $in: projectData.members } })
     additionalMembers.forEach((member: any) => {
@@ -86,29 +82,23 @@ export const createProject = catchAsync(async (req: any, res: Response) => {
   await project.save()
   await project.populate('createdBy members.user', 'username email avatar role')
 
-  // Cache the project
   await redisService.cacheProject((project._id as any).toString(), formatProjectResponse(project));
 
-  // Comprehensive cache invalidation for creator
   await redisService.invalidateAllProjectCaches(userId);
 
-  // Invalidate user project caches for all members
   if (projectData.members && projectData.members.length > 0) {
     for (const memberId of projectData.members) {
       await redisService.invalidateAllProjectCaches(memberId);
     }
   }
 
-  // Invalidate team cache if project belongs to a team
   if (project.teamId) {
     await redisService.invalidateTeam(project.teamId.toString());
     await redisService.invalidatePattern(`user:*:teams*`);
   }
 
-  // Invalidate all project list caches (for any user who might see this project)
   await redisService.invalidatePattern(`cache:*projects*`);
 
-  // If project has a teamId, add it to the team's projects array
   if (project.teamId) {
     const Team = require('../models/team.model').Team
     await Team.findByIdAndUpdate(project.teamId, {
@@ -123,12 +113,10 @@ export const createProject = catchAsync(async (req: any, res: Response) => {
   })
 })
 
-// Get all projects for a user
 export const getProjects = catchAsync(async (req: any, res: Response) => {
   const userId = req.user._id
   const { status, priority, search, page = 1, limit = 10 } = req.query
 
-  // Try to get from cache first
   const cacheKey = `user:${userId}:projects:${JSON.stringify({ status, priority, search, page, limit })}`
   const cached = await redisService.get(cacheKey)
   
@@ -194,18 +182,15 @@ export const getProjects = catchAsync(async (req: any, res: Response) => {
     }
   }
 
-  // Cache the response for 5 minutes
   await redisService.set(cacheKey, response, 300)
 
   res.status(200).json(response)
 })
 
-// Get project by ID
 export const getProjectById = catchAsync(async (req: any, res: Response) => {
   const { projectId } = req.params
   const userId = req.user._id
 
-  // Try to get from cache first
   const cached = await redisService.getProject(projectId)
   if (cached) {
     return res.status(200).json({
@@ -248,15 +233,10 @@ export const getProjectById = catchAsync(async (req: any, res: Response) => {
     })
   }
 
-
-
-  // Debug: Check if there are any tasks with this projectId
   const tasksWithProject = await Task.find({ projectId: project._id })
- 
-  // Debug: Check if there are any meetings with this projectId
+
   const meetingsWithProject = await Meeting.find({ projectId: project._id })
- 
-  // Sync tasks and meetings with project if they exist but aren't in the arrays
+
   if (tasksWithProject.length > 0 || meetingsWithProject.length > 0) {
     const taskIds = tasksWithProject.map(t => t._id)
     const meetingIds = meetingsWithProject.map(m => m._id)
@@ -267,8 +247,7 @@ export const getProjectById = catchAsync(async (req: any, res: Response) => {
         meetings: { $each: meetingIds }
       }
     })
-    
-    // Refetch the project with updated arrays
+
     const updatedProject = await Project.findById(project._id)
       .populate('createdBy', 'username email avatar role')
       .populate('members.user', 'username email avatar role')
@@ -296,8 +275,7 @@ export const getProjectById = catchAsync(async (req: any, res: Response) => {
   }
 
   const projectResponse = formatProjectResponse(project)
-  
-  // Cache the project
+
   await redisService.cacheProject(projectId, projectResponse)
 
   res.status(200).json({
@@ -306,7 +284,6 @@ export const getProjectById = catchAsync(async (req: any, res: Response) => {
   })
 })
 
-// Update project
 export const updateProject = catchAsync(async (req: any, res: Response) => {
   const { projectId } = req.params
   const userId = req.user._id
@@ -332,14 +309,11 @@ export const updateProject = catchAsync(async (req: any, res: Response) => {
   await project.populate('createdBy members.user', 'username email avatar role')
 
   const projectResponse = formatProjectResponse(project)
-  
-  // Update cache
+
   await redisService.cacheProject(projectId, projectResponse)
-  
-  // Comprehensive cache invalidation
+
   await redisService.invalidateAllProjectCaches(userId)
-  
-  // Invalidate caches for all project members
+
   if (project.members && project.members.length > 0) {
     for (const member of project.members) {
       const memberId = member.user?._id || member.user;
@@ -348,14 +322,12 @@ export const updateProject = catchAsync(async (req: any, res: Response) => {
       }
     }
   }
-  
-  // Invalidate team cache if project belongs to a team
+
   if (project.teamId) {
     await redisService.invalidateTeam(project.teamId.toString())
     await redisService.invalidatePattern(`user:*:teams*`)
   }
-  
-  // Invalidate all project list caches
+
   await redisService.invalidatePattern(`cache:*projects*`)
 
   res.status(200).json({
@@ -365,7 +337,6 @@ export const updateProject = catchAsync(async (req: any, res: Response) => {
   })
 })
 
-// Delete project
 export const deleteProject = catchAsync(async (req: any, res: Response) => {
   const { projectId } = req.params
   const userId = req.user._id
@@ -382,29 +353,24 @@ export const deleteProject = catchAsync(async (req: any, res: Response) => {
     })
   }
 
-  // Get project members before deletion for cache invalidation
   const projectMembers = project.members?.map((m: any) => m.user?.toString() || m.user) || []
   
   await Project.findByIdAndDelete(projectId)
 
-  // Comprehensive cache invalidation
   await redisService.invalidateProject(projectId)
   await redisService.invalidateAllProjectCaches(userId)
-  
-  // Invalidate caches for all project members
+
   for (const memberId of projectMembers) {
     if (memberId) {
       await redisService.invalidateAllProjectCaches(memberId)
     }
   }
-  
-  // Invalidate team cache if project belonged to a team
+
   if (project.teamId) {
     await redisService.invalidateTeam(project.teamId.toString())
     await redisService.invalidatePattern(`user:*:teams*`)
   }
-  
-  // Invalidate all project list caches
+
   await redisService.invalidatePattern(`cache:*projects*`)
 
   res.status(200).json({
@@ -413,7 +379,6 @@ export const deleteProject = catchAsync(async (req: any, res: Response) => {
   })
 })
 
-// Add member to project
 export const addMember = catchAsync(async (req: any, res: Response) => {
   const { projectId } = req.params
   const userId = req.user._id
@@ -434,7 +399,6 @@ export const addMember = catchAsync(async (req: any, res: Response) => {
     })
   }
 
-  // Check if user is already a member
   const existingMember = project.members.find(member => 
     member.user.toString() === newMemberId
   )
@@ -446,7 +410,6 @@ export const addMember = catchAsync(async (req: any, res: Response) => {
     })
   }
 
-  // Verify the user exists
   const user = await User.findById(newMemberId)
   if (!user) {
     return res.status(404).json({
@@ -465,15 +428,12 @@ export const addMember = catchAsync(async (req: any, res: Response) => {
   await project.populate('createdBy members.user', 'username email avatar role')
 
   const projectResponse = formatProjectResponse(project)
-  
-  // Update cache
+
   await redisService.cacheProject(projectId, projectResponse)
-  
-  // Comprehensive cache invalidation
+
   await redisService.invalidateAllProjectCaches(userId)
   await redisService.invalidateAllProjectCaches(newMemberId)
-  
-  // Invalidate caches for all project members
+
   if (project.members && project.members.length > 0) {
     for (const member of project.members) {
       const memberId = member.user?._id || member.user;
@@ -482,14 +442,12 @@ export const addMember = catchAsync(async (req: any, res: Response) => {
       }
     }
   }
-  
-  // Invalidate team cache if project belongs to a team
+
   if (project.teamId) {
     await redisService.invalidateTeam(project.teamId.toString())
     await redisService.invalidatePattern(`user:*:teams*`)
   }
-  
-  // Invalidate all project list caches
+
   await redisService.invalidatePattern(`cache:*projects*`)
 
   res.status(200).json({
@@ -499,7 +457,6 @@ export const addMember = catchAsync(async (req: any, res: Response) => {
   })
 })
 
-// Remove member from project
 export const removeMember = catchAsync(async (req: any, res: Response) => {
   const { projectId } = req.params
   const userId = req.user._id
@@ -520,7 +477,6 @@ export const removeMember = catchAsync(async (req: any, res: Response) => {
     })
   }
 
-  // Cannot remove the owner
   if (project.createdBy.toString() === memberToRemove) {
     return res.status(400).json({
       success: false,
@@ -536,15 +492,12 @@ export const removeMember = catchAsync(async (req: any, res: Response) => {
   await project.populate('createdBy members.user', 'username email avatar role')
 
   const projectResponse = formatProjectResponse(project)
-  
-  // Update cache
+
   await redisService.cacheProject(projectId, projectResponse)
-  
-  // Comprehensive cache invalidation
+
   await redisService.invalidateAllProjectCaches(userId)
   await redisService.invalidateAllProjectCaches(memberToRemove)
-  
-  // Invalidate caches for all project members
+
   if (project.members && project.members.length > 0) {
     for (const member of project.members) {
       const memberId = member.user?._id || member.user;
@@ -553,14 +506,12 @@ export const removeMember = catchAsync(async (req: any, res: Response) => {
       }
     }
   }
-  
-  // Invalidate team cache if project belongs to a team
+
   if (project.teamId) {
     await redisService.invalidateTeam(project.teamId.toString())
     await redisService.invalidatePattern(`user:*:teams*`)
   }
-  
-  // Invalidate all project list caches
+
   await redisService.invalidatePattern(`cache:*projects*`)
 
   res.status(200).json({
@@ -570,7 +521,6 @@ export const removeMember = catchAsync(async (req: any, res: Response) => {
   })
 })
 
-// Update member role
 export const updateMemberRole = catchAsync(async (req: any, res: Response) => {
   const { projectId } = req.params
   const userId = req.user._id
@@ -601,15 +551,12 @@ export const updateMemberRole = catchAsync(async (req: any, res: Response) => {
   await project.populate('createdBy members.user', 'username email avatar role')
 
   const projectResponse = formatProjectResponse(project)
-  
-  // Update cache
+
   await redisService.cacheProject(projectId, projectResponse)
-  
-  // Comprehensive cache invalidation
+
   await redisService.invalidateAllProjectCaches(userId)
   await redisService.invalidateAllProjectCaches(memberId)
-  
-  // Invalidate caches for all project members
+
   if (project.members && project.members.length > 0) {
     for (const member of project.members) {
       const memId = member.user?._id || member.user;
@@ -618,14 +565,12 @@ export const updateMemberRole = catchAsync(async (req: any, res: Response) => {
       }
     }
   }
-  
-  // Invalidate team cache if project belongs to a team
+
   if (project.teamId) {
     await redisService.invalidateTeam(project.teamId.toString())
     await redisService.invalidatePattern(`user:*:teams*`)
   }
-  
-  // Invalidate all project list caches
+
   await redisService.invalidatePattern(`cache:*projects*`)
 
   res.status(200).json({
@@ -635,7 +580,6 @@ export const updateMemberRole = catchAsync(async (req: any, res: Response) => {
   })
 })
 
-// Add link to project
 export const addLink = catchAsync(async (req: any, res: Response) => {
   const { projectId } = req.params
   const userId = req.user._id
@@ -670,7 +614,6 @@ export const addLink = catchAsync(async (req: any, res: Response) => {
   })
 })
 
-// Update project link
 export const updateLink = catchAsync(async (req: any, res: Response) => {
   const { projectId } = req.params
   const userId = req.user._id
@@ -710,7 +653,6 @@ export const updateLink = catchAsync(async (req: any, res: Response) => {
   })
 })
 
-// Remove link from project
 export const removeLink = catchAsync(async (req: any, res: Response) => {
   const { projectId } = req.params
   const userId = req.user._id
@@ -742,12 +684,11 @@ export const removeLink = catchAsync(async (req: any, res: Response) => {
   })
 })
 
-// Clear project cache for debugging
 export const clearProjectCache = catchAsync(async (req: any, res: Response) => {
   const userId = req.user._id
   
   try {
-    // Clear all project-related cache for the user
+
     await redisService.invalidateUserProjects(userId);
     await redisService.invalidatePattern(`user:${userId}:projects:*`);
     
@@ -764,7 +705,6 @@ export const clearProjectCache = catchAsync(async (req: any, res: Response) => {
   }
 });
 
-// Get project statistics
 export const getProjectStats = catchAsync(async (req: any, res: Response) => {
   const userId = req.user._id
 
@@ -775,10 +715,8 @@ export const getProjectStats = catchAsync(async (req: any, res: Response) => {
     ]
   })
 
-  // Get task and meeting counts for each project
   const projectIds = projects.map(p => p._id)
-  
-  // Get task counts per project
+
   const taskCounts = await Task.aggregate([
     { $match: { projectId: { $in: projectIds } } },
     { $group: {
@@ -787,8 +725,7 @@ export const getProjectStats = catchAsync(async (req: any, res: Response) => {
       completedTasks: { $sum: { $cond: [{ $eq: ['$status', 'completed'] }, 1, 0] } }
     }}
   ])
-  
-  // Get meeting counts per project
+
   const meetingCounts = await Meeting.aggregate([
     { $match: { projectId: { $in: projectIds } } },
     { $group: {
@@ -797,8 +734,7 @@ export const getProjectStats = catchAsync(async (req: any, res: Response) => {
       completedMeetings: { $sum: { $cond: [{ $eq: ['$status', 'completed'] }, 1, 0] } }
     }}
   ])
-  
-  // Create lookup maps
+
   const taskCountMap = new Map()
   taskCounts.forEach((tc: any) => {
     taskCountMap.set(tc._id.toString(), tc)
@@ -808,8 +744,7 @@ export const getProjectStats = catchAsync(async (req: any, res: Response) => {
   meetingCounts.forEach((mc: any) => {
     meetingCountMap.set(mc._id.toString(), mc)
   })
-  
-  // Update project stats
+
   for (const project of projects) {
     const projectId = (project as any)._id.toString()
     const taskStats = taskCountMap.get(projectId) || { totalTasks: 0, completedTasks: 0 }

@@ -47,7 +47,6 @@ const formatMeetingResponse = (meeting: any): MeetingResponse => ({
   updatedAt: meeting.updatedAt
 });
 
-// Create meeting with Redis caching
 export const createMeeting = catchAsync(async (req: any, res: any) => {
   const { title, description, type, assignedTo, startDate, endDate, location, meetingLink, tags, attendees, projectId }: CreateMeetingRequest = req.body;
   const assignedBy = req.user._id;
@@ -79,30 +78,25 @@ export const createMeeting = catchAsync(async (req: any, res: any) => {
     { path: "projectId", select: "name logo" }
   ]);
 
-  // Add meeting to project if projectId is provided
   if (projectId) {
     const { Project } = await import('../models/project.model');
     await Project.findByIdAndUpdate(projectId, {
       $addToSet: { meetings: meeting._id }
     });
-    
-    // Invalidate project cache
+
     await redisService.invalidateProject(projectId);
     await redisService.invalidatePattern(`user:${assignedBy}:projects:*`);
     await redisService.invalidatePattern(`user:${assignedTo}:projects:*`);
   }
 
-  // Cache the new meeting
   await redisService.cacheMeeting((meeting._id as any).toString(), formatMeetingResponse(meeting));
 
-  // Invalidate user meeting caches
   await redisService.invalidateUserMeetings(assignedBy.toString());
   await redisService.invalidateUserMeetings(assignedTo);
   await redisService.invalidateDashboardData(assignedBy.toString());
   await redisService.invalidateDashboardData(assignedTo);
   await redisService.invalidatePattern('meetings:*');
 
-  // Create notification
   await Notification.create({
     recipient: assignedTo,
     sender: assignedBy,
@@ -118,7 +112,6 @@ export const createMeeting = catchAsync(async (req: any, res: any) => {
   });
 });
 
-// Create video meeting (Jitsi Meet or Zoom)
 export const createZoomMeeting = catchAsync(async (req: any, res: any) => {
   const { topic, startTime, duration, agenda, timezone } = req.body;
 
@@ -151,12 +144,10 @@ export const createZoomMeeting = catchAsync(async (req: any, res: any) => {
   }
 });
 
-// Get meetings with Redis caching
 export const getMeetings = catchAsync(async (req: any, res: any) => {
   const { status, type, assignedTo, assignedBy, page = 1, limit = 20 } = req.query;
   const skip = (parseInt(page as string) - 1) * parseInt(limit as string);
 
-  // Try to get from cache first
   const cacheKey = `meetings:${JSON.stringify({ status, type, assignedTo, assignedBy, page, limit })}`;
   const cachedMeetings = await redisService.get(cacheKey);
   
@@ -193,17 +184,14 @@ export const getMeetings = catchAsync(async (req: any, res: any) => {
     }
   };
 
-  // Cache the response for 5 minutes
   await redisService.set(cacheKey, response, 300);
 
   res.status(200).json(response);
 });
 
-// Get meeting by ID with Redis caching
 export const getMeetingById = catchAsync(async (req: any, res: any) => {
   const { meetingId } = req.params;
 
-  // Try cache first
   const cachedMeeting = await redisService.getMeeting(meetingId);
   if (cachedMeeting) {
     return res.status(200).json({ meeting: cachedMeeting });
@@ -221,14 +209,12 @@ export const getMeetingById = catchAsync(async (req: any, res: any) => {
   }
 
   const meetingResponse = formatMeetingResponse(meeting);
-  
-  // Cache the meeting
+
   await redisService.cacheMeeting(meetingId, meetingResponse);
 
   res.status(200).json({ meeting: meetingResponse });
 });
 
-// Update meeting with comprehensive editing
 export const updateMeeting = catchAsync(async (req: any, res: any) => {
   const { meetingId } = req.params;
   const updates: UpdateMeetingRequest = req.body;
@@ -239,7 +225,6 @@ export const updateMeeting = catchAsync(async (req: any, res: any) => {
     return res.status(404).json({ message: "Meeting not found" });
   }
 
-  // Only the user who assigned the meeting can update it
   if (originalMeeting.assignedBy.toString() !== currentUserId.toString()) {
     return res.status(403).json({ message: "Only the user who assigned this meeting can update it" });
   }
@@ -260,17 +245,14 @@ export const updateMeeting = catchAsync(async (req: any, res: any) => {
 
   const meetingResponse = formatMeetingResponse(meeting);
 
-  // Update cache
   await redisService.cacheMeeting(meetingId, meetingResponse);
-  
-  // Invalidate related caches
+
   await redisService.invalidateUserMeetings(originalMeeting.assignedBy.toString());
   await redisService.invalidateUserMeetings(originalMeeting.assignedTo.toString());
   await redisService.invalidateDashboardData(originalMeeting.assignedBy.toString());
   await redisService.invalidateDashboardData(originalMeeting.assignedTo.toString());
   await redisService.invalidatePattern('meetings:*');
 
-  // Create notification for assignee
   await Notification.create({
     recipient: meeting.assignedTo,
     sender: currentUserId,
@@ -285,7 +267,6 @@ export const updateMeeting = catchAsync(async (req: any, res: any) => {
   });
 });
 
-// Update meeting status (only by assignee)
 export const updateMeetingStatus = catchAsync(async (req: any, res: any) => {
   const { meetingId } = req.params;
   const { status }: { status: MeetingStatus } = req.body;
@@ -296,7 +277,6 @@ export const updateMeetingStatus = catchAsync(async (req: any, res: any) => {
     return res.status(404).json({ message: "Meeting not found" });
   }
 
-  // Only the assigned user can update the meeting status
   if (meeting.assignedTo.toString() !== currentUserId.toString()) {
     return res.status(403).json({ message: "Only the assigned user can update meeting status" });
   }
@@ -312,17 +292,14 @@ export const updateMeetingStatus = catchAsync(async (req: any, res: any) => {
 
   const meetingResponse = formatMeetingResponse(meeting);
 
-  // Update cache
   await redisService.cacheMeeting(meetingId, meetingResponse);
-  
-  // Invalidate related caches
+
   await redisService.invalidateUserMeetings(meeting.assignedBy.toString());
   await redisService.invalidateUserMeetings(meeting.assignedTo.toString());
   await redisService.invalidateDashboardData(meeting.assignedBy.toString());
   await redisService.invalidateDashboardData(meeting.assignedTo.toString());
   await redisService.invalidatePattern('meetings:*');
 
-  // Create notification for assigner
   await Notification.create({
     recipient: meeting.assignedBy,
     sender: currentUserId,
@@ -337,7 +314,6 @@ export const updateMeetingStatus = catchAsync(async (req: any, res: any) => {
   });
 });
 
-// Reschedule meeting
 export const rescheduleMeeting = catchAsync(async (req: any, res: any) => {
   const { meetingId } = req.params;
   const { startDate, endDate, location, meetingLink } = req.body;
@@ -348,12 +324,10 @@ export const rescheduleMeeting = catchAsync(async (req: any, res: any) => {
     return res.status(404).json({ message: "Meeting not found" });
   }
 
-  // Only the user who assigned the meeting can reschedule it
   if (meeting.assignedBy.toString() !== currentUserId.toString()) {
     return res.status(403).json({ message: "Only the user who assigned this meeting can reschedule it" });
   }
 
-  // Update meeting details
   if (startDate) meeting.startDate = startDate;
   if (endDate) meeting.endDate = endDate;
   if (location) meeting.location = location;
@@ -369,17 +343,14 @@ export const rescheduleMeeting = catchAsync(async (req: any, res: any) => {
 
   const meetingResponse = formatMeetingResponse(meeting);
 
-  // Update cache
   await redisService.cacheMeeting(meetingId, meetingResponse);
-  
-  // Invalidate related caches
+
   await redisService.invalidateUserMeetings(meeting.assignedBy.toString());
   await redisService.invalidateUserMeetings(meeting.assignedTo.toString());
   await redisService.invalidateDashboardData(meeting.assignedBy.toString());
   await redisService.invalidateDashboardData(meeting.assignedTo.toString());
   await redisService.invalidatePattern('meetings:*');
 
-  // Create notification for assignee
   await Notification.create({
     recipient: meeting.assignedTo,
     sender: currentUserId,
@@ -394,7 +365,6 @@ export const rescheduleMeeting = catchAsync(async (req: any, res: any) => {
   });
 });
 
-// Reassign meeting
 export const reassignMeeting = catchAsync(async (req: any, res: any) => {
   const { meetingId } = req.params;
   const { assignedTo } = req.body;
@@ -405,7 +375,6 @@ export const reassignMeeting = catchAsync(async (req: any, res: any) => {
     return res.status(404).json({ message: "Meeting not found" });
   }
 
-  // Only the user who assigned the meeting can reassign it
   if (meeting.assignedBy.toString() !== currentUserId.toString()) {
     return res.status(403).json({ message: "Only the user who assigned this meeting can reassign it" });
   }
@@ -427,10 +396,8 @@ export const reassignMeeting = catchAsync(async (req: any, res: any) => {
 
   const meetingResponse = formatMeetingResponse(meeting);
 
-  // Update cache
   await redisService.cacheMeeting(meetingId, meetingResponse);
-  
-  // Invalidate related caches
+
   await redisService.invalidateUserMeetings(meeting.assignedBy.toString());
   await redisService.invalidateUserMeetings(oldAssignee.toString());
   await redisService.invalidateUserMeetings(assignedTo);
@@ -438,7 +405,6 @@ export const reassignMeeting = catchAsync(async (req: any, res: any) => {
   await redisService.invalidateDashboardData(oldAssignee.toString());
   await redisService.invalidateDashboardData(assignedTo);
 
-  // Create notifications
   await Notification.create({
     recipient: assignedTo,
     sender: currentUserId,
@@ -461,7 +427,6 @@ export const reassignMeeting = catchAsync(async (req: any, res: any) => {
   });
 });
 
-// Add/Remove attendees
 export const updateAttendees = catchAsync(async (req: any, res: any) => {
   const { meetingId } = req.params;
   const { attendees } = req.body;
@@ -472,12 +437,10 @@ export const updateAttendees = catchAsync(async (req: any, res: any) => {
     return res.status(404).json({ message: "Meeting not found" });
   }
 
-  // Only the user who assigned the meeting can update attendees
   if (meeting.assignedBy.toString() !== currentUserId.toString()) {
     return res.status(403).json({ message: "Only the user who assigned this meeting can update attendees" });
   }
 
-  // Validate attendees exist
   const attendeeUsers = await User.find({ _id: { $in: attendees } });
   if (attendeeUsers.length !== attendees.length) {
     return res.status(400).json({ message: "Some attendees not found" });
@@ -494,10 +457,8 @@ export const updateAttendees = catchAsync(async (req: any, res: any) => {
 
   const meetingResponse = formatMeetingResponse(meeting);
 
-  // Update cache
   await redisService.cacheMeeting(meetingId, meetingResponse);
-  
-  // Invalidate related caches
+
   await redisService.invalidateUserMeetings(meeting.assignedBy.toString());
   await redisService.invalidateUserMeetings(meeting.assignedTo.toString());
   await redisService.invalidateDashboardData(meeting.assignedBy.toString());
@@ -510,7 +471,6 @@ export const updateAttendees = catchAsync(async (req: any, res: any) => {
   });
 });
 
-// Delete meeting
 export const deleteMeeting = catchAsync(async (req: any, res: any) => {
   const { meetingId } = req.params;
   const currentUserId = req.user._id;
@@ -520,14 +480,12 @@ export const deleteMeeting = catchAsync(async (req: any, res: any) => {
     return res.status(404).json({ message: "Meeting not found" });
   }
 
-  // Only the user who assigned the meeting can delete it
   if (meeting.assignedBy.toString() !== currentUserId.toString()) {
     return res.status(403).json({ message: "Only the user who assigned this meeting can delete it" });
   }
 
   await Meeting.findByIdAndDelete(meetingId);
 
-  // Invalidate caches
   await redisService.invalidateMeeting(meetingId);
   await redisService.invalidateUserMeetings(meeting.assignedBy.toString());
   await redisService.invalidateUserMeetings(meeting.assignedTo.toString());
@@ -538,11 +496,9 @@ export const deleteMeeting = catchAsync(async (req: any, res: any) => {
   res.status(200).json({ message: "Meeting deleted successfully" });
 });
 
-// Get meeting statistics
 export const getMeetingStats = catchAsync(async (req: any, res: any) => {
   const currentUserId = req.user._id;
 
-  // Try cache first
   const cachedStats = await redisService.get(`meeting_stats:${currentUserId}`);
   if (cachedStats) {
     return res.status(200).json(cachedStats);
@@ -594,7 +550,6 @@ export const getMeetingStats = catchAsync(async (req: any, res: any) => {
     completionRate: parseFloat(completionRate.toFixed(2))
   };
 
-  // Cache stats for 5 minutes
   await redisService.set(`meeting_stats:${currentUserId}`, stats, 300);
 
   res.status(200).json(stats);

@@ -7,7 +7,6 @@ export const getNotifications = catchAsync(async (req: any, res: any) => {
   const skip = (parseInt(page as string) - 1) * parseInt(limit as string);
   const userId = req.user._id;
 
-  // Try to get from cache first
   const cacheKey = `user:${userId}:notifications:${page}:${limit}`;
   const cached = await redisService.get(cacheKey);
   
@@ -33,7 +32,6 @@ export const getNotifications = catchAsync(async (req: any, res: any) => {
     }
   };
 
-  // Cache the response for 5 minutes
   await redisService.set(cacheKey, response, 300);
 
   res.status(200).json(response);
@@ -53,7 +51,6 @@ export const markAsRead = catchAsync(async (req: any, res: any) => {
     return res.status(404).json({ message: "Notification not found" });
   }
 
-  // Invalidate user notification caches
   await redisService.invalidateUserNotifications(userId);
   await redisService.invalidatePattern(`user:${userId}:notifications:*`);
 
@@ -71,7 +68,6 @@ export const markAllAsRead = catchAsync(async (req: any, res: any) => {
     { isRead: true }
   );
 
-  // Invalidate user notification caches
   await redisService.invalidateUserNotifications(userId);
   await redisService.invalidatePattern(`user:${userId}:notifications:*`);
 

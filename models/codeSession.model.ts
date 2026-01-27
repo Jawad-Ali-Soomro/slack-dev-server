@@ -25,8 +25,7 @@ export interface ICodeSession extends Document {
   inviteCode?: string;
   invitedUsers?: mongoose.Types.ObjectId[];
   tags?: string[];
-  
-  // Methods
+
   addParticipant(userId: string): boolean;
   removeParticipant(userId: string): boolean;
   updateParticipantActivity(userId: string, cursorPosition?: { line: number; column: number }): boolean;
@@ -124,25 +123,21 @@ const CodeSessionSchema = new Schema<ICodeSession>({
   timestamps: true
 });
 
-// Indexes for better performance
 CodeSessionSchema.index({ owner: 1, isActive: 1 });
 CodeSessionSchema.index({ 'participants.user': 1, isActive: 1 });
 CodeSessionSchema.index({ isPublic: 1, isActive: 1 });
 CodeSessionSchema.index({ language: 1, isActive: 1 });
 CodeSessionSchema.index({ createdAt: -1 });
 
-// Update the updatedAt field before saving
 CodeSessionSchema.pre('save', function(next) {
   this.updatedAt = new Date();
   next();
 });
 
-// Virtual for participant count
 CodeSessionSchema.virtual('participantCount').get(function() {
   return this.participants.length;
 });
 
-// Method to add participant
 CodeSessionSchema.methods.addParticipant = function(userId: string) {
   const existingParticipant = this.participants.find((p: any) => p.user.toString() === userId);
   if (!existingParticipant && this.participants.length < this.maxParticipants) {
@@ -156,7 +151,6 @@ CodeSessionSchema.methods.addParticipant = function(userId: string) {
   return false;
 };
 
-// Method to remove participant
 CodeSessionSchema.methods.removeParticipant = function(userId: string) {
   const participantIndex = this.participants.findIndex((p: any) => p.user.toString() === userId);
   if (participantIndex !== -1) {
@@ -166,7 +160,6 @@ CodeSessionSchema.methods.removeParticipant = function(userId: string) {
   return false;
 };
 
-// Method to update participant activity
 CodeSessionSchema.methods.updateParticipantActivity = function(userId: string, cursorPosition?: { line: number; column: number }) {
   const participant = this.participants.find((p: any) => p.user.toString() === userId);
   if (participant) {
@@ -179,7 +172,6 @@ CodeSessionSchema.methods.updateParticipantActivity = function(userId: string, c
   return false;
 };
 
-// Method to generate invite code
 CodeSessionSchema.methods.generateInviteCode = function() {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   let result = '';
@@ -190,7 +182,6 @@ CodeSessionSchema.methods.generateInviteCode = function() {
   return result;
 };
 
-// Method to add invited user
 CodeSessionSchema.methods.addInvitedUser = function(userId: string) {
   if (!this.invitedUsers.includes(userId)) {
     this.invitedUsers.push(userId);
@@ -199,7 +190,6 @@ CodeSessionSchema.methods.addInvitedUser = function(userId: string) {
   return false;
 };
 
-// Method to check if user can join (public or invited)
 CodeSessionSchema.methods.canUserJoin = function(userId: string) {
   if (this.isPublic) return true;
   if (this.invitedUsers.includes(userId)) return true;

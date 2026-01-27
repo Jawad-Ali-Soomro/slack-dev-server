@@ -3,7 +3,6 @@ import { catchAsync } from '../middlewares';
 import { Challenge, User } from '../models';
 import { AwardService } from '../services/awardService';
 
-// Get all challenges with optional filters
 export const getChallenges = catchAsync(async (req: any, res: Response) => {
   const { difficulty, category, search, page = 1, limit = 20 } = req.query;
   const skip = (parseInt(page as string) - 1) * parseInt(limit as string);
@@ -47,7 +46,6 @@ export const getChallenges = catchAsync(async (req: any, res: Response) => {
   });
 });
 
-// Get challenge by ID
 export const getChallengeById = catchAsync(async (req: any, res: Response) => {
   const { id } = req.params;
   const userId = req.user._id;
@@ -60,7 +58,6 @@ export const getChallengeById = catchAsync(async (req: any, res: Response) => {
     return res.status(404).json({ message: 'Challenge not found' });
   }
 
-  // Check if user has completed this challenge
   const isCompleted = challenge.completedBy?.some(
     (userIdObj: any) => {
       const userIdStr = typeof userIdObj === 'object' && userIdObj._id 
@@ -70,7 +67,6 @@ export const getChallengeById = catchAsync(async (req: any, res: Response) => {
     }
   );
 
-  // Get user's submitted solution
   const userSolutionData = challenge.userSolutions?.find(
     (sol: any) => {
       const solUserId = typeof sol.userId === 'object' && sol.userId._id 
@@ -80,7 +76,6 @@ export const getChallengeById = catchAsync(async (req: any, res: Response) => {
     }
   );
 
-  // Don't send creator's solution and answer unless user has completed it or is the creator
   const challengeData: any = challenge.toObject();
   const isCreator = challenge.createdBy._id.toString() === userId.toString();
   
@@ -102,7 +97,6 @@ export const getChallengeById = catchAsync(async (req: any, res: Response) => {
   });
 });
 
-// Create a new challenge
 export const createChallenge = catchAsync(async (req: any, res: Response) => {
   const userId = req.user._id;
   const {
@@ -143,7 +137,6 @@ export const createChallenge = catchAsync(async (req: any, res: Response) => {
   const populatedChallenge = await Challenge.findById(challenge._id)
     .populate('createdBy', 'username avatar');
 
-  // Only creator can see the answer they just created
   const challengeData: any = populatedChallenge?.toObject();
   
   res.status(201).json({
@@ -153,7 +146,6 @@ export const createChallenge = catchAsync(async (req: any, res: Response) => {
   });
 });
 
-// Update challenge
 export const updateChallenge = catchAsync(async (req: any, res: Response) => {
   const { id } = req.params;
   const userId = req.user._id;
@@ -164,7 +156,6 @@ export const updateChallenge = catchAsync(async (req: any, res: Response) => {
     return res.status(404).json({ message: 'Challenge not found' });
   }
 
-  // Only creator can update
   if (challenge.createdBy.toString() !== userId.toString()) {
     return res.status(403).json({ message: 'Only the creator can update this challenge' });
   }
@@ -209,7 +200,6 @@ export const updateChallenge = catchAsync(async (req: any, res: Response) => {
   });
 });
 
-// Delete challenge
 export const deleteChallenge = catchAsync(async (req: any, res: Response) => {
   const { id } = req.params;
   const userId = req.user._id;
@@ -220,7 +210,6 @@ export const deleteChallenge = catchAsync(async (req: any, res: Response) => {
     return res.status(404).json({ message: 'Challenge not found' });
   }
 
-  // Only creator can delete
   if (challenge.createdBy.toString() !== userId.toString()) {
     return res.status(403).json({ message: 'Only the creator can delete this challenge' });
   }
@@ -233,9 +222,7 @@ export const deleteChallenge = catchAsync(async (req: any, res: Response) => {
   });
 });
 
-// Helper function to compare answers (no longer needed, but kept for reference)
 
-// Submit solution (mark as completed)
 export const submitSolution = catchAsync(async (req: any, res: Response) => {
   const { id } = req.params;
   const userId = req.user._id;
@@ -251,13 +238,11 @@ export const submitSolution = catchAsync(async (req: any, res: Response) => {
     return res.status(404).json({ message: 'Challenge not found' });
   }
 
-  // Check if user is the creator - they cannot solve their own challenge
   const isCreator = challenge.createdBy.toString() === userId.toString();
   if (isCreator) {
     return res.status(403).json({ message: 'You cannot solve challenges that you created yourself' });
   }
 
-  // Check if already completed
   const isAlreadyCompleted = challenge.completedBy?.some(
     (userIdObj: any) => {
       const userIdStr = typeof userIdObj === 'object' && userIdObj._id 
@@ -271,34 +256,30 @@ export const submitSolution = catchAsync(async (req: any, res: Response) => {
     return res.status(400).json({ message: 'Challenge already completed' });
   }
 
-  // Evaluate solution by comparing user's answer with challenge's answer
   let isCorrect = false;
   let hasError = false;
-  
-  // Check if user provided an answer
+
   if (!userAnswer || !userAnswer.trim()) {
-    // No answer provided - mark as completed but incorrect (0 points)
+
     isCorrect = false;
     hasError = true;
   } else {
-    // Compare user's answer with challenge's answer
+
     const expectedAnswer = challenge.answer || challenge.solution || '';
     
     if (expectedAnswer) {
-      // Normalize answers for comparison (trim and lowercase)
+
       const normalizedUserAnswer = userAnswer.trim().toLowerCase();
       const normalizedExpectedAnswer = expectedAnswer.trim().toLowerCase();
       isCorrect = normalizedUserAnswer === normalizedExpectedAnswer;
     } else {
-      // No expected answer defined - can't evaluate, mark as incorrect
+
       isCorrect = false;
     }
   }
-  
-  // Points earned: only if answer is correct
+
   const pointsEarned = isCorrect ? challenge.points : 0;
 
-  // Store user solution and answer
   challenge.userSolutions = challenge.userSolutions || [];
   challenge.userSolutions.push({
     userId: userId as any,
@@ -309,12 +290,10 @@ export const submitSolution = catchAsync(async (req: any, res: Response) => {
     submittedAt: new Date()
   });
 
-  // Add user to completedBy array
   challenge.completedBy = challenge.completedBy || [];
   challenge.completedBy.push(userId as any);
   await challenge.save();
 
-  // Calculate user's total points and check for new awards
   let totalPoints = 0;
   const allChallenges = await Challenge.find({ 'userSolutions.userId': userId });
   allChallenges.forEach((ch) => {
@@ -331,7 +310,6 @@ export const submitSolution = catchAsync(async (req: any, res: Response) => {
     }
   });
 
-  // Check and award badges
   const newlyEarnedAwards = await AwardService.checkAndAwardBadges(userId.toString(), totalPoints);
 
   res.status(200).json({
@@ -349,7 +327,6 @@ export const submitSolution = catchAsync(async (req: any, res: Response) => {
   });
 });
 
-// Get user's completed challenges
 export const getMyChallenges = catchAsync(async (req: any, res: Response) => {
   const userId = req.user._id;
 
@@ -358,7 +335,6 @@ export const getMyChallenges = catchAsync(async (req: any, res: Response) => {
     .populate('createdBy', 'username avatar')
     .sort({ createdAt: -1 });
 
-  // Calculate total points
   let totalPoints = 0;
   challenges.forEach((challenge) => {
     const userSolution = challenge.userSolutions?.find(
@@ -374,7 +350,6 @@ export const getMyChallenges = catchAsync(async (req: any, res: Response) => {
     }
   });
 
-  // Get user's awards
   const user = await User.findById(userId).select('awards totalChallengePoints');
   const awards = user?.awards || [];
 
@@ -386,7 +361,6 @@ export const getMyChallenges = catchAsync(async (req: any, res: Response) => {
   });
 });
 
-// Get challenge categories
 export const getCategories = catchAsync(async (req: any, res: Response) => {
   const categories = await Challenge.distinct('category');
   res.status(200).json({

@@ -39,7 +39,6 @@ const PurchaseSchema = new Schema<IPurchase>({
   timestamps: true
 })
 
-// Indexes for efficient queries
 PurchaseSchema.index({ user: 1, project: 1 }, { unique: true })
 PurchaseSchema.index({ user: 1, status: 1 })
 PurchaseSchema.index({ project: 1 })

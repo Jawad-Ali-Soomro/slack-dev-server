@@ -25,8 +25,7 @@ const formatUserResponse = (user: IUser): UserResponse => ({
 
 export const register = catchAsync(async (req: any, res: any) => {
   const { email, username } = req.body;
-  
-  // Normalize email to lowercase and trim whitespace
+
   const normalizedEmail = email?.toLowerCase().trim();
   const trimmedUsername = username?.trim();
   
@@ -66,13 +65,12 @@ export const register = catchAsync(async (req: any, res: any) => {
     }]
   })
   try {
-    // Ensure role is set to 'user' by default (prevent role manipulation during registration)
+
     const userData = { ...req.body };
     if (!userData.role || userData.role !== 'user') {
       userData.role = 'user';
     }
-    
-    // Use normalized email and trimmed username
+
     userData.email = normalizedEmail;
     userData.username = trimmedUsername;
     
@@ -110,8 +108,7 @@ export const register = catchAsync(async (req: any, res: any) => {
 
 export const login = catchAsync(async (req: any, res: any) => {
   const { email, password } = req.body;
-  
-  // Normalize email to lowercase and trim whitespace
+
   const normalizedEmail = email?.toLowerCase().trim();
   const trimmedPassword = password?.trim();
   
@@ -124,16 +121,14 @@ export const login = catchAsync(async (req: any, res: any) => {
     return res.status(401).json({ message: "invalid credentials" });
   }
   if (!user.emailVerified) {
-    // Generate new verification token
+
     const emailVerificationToken = generateOtp();
     const emailVerificationTokenExpires = new Date(Date.now() + 24 * 60 * 60 * 1000);
-    
-    // Update user with new token
+
     user.emailVerificationToken = emailVerificationToken;
     user.emailVerificationTokenExpires = emailVerificationTokenExpires;
     await user.save();
-    
-    // Send verification email
+
     const { html, text } = buildOtpEmail({
       otp: emailVerificationToken,
       username: user.username,
@@ -155,8 +150,7 @@ export const login = catchAsync(async (req: any, res: any) => {
         cid: 'logo'
       }]
     })
-    
-    // Return success response with email sent info
+
     res.status(200).json({ 
       message: "verification email sent", 
       emailSent: true,

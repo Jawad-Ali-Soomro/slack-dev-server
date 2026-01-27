@@ -73,13 +73,11 @@ export const getUserDetails = catchAsync(async (req: any, res: any) => {
     });
   }
 
-  // Import models
   const { Project } = await import('../models/project.model');
   const Task = (await import('../models/task.model')).default;
   const Meeting = (await import('../models/meeting.model')).default;
   const { Team } = await import('../models/team.model');
 
-  // Find projects where user is creator or member, but exclude team projects
   const projects = await Project.find({
     $or: [
       { createdBy: userId },
@@ -91,7 +89,6 @@ export const getUserDetails = catchAsync(async (req: any, res: any) => {
   .select('name description logo status priority progress createdAt members teamId')
   .sort({ createdAt: -1 });
 
-  // Find tasks where user is assignee or assigner
   const tasks = await Task.find({
     $or: [
       { assignTo: userId },
@@ -103,7 +100,6 @@ export const getUserDetails = catchAsync(async (req: any, res: any) => {
   .select('title status priority createdAt assignTo assignedBy projectId')
   .sort({ createdAt: -1 });
 
-  // Find meetings where user is assigned or creator
   const meetings = await Meeting.find({
     $or: [
       { assignedTo: userId },
@@ -115,7 +111,6 @@ export const getUserDetails = catchAsync(async (req: any, res: any) => {
   .select('title status type startDate createdAt assignedTo assignedBy projectId')
   .sort({ createdAt: -1 });
 
-  // Find teams where user is member
   const teams = await Team.find({
     'members.user': userId
   })
@@ -123,7 +118,6 @@ export const getUserDetails = catchAsync(async (req: any, res: any) => {
   .select('name description members createdAt')
   .sort({ createdAt: -1 });
 
-  // Format projects
   const formattedProjects = projects.map((project: any) => ({
     id: project._id,
     name: project.name,
@@ -136,7 +130,6 @@ export const getUserDetails = catchAsync(async (req: any, res: any) => {
     createdAt: project.createdAt
   }));
 
-  // Format teams with member count and user role
   const formattedTeams = teams.map((team: any) => ({
     id: team._id,
     name: team.name,
@@ -148,7 +141,6 @@ export const getUserDetails = catchAsync(async (req: any, res: any) => {
     createdAt: team.createdAt
   }));
 
-  // Format tasks
   const formattedTasks = tasks.map((task: any) => ({
     id: task._id,
     title: task.title,
@@ -159,7 +151,6 @@ export const getUserDetails = catchAsync(async (req: any, res: any) => {
     createdAt: task.createdAt
   }));
 
-  // Format meetings
   const formattedMeetings = meetings.map((meeting: any) => ({
     id: meeting._id,
     title: meeting.title,
@@ -171,10 +162,8 @@ export const getUserDetails = catchAsync(async (req: any, res: any) => {
     createdAt: meeting.createdAt
   }));
 
-  // Get awards from user object
   const userAwards = user?.awards || [];
-  
-  // Always calculate points from challenges to ensure accuracy
+
   const { Challenge } = await import('../models/challenge.model');
   const allChallenges = await Challenge.find({ 'userSolutions.userId': userId });
   let calculatedPoints = 0;
@@ -192,11 +181,9 @@ export const getUserDetails = catchAsync(async (req: any, res: any) => {
       calculatedPoints += userSolution.pointsEarned || 0;
     }
   });
-  
-  // Use calculated points (always accurate)
+
   const userPoints = calculatedPoints;
-  
-  // Update user's totalChallengePoints if calculated value is different
+
   if (calculatedPoints !== (user?.totalChallengePoints || 0)) {
     await User.findByIdAndUpdate(userId, { totalChallengePoints: calculatedPoints });
   }
@@ -220,7 +207,6 @@ export const getUserDetails = catchAsync(async (req: any, res: any) => {
     user: userResponse
   };
 
-  // Cache the response for 10 minutes
   await redisService.set(cacheKey, response, 600);
 
   res.status(200).json(response);
@@ -253,7 +239,6 @@ export const updateProfile = catchAsync(async (req: any, res: any) => {
     return res.status(404).json({ message: "user not found" });
   }
 
-  // Invalidate user cache
   await invalidateUserCache(userId);
 
   res.status(200).json({
@@ -290,7 +275,6 @@ export const uploadAvatar = catchAsync(async (req: any, res: any) => {
     return res.status(404).json({ message: "user not found" });
   }
 
-  // Invalidate user cache
   await invalidateUserCache(userId);
 
   res.status(200).json({
@@ -326,7 +310,6 @@ export const deleteAvatar = catchAsync(async (req: any, res: any) => {
     return res.status(404).json({ message: "user not found" });
   }
 
-  // Invalidate user cache
   await invalidateUserCache(userId);
 
   res.status(200).json({
@@ -359,7 +342,6 @@ export const getUsers = catchAsync(async (req: any, res: any) => {
   const { page = 1, limit = 20, search } = req.query;
   const skip = (parseInt(page as string) - 1) * parseInt(limit as string);
 
-  // Try to get from cache first
   const cacheKey = `users:${JSON.stringify({ page, limit, search })}`;
   const cached = await redisService.get(cacheKey);
   
@@ -403,7 +385,6 @@ export const getUsers = catchAsync(async (req: any, res: any) => {
     }
   };
 
-  // Cache the response for 5 minutes
   await redisService.set(cacheKey, response, 300);
 
   res.status(200).json(response);
@@ -412,7 +393,6 @@ export const getUsers = catchAsync(async (req: any, res: any) => {
 export const getUserById = catchAsync(async (req: any, res: any) => {
   const { userId } = req.params;
 
-  // Try to get from cache first
   const cached = await redisService.getUser(userId);
   if (cached) {
     return res.status(200).json({ user: cached });
@@ -426,8 +406,7 @@ export const getUserById = catchAsync(async (req: any, res: any) => {
   }
 
   const userResponse = formatUserResponse(user);
-  
-  // Cache the user for 1 hour
+
   await redisService.cacheUser(userId, userResponse);
 
   res.status(200).json({
@@ -442,7 +421,6 @@ export const searchUsers = catchAsync(async (req: any, res: any) => {
     return res.status(400).json({ message: "search query is required" });
   }
 
-  // Try to get from cache first
   const cacheKey = `search:users:${q}`;
   const cached = await redisService.get(cacheKey);
   
@@ -473,7 +451,6 @@ export const searchUsers = catchAsync(async (req: any, res: any) => {
     users: userResponses
   };
 
-  // Cache the response for 3 minutes
   await redisService.set(cacheKey, response, 180);
 
   res.status(200).json(response);
@@ -488,7 +465,6 @@ export const assignUserRole = catchAsync(async (req: any, res: any) => {
   const { role } = req.body;
   const currentUser = req.user;
 
-  // Verify current user is superadmin
   if (currentUser.role !== Role.Superadmin) {
     return res.status(403).json({
       success: false,
@@ -496,7 +472,6 @@ export const assignUserRole = catchAsync(async (req: any, res: any) => {
     });
   }
 
-  // Validate role
   if (!role || !Object.values(Role).includes(role)) {
     return res.status(400).json({
       success: false,
@@ -504,7 +479,6 @@ export const assignUserRole = catchAsync(async (req: any, res: any) => {
     });
   }
 
-  // Prevent changing superadmin role (security measure)
   const targetUser = await User.findById(userId);
   if (!targetUser) {
     return res.status(404).json({
@@ -513,7 +487,6 @@ export const assignUserRole = catchAsync(async (req: any, res: any) => {
     });
   }
 
-  // Prevent assigning superadmin role (only one superadmin or manual assignment)
   if (role === Role.Superadmin) {
     return res.status(403).json({
       success: false,
@@ -521,7 +494,6 @@ export const assignUserRole = catchAsync(async (req: any, res: any) => {
     });
   }
 
-  // Prevent removing superadmin role
   if (targetUser.role === Role.Superadmin && role !== Role.Superadmin) {
     return res.status(403).json({
       success: false,
@@ -529,11 +501,9 @@ export const assignUserRole = catchAsync(async (req: any, res: any) => {
     });
   }
 
-  // Update user role
   targetUser.role = role as Role;
   await targetUser.save();
 
-  // Invalidate caches
   await invalidateUserCache(userId);
   await invalidateUserListingCaches();
 
@@ -622,11 +592,10 @@ export const getAllUsers = catchAsync(async (req: any, res: any) => {
   const { page = 1, limit = 20, search, role } = req.query;
   const skip = (parseInt(page as string) - 1) * parseInt(limit as string);
 
-  // Build filter based on current user role
   let filter: any = {};
 
   if (currentUser.role === Role.Superadmin) {
-    // Superadmin can see all users
+
     if (search) {
       filter.$or = [
         { username: { $regex: search, $options: 'i' } },
@@ -637,13 +606,12 @@ export const getAllUsers = catchAsync(async (req: any, res: any) => {
       filter.role = role;
     }
   } else if (currentUser.role === Role.Admin) {
-    // Admin can only see users in their teams
+
     const teams = await Team.find({ createdBy: currentUser._id });
     const teamMemberIds = teams.flatMap(team => 
       team.members.map(member => member.user.toString())
     );
-    
-    // Include the admin themselves
+
     teamMemberIds.push(currentUser._id.toString());
     
     filter._id = { $in: teamMemberIds };
@@ -665,7 +633,6 @@ export const getAllUsers = catchAsync(async (req: any, res: any) => {
     });
   }
 
-  // Try to get from cache first
   const cacheKey = `admin:users:${JSON.stringify({ page, limit, search, role, userRole: currentUser.role })}`;
   const cached = await redisService.get(cacheKey);
   
@@ -704,7 +671,6 @@ export const getAllUsers = catchAsync(async (req: any, res: any) => {
     }
   };
 
-  // Cache the response for 5 minutes
   await redisService.set(cacheKey, response, 300);
 
   res.status(200).json(response);
@@ -718,7 +684,6 @@ export const deleteUser = catchAsync(async (req: any, res: any) => {
   const { userId } = req.params;
   const currentUser = req.user;
 
-  // Verify current user is superadmin
   if (currentUser.role !== Role.Superadmin) {
     return res.status(403).json({
       success: false,
@@ -726,7 +691,6 @@ export const deleteUser = catchAsync(async (req: any, res: any) => {
     });
   }
 
-  // Prevent self-deletion
   if (currentUser._id.toString() === userId) {
     return res.status(400).json({
       success: false,
@@ -742,7 +706,6 @@ export const deleteUser = catchAsync(async (req: any, res: any) => {
     });
   }
 
-  // Prevent deleting superadmin
   if (user.role === Role.Superadmin) {
     return res.status(403).json({
       success: false,
@@ -752,7 +715,6 @@ export const deleteUser = catchAsync(async (req: any, res: any) => {
 
   await User.findByIdAndDelete(userId);
 
-  // Invalidate caches
   await invalidateUserCache(userId);
   await invalidateUserListingCaches();
 

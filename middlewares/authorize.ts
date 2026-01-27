@@ -63,19 +63,16 @@ export const canManageTeam = async (req: any, res: Response, next: NextFunction)
     const userRole = req.user.role as Role;
     const userId = req.user._id.toString();
 
-    // Superadmin can manage all teams
     if (userRole === Role.Superadmin) {
       return next();
     }
 
-    // Admin can only manage teams they created
     if (userRole === Role.Admin) {
-      // For team operations, we'll check in the controller if the team belongs to the admin
-      // This middleware just ensures they have admin role
+
+
       return next();
     }
 
-    // Regular users can manage their own teams (already handled by team ownership checks)
     return next();
   } catch (error) {
     logger.error('Team management authorization error:', error);

@@ -17,7 +17,6 @@ class RedisService {
     });
   }
 
-  // Generic cache methods
   async set(key: string, value: any, ttl?: number): Promise<void> {
     try {
       const serializedValue = JSON.stringify(value);
@@ -61,7 +60,6 @@ class RedisService {
     }
   }
 
-  // User cache methods
   async cacheUser(userId: string, userData: any, ttl: number = 3600): Promise<void> {
     await this.set(`user:${userId}`, userData, ttl);
   }
@@ -74,7 +72,6 @@ class RedisService {
     await this.del(`user:${userId}`);
   }
 
-  // Task cache methods
   async cacheUserTasks(userId: string, tasks: any[], ttl: number = 1800): Promise<void> {
     await this.set(`user:${userId}:tasks`, tasks, ttl);
   }
@@ -99,7 +96,6 @@ class RedisService {
     await this.del(`task:${taskId}`);
   }
 
-  // Meeting cache methods
   async cacheUserMeetings(userId: string, meetings: any[], ttl: number = 1800): Promise<void> {
     await this.set(`user:${userId}:meetings`, meetings, ttl);
   }
@@ -124,7 +120,6 @@ class RedisService {
     await this.del(`meeting:${meetingId}`);
   }
 
-  // Dashboard cache methods
   async cacheDashboardData(userId: string, dashboardData: any, ttl: number = 900): Promise<void> {
     await this.set(`dashboard:${userId}`, dashboardData, ttl);
   }
@@ -137,7 +132,6 @@ class RedisService {
     await this.del(`dashboard:${userId}`);
   }
 
-  // Pattern-based invalidation
   async invalidateUserData(userId: string): Promise<void> {
     const keys = await this.client.keys(`*${userId}*`);
     if (keys.length > 0) {
@@ -149,7 +143,7 @@ class RedisService {
     try {
       const keys = await this.client.keys(pattern);
       if (keys.length > 0) {
-        // Delete in batches to avoid blocking Redis
+
         const batchSize = 100;
         for (let i = 0; i < keys.length; i += batchSize) {
           const batch = keys.slice(i, i + batchSize);
@@ -170,16 +164,13 @@ class RedisService {
   async invalidateAllProjectCaches(userId: string | any): Promise<void> {
     const userIdStr = userId?.toString() || userId;
     try {
-      // Invalidate user project list caches (all query variations)
+
       await this.invalidatePattern(`user:${userIdStr}:projects*`);
-      
-      // Invalidate user project cache
+
       await this.invalidateUserProjects(userIdStr);
-      
-      // Invalidate dashboard cache
+
       await this.invalidateDashboardData(userIdStr);
-      
-      // Invalidate user details cache (contains projects)
+
       await this.invalidatePattern(`user:${userIdStr}:details*`);
       await this.invalidatePattern(`cache:*user:${userIdStr}*`);
       
@@ -196,16 +187,13 @@ class RedisService {
   async invalidateAllTeamCaches(userId: string | any): Promise<void> {
     const userIdStr = userId?.toString() || userId;
     try {
-      // Invalidate user team list caches (all query variations)
+
       await this.invalidatePattern(`user:${userIdStr}:teams*`);
-      
-      // Invalidate user team cache
+
       await this.invalidateUserTeams(userIdStr);
-      
-      // Invalidate dashboard cache
+
       await this.invalidateDashboardData(userIdStr);
-      
-      // Invalidate user details cache (contains teams)
+
       await this.invalidatePattern(`user:${userIdStr}:details*`);
       await this.invalidatePattern(`cache:*user:${userIdStr}*`);
       
@@ -215,7 +203,6 @@ class RedisService {
     }
   }
 
-  // Notification cache methods
   async cacheUserNotifications(userId: string, notifications: any[], ttl: number = 1800): Promise<void> {
     await this.set(`user:${userId}:notifications`, notifications, ttl);
   }
@@ -240,7 +227,6 @@ class RedisService {
     await this.del(`notification:${notificationId}`);
   }
 
-  // Project cache methods
   async cacheUserProjects(userId: string, projects: any[], ttl: number = 1800): Promise<void> {
     await this.set(`user:${userId}:projects`, projects, ttl);
   }
@@ -265,7 +251,6 @@ class RedisService {
     await this.del(`project:${projectId}`);
   }
 
-  // Team cache methods
   async cacheUserTeams(userId: string, teams: any[], ttl: number = 1800): Promise<void> {
     await this.set(`user:${userId}:teams`, teams, ttl);
   }
@@ -290,7 +275,6 @@ class RedisService {
     await this.del(`team:${teamId}`);
   }
 
-  // Friend cache methods
   async invalidateFriendRequests(userId: string): Promise<void> {
     await this.invalidatePattern(`user:${userId}:friendRequests:*`);
   }
@@ -299,7 +283,6 @@ class RedisService {
     await this.del(`user:${userId}:friendStats`);
   }
 
-  // Friend cache methods
   async cacheUserFriends(userId: string, friends: any[], ttl: number = 1800): Promise<void> {
     await this.set(`user:${userId}:friends`, friends, ttl);
   }
@@ -312,7 +295,6 @@ class RedisService {
     await this.del(`user:${userId}:friends`);
   }
 
-  // Follow cache methods
   async cacheUserFollowers(userId: string, followers: any[], ttl: number = 1800): Promise<void> {
     await this.set(`user:${userId}:followers`, followers, ttl);
   }
@@ -337,7 +319,6 @@ class RedisService {
     await this.del(`user:${userId}:following`);
   }
 
-  // Rate limiting methods
   async increment(key: string): Promise<number> {
     try {
       return await this.client.incr(key);
@@ -365,7 +346,6 @@ class RedisService {
     }
   }
 
-  // Set string value (for rate limiting)
   async setString(key: string, value: string, ttl?: number): Promise<void> {
     try {
       if (ttl) {
@@ -379,7 +359,6 @@ class RedisService {
     }
   }
 
-  // Get string value (for rate limiting)
   async getString(key: string): Promise<string | null> {
     try {
       return await this.client.get(key);
@@ -389,7 +368,6 @@ class RedisService {
     }
   }
 
-  // Flush entire cache (use with caution)
   async flushAll(): Promise<void> {
     try {
       await this.client.flushall();
@@ -400,12 +378,10 @@ class RedisService {
     }
   }
 
-  // Health check
   async ping(): Promise<string> {
     return await this.client.ping();
   }
 
-  // Close connection
   async disconnect(): Promise<void> {
     await this.client.quit();
   }

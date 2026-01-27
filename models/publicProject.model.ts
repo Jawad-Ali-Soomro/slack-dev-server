@@ -72,7 +72,6 @@ const PublicProjectSchema = new Schema<IPublicProject>({
   timestamps: true
 })
 
-// Indexes for efficient queries
 PublicProjectSchema.index({ isActive: 1, category: 1 })
 PublicProjectSchema.index({ createdBy: 1 })
 PublicProjectSchema.index({ tags: 1 })

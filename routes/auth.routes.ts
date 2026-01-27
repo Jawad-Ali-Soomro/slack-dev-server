@@ -32,7 +32,7 @@ import { authenticate, authRateLimiter } from '../middlewares'
  *       400:
  *         description: Email already in use
  */
-// Apply strict rate limiting to all authentication endpoints
+
 authRouter.post('/register', authRateLimiter, register)
 
 /**

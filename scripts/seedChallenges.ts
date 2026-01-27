@@ -4,13 +4,12 @@ import path from 'path';
 import { Challenge } from '../models';
 import User from '../models/user.model';
 
-// Load environment variables
 dotenv.config({ path: path.join(__dirname, '../config/.env') });
 
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/core-stack';
 
 const sampleChallenges = [
-  // Beginner Challenges
+
   {
     title: 'Sum of Two Numbers',
     description: 'Write a function that takes two numbers as parameters and returns their sum.',
@@ -23,7 +22,7 @@ Example:
 - sum(-1, 1) should return 0
 - sum(0, 0) should return 0`,
     starterCode: `function sum(a, b) {
-  // Your code here
+
 }`,
     solution: `function sum(a, b) {
   return a + b;
@@ -50,7 +49,7 @@ Example:
 - findMax([-1, -5, -3]) should return -1
 - findMax([42]) should return 42`,
     starterCode: `function findMax(arr) {
-  // Your code here
+
 }`,
     solution: `function findMax(arr) {
   return Math.max(...arr);
@@ -76,7 +75,7 @@ Example:
 - reverseString("world") should return "dlrow"
 - reverseString("") should return ""`,
     starterCode: `function reverseString(str) {
-  // Your code here
+
 }`,
     solution: `function reverseString(str) {
   return str.split('').reverse().join('');
@@ -103,7 +102,7 @@ Example:
 - isEven(7) should return false
 - isEven(0) should return true`,
     starterCode: `function isEven(num) {
-  // Your code here
+
 }`,
     solution: `function isEven(num) {
   return num % 2 === 0;
@@ -130,7 +129,7 @@ Example:
 - countVowels("world") should return 1
 - countVowels("AEIOU") should return 5`,
     starterCode: `function countVowels(str) {
-  // Your code here
+
 }`,
     solution: `function countVowels(str) {
   const vowels = 'aeiou';
@@ -147,7 +146,6 @@ Example:
     tags: ['javascript', 'strings', 'arrays']
   },
 
-  // Intermediate Challenges
   {
     title: 'Two Sum Problem',
     description: 'Find two numbers in an array that add up to a target value.',
@@ -162,7 +160,7 @@ Example:
 - twoSum([3, 2, 4], 6) should return [1, 2]
 - twoSum([3, 3], 6) should return [0, 1]`,
     starterCode: `function twoSum(nums, target) {
-  // Your code here
+
 }`,
     solution: `function twoSum(nums, target) {
   const map = new Map();
@@ -201,7 +199,7 @@ Example:
 - isValid("(]") should return false
 - isValid("([)]") should return false`,
     starterCode: `function isValid(s) {
-  // Your code here
+
 }`,
     solution: `function isValid(s) {
   const stack = [];
@@ -242,7 +240,7 @@ Example:
 - isPalindrome("race a car") should return false
 - isPalindrome("racecar") should return true`,
     starterCode: `function isPalindrome(s) {
-  // Your code here
+
 }`,
     solution: `function isPalindrome(s) {
   const cleaned = s.toLowerCase().replace(/[^a-z0-9]/g, '');
@@ -270,7 +268,7 @@ Example:
 - flatten([1, 2, 3]) should return [1, 2, 3]
 - flatten([]) should return []`,
     starterCode: `function flatten(arr) {
-  // Your code here
+
 }`,
     solution: `function flatten(arr) {
   return arr.reduce((acc, val) => {
@@ -298,7 +296,7 @@ Example:
 - removeDuplicates(['a', 'b', 'a', 'c']) should return ['a', 'b', 'c']
 - removeDuplicates([1, 1, 1]) should return [1]`,
     starterCode: `function removeDuplicates(arr) {
-  // Your code here
+
 }`,
     solution: `function removeDuplicates(arr) {
   return [...new Set(arr)];
@@ -313,7 +311,6 @@ Example:
     tags: ['javascript', 'arrays', 'sets']
   },
 
-  // Advanced Challenges
   {
     title: 'Binary Search',
     description: 'Implement binary search algorithm to find an element in a sorted array.',
@@ -328,7 +325,7 @@ Example:
 - binarySearch([1, 2, 3, 4, 5], 6) should return -1
 - binarySearch([1, 3, 5, 7, 9], 5) should return 2`,
     starterCode: `function binarySearch(arr, target) {
-  // Your code here
+
 }`,
     solution: `function binarySearch(arr, target) {
   let left = 0;
@@ -370,7 +367,7 @@ Example:
 - mergeSorted([1, 2], [3, 4]) should return [1, 2, 3, 4]
 - mergeSorted([], [1, 2]) should return [1, 2]`,
     starterCode: `function mergeSorted(arr1, arr2) {
-  // Your code here
+
 }`,
     solution: `function mergeSorted(arr1, arr2) {
   const merged = [];
@@ -420,7 +417,7 @@ Example:
 - longestCommonPrefix(["dog", "racecar", "car"]) should return ""
 - longestCommonPrefix(["interspecies", "interstellar", "interstate"]) should return "inters"`,
     starterCode: `function longestCommonPrefix(strs) {
-  // Your code here
+
 }`,
     solution: `function longestCommonPrefix(strs) {
   if (strs.length === 0) return '';
@@ -466,23 +463,23 @@ queue.pop(); // returns 1
 queue.empty(); // returns false`,
     starterCode: `class MyQueue {
   constructor() {
-    // Your code here
+
   }
   
   push(x) {
-    // Your code here
+
   }
   
   pop() {
-    // Your code here
+
   }
   
   peek() {
-    // Your code here
+
   }
   
   empty() {
-    // Your code here
+
   }
 }`,
     solution: `class MyQueue {
@@ -538,7 +535,7 @@ Example:
 - missingNumber([0, 1]) should return 2
 - missingNumber([9, 6, 4, 2, 3, 5, 7, 0, 1]) should return 8`,
     starterCode: `function missingNumber(nums) {
-  // Your code here
+
 }`,
     solution: `function missingNumber(nums) {
   const n = nums.length;
@@ -560,15 +557,14 @@ Example:
 
 async function seedChallenges() {
   try {
-    // Connect to MongoDB
+
     await mongoose.connect(MONGODB_URI);
     console.log('Connected to MongoDB');
 
-    // Find or create a default admin user to assign challenges to
     let adminUser = await User.findOne({ $or: [{ role: 'admin' }, { role: 'superadmin' }] });
     
     if (!adminUser) {
-      // Try to find any user
+
       adminUser = await User.findOne();
       
       if (!adminUser) {
@@ -579,14 +575,12 @@ async function seedChallenges() {
 
     console.log(`Using user: ${adminUser.username} (${adminUser._id}) for seeding challenges`);
 
-    // Clear existing challenges (optional - comment out if you want to keep existing)
-    // await Challenge.deleteMany({});
-    // console.log('Cleared existing challenges');
 
-    // Create challenges
+
+
     const createdChallenges = [];
     for (const challengeData of sampleChallenges) {
-      // Check if challenge already exists
+
       const existing = await Challenge.findOne({ 
         title: challengeData.title,
         createdBy: adminUser._id 
@@ -619,6 +613,5 @@ async function seedChallenges() {
   }
 }
 
-// Run the seed function
 seedChallenges();
 

@@ -539,10 +539,9 @@ projectRouter.delete('/:projectId/links', authenticate, removeLink)
  *         description: Unauthorized
  */
 projectRouter.post('/upload/projects', authenticate, (req: any, res: any) => {
-  // Set the folder parameter for the upload middleware
+
   req.params.folder = 'projects';
-  
-  // Use the upload middleware
+
   upload.single('logo')(req, res, (err: any) => {
     if (err) {
       return res.status(400).json({ message: "Upload failed", error: err.message });

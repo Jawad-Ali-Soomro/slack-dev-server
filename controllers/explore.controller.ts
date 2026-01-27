@@ -20,7 +20,6 @@ const ensureStripeClient = () => {
   return stripeClient
 }
 
-// Configure multer for zip file uploads
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     const uploadPath = 'uploads/projects'
@@ -36,7 +35,7 @@ const storage = multer.diskStorage({
 })
 
 const fileFilter = (req: any, file: any, cb: any) => {
-  // Only allow zip files
+
   if (file.mimetype === 'application/zip' || file.mimetype === 'application/x-zip-compressed' || path.extname(file.originalname).toLowerCase() === '.zip') {
     cb(null, true)
   } else {
@@ -52,7 +51,6 @@ const upload = multer({
   fileFilter: fileFilter
 })
 
-// Middleware to handle both zip file and preview images
 export const uploadProjectFiles = (req: any, res: any, next: any) => {
   const uploadMultiple = multer({
     storage: storage,
@@ -60,7 +58,7 @@ export const uploadProjectFiles = (req: any, res: any, next: any) => {
       fileSize: 100 * 1024 * 1024, // 100MB limit
     },
     fileFilter: (req, file, cb) => {
-      // Allow zip files and images
+
       if (file.fieldname === 'zipFile') {
         if (file.mimetype === 'application/zip' || 
             file.mimetype === 'application/x-zip-compressed' || 
@@ -87,7 +85,6 @@ export const uploadProjectFiles = (req: any, res: any, next: any) => {
   uploadMultiple(req, res, next)
 }
 
-// Create a new public project
 export const createPublicProject = catchAsync(async (req: any, res: Response) => {
   const userId = req.user._id
   const { title, description, price, category, tags } = req.body
@@ -100,8 +97,7 @@ export const createPublicProject = catchAsync(async (req: any, res: Response) =>
   }
 
   const zipFile = `/projects/${req.files.zipFile[0].filename}`
-  
-  // Handle preview images
+
   let previewImages: string[] = []
   if (req.files.previewImages && Array.isArray(req.files.previewImages)) {
     previewImages = req.files.previewImages
@@ -127,7 +123,6 @@ export const createPublicProject = catchAsync(async (req: any, res: Response) =>
   })
 })
 
-// Get all public projects (for explore page)
 export const getPublicProjects = catchAsync(async (req: any, res: Response) => {
   const { category, search, createdBy, page = 1, limit = 12, sortBy = 'createdAt', sortOrder = 'desc' } = req.query
 
@@ -172,7 +167,6 @@ export const getPublicProjects = catchAsync(async (req: any, res: Response) => {
   })
 })
 
-// Get single public project
 export const getPublicProject = catchAsync(async (req: any, res: Response) => {
   const { id } = req.params
   const userId = req.user?._id
@@ -187,7 +181,6 @@ export const getPublicProject = catchAsync(async (req: any, res: Response) => {
     })
   }
 
-  // Check if user has purchased this project
   let hasPurchased = false
   if (userId) {
     const purchase = await Purchase.findOne({ user: userId, project: id, status: 'completed' })
@@ -262,7 +255,6 @@ export const createPaymentIntent = catchAsync(async (req: any, res: Response) =>
   })
 })
 
-// Purchase a project (validates Stripe payment)
 export const purchaseProject = catchAsync(async (req: any, res: Response) => {
   const stripe = ensureStripeClient()
   const userId = req.user._id
@@ -276,7 +268,6 @@ export const purchaseProject = catchAsync(async (req: any, res: Response) => {
     })
   }
 
-  // Check if already purchased
   const existingPurchase = await Purchase.findOne({ user: userId, project: projectId })
   if (existingPurchase && existingPurchase.status === 'completed') {
     return res.status(400).json({
@@ -315,7 +306,6 @@ export const purchaseProject = catchAsync(async (req: any, res: Response) => {
     })
   }
 
-  // Create purchase record
   const purchase = await Purchase.findOneAndUpdate(
     { user: userId, project: projectId },
     {
@@ -328,7 +318,6 @@ export const purchaseProject = catchAsync(async (req: any, res: Response) => {
     { upsert: true, new: true }
   )
 
-  // Update purchase count
   await PublicProject.findByIdAndUpdate(projectId, { $inc: { purchaseCount: 1 } })
 
   res.status(200).json({
@@ -338,12 +327,10 @@ export const purchaseProject = catchAsync(async (req: any, res: Response) => {
   })
 })
 
-// Get user's purchased and created projects
 export const getMyPurchases = catchAsync(async (req: any, res: Response) => {
   const userId = req.user._id
   const { page = 1, limit = 12 } = req.query
 
-  // Get purchased projects
   const purchases = await Purchase.find({ user: userId, status: 'completed' })
     .populate({
       path: 'project',
@@ -354,18 +341,15 @@ export const getMyPurchases = catchAsync(async (req: any, res: Response) => {
     })
     .sort({ purchasedAt: -1 })
 
-  // Get created projects
   const createdProjects = await PublicProject.find({ createdBy: userId, isActive: true })
     .populate('createdBy', 'username email avatar')
     .sort({ createdAt: -1 })
 
-  // Combine and format
   const allProjects = [
     ...purchases.map(p => ({ ...p.toObject(), type: 'purchased', purchaseDate: p.purchasedAt })),
     ...createdProjects.map(p => ({ project: p.toObject(), type: 'created', purchaseDate: p.createdAt }))
   ].sort((a, b) => new Date(b.purchaseDate).getTime() - new Date(a.purchaseDate).getTime())
 
-  // Paginate
   const total = allProjects.length
   const paginatedProjects = allProjects.slice(
     (parseInt(page) - 1) * parseInt(limit),
@@ -384,7 +368,6 @@ export const getMyPurchases = catchAsync(async (req: any, res: Response) => {
   })
 })
 
-// Download project (purchased or created by user)
 export const downloadProject = catchAsync(async (req: any, res: Response) => {
   const userId = req.user._id
   const { projectId } = req.params
@@ -397,10 +380,8 @@ export const downloadProject = catchAsync(async (req: any, res: Response) => {
     })
   }
 
-  // Check if user is creator
   const isCreator = project.createdBy.toString() === userId.toString()
-  
-  // If not creator, verify purchase
+
   if (!isCreator) {
     const purchase = await Purchase.findOne({ user: userId, project: projectId, status: 'completed' })
     if (!purchase) {
@@ -423,7 +404,6 @@ export const downloadProject = catchAsync(async (req: any, res: Response) => {
   res.download(filePath, `${project.title}.zip`)
 })
 
-// Delete created project
 export const deletePublicProject = catchAsync(async (req: any, res: Response) => {
   const userId = req.user._id
   const { projectId } = req.params
@@ -436,7 +416,6 @@ export const deletePublicProject = catchAsync(async (req: any, res: Response) =>
     })
   }
 
-  // Verify user is creator
   if (project.createdBy.toString() !== userId.toString()) {
     return res.status(403).json({
       success: false,
@@ -444,13 +423,11 @@ export const deletePublicProject = catchAsync(async (req: any, res: Response) =>
     })
   }
 
-  // Delete file if exists
   const filePath = path.join('uploads', 'projects', path.basename(project.zipFile))
   if (fs.existsSync(filePath)) {
     fs.unlinkSync(filePath)
   }
 
-  // Delete preview images
   if (project.previewImages && project.previewImages.length > 0) {
     project.previewImages.forEach((imgPath) => {
       const imgFilePath = path.join('uploads', 'projects', path.basename(imgPath))
@@ -460,7 +437,6 @@ export const deletePublicProject = catchAsync(async (req: any, res: Response) =>
     })
   }
 
-  // Delete project from database
   await PublicProject.findByIdAndDelete(projectId)
 
   res.status(200).json({
@@ -469,7 +445,6 @@ export const deletePublicProject = catchAsync(async (req: any, res: Response) =>
   })
 })
 
-// Get project categories
 export const getCategories = catchAsync(async (req: any, res: Response) => {
   const categories = await PublicProject.distinct('category', { isActive: true })
   

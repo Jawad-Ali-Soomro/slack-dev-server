@@ -49,7 +49,6 @@ const FriendshipSchema = new Schema<IFriendship>({
   timestamps: true
 })
 
-// Indexes for better performance
 FriendRequestSchema.index({ sender: 1, receiver: 1 }, { unique: true })
 FriendRequestSchema.index({ receiver: 1, status: 1 })
 FriendshipSchema.index({ user1: 1, user2: 1 }, { unique: true })

@@ -3,7 +3,6 @@ import { catchAsync } from '../middlewares';
 import { AwardService } from '../services/awardService';
 import { User } from '../models';
 
-// Get user's awards
 export const getUserAwards = catchAsync(async (req: any, res: Response) => {
   const userId = req.user._id;
 
@@ -19,7 +18,6 @@ export const getUserAwards = catchAsync(async (req: any, res: Response) => {
   });
 });
 
-// Get all available awards
 export const getAllAwards = catchAsync(async (req: any, res: Response) => {
   const userId = req.user._id;
 

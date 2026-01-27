@@ -15,11 +15,9 @@ import {
 
 const router = express.Router()
 
-// Public routes
 router.get('/projects', getPublicProjects)
 router.get('/categories', getCategories)
 
-// Routes requiring authentication
 router.use(authenticate)
 
 router.get('/projects/:id', getPublicProject)

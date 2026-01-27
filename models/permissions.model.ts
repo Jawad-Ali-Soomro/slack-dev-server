@@ -41,7 +41,6 @@ const PermissionsSchema = new Schema<IPermissions>({
   timestamps: true
 });
 
-// Index for efficient queries
 PermissionsSchema.index({ userId: 1 });
 PermissionsSchema.index({ grantedBy: 1 });
 

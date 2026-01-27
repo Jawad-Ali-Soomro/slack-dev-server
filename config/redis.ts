@@ -1,6 +1,5 @@
 import dotenv from 'dotenv';
 
-// Load environment variables
 dotenv.config({
   path: './config/.env'
 });
@@ -18,7 +17,6 @@ export const redisConfig = {
   enableOfflineQueue: true,
   sentinels: process.env.REDIS_SENTINELS ? JSON.parse(process.env.REDIS_SENTINELS) : undefined,
   name: process.env.REDIS_SENTINEL_NAME,
-  // Redis URL (alternative to host/port)
   url: process.env.REDIS_URL,
 };
 

@@ -19,14 +19,12 @@ import {
   addCommentReaction
 } from '../controllers/post.controller'
 import { authenticate } from '../middlewares'
-// authenticate
+
 
 const router = express.Router()
 
-// Apply authentication middleware to all routes
 router.use(authenticate)
 
-// Post CRUD operations
 router.post('/', createPost)
 router.get('/', getPosts)
 router.get('/trending', getTrendingPosts)
@@ -35,12 +33,10 @@ router.get('/:postId', getPost)
 router.put('/:postId', updatePost)
 router.delete('/:postId', deletePost)
 
-// Post interactions
 router.post('/:postId/like', toggleLike)
 router.post('/:postId/share', sharePost)
 router.post('/:postId/pin', togglePin)
 
-// Comment operations
 router.post('/:postId/comments', addComment)
 router.get('/:postId/comments', getPostComments)
 router.put('/:postId/comments/:commentId', updateComment)

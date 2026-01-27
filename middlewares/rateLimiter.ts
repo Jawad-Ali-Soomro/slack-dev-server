@@ -14,12 +14,11 @@ interface RateLimitOptions {
  * Get client identifier (IP address or user ID)
  */
 function getClientId(req: Request): string {
-  // Try to get user ID if authenticated
+
   if ((req as any).user && (req as any).user._id) {
     return `user:${(req as any).user._id}`;
   }
-  
-  // Fallback to IP address
+
   const forwarded = req.headers['x-forwarded-for'];
   const ip = forwarded 
     ? (typeof forwarded === 'string' ? forwarded.split(',')[0] : forwarded[0])
@@ -47,15 +46,12 @@ export const rateLimiter = (options: RateLimitOptions) => {
       const key = `ratelimit:${clientId}:${req.method}:${req.path}`;
       const windowSeconds = Math.ceil(windowMs / 1000);
 
-      // Get current request count (using getString for rate limiting)
       const current = await redisService.getString(key);
       const count = current ? parseInt(current, 10) : 0;
 
-      // Check if limit exceeded
       if (count >= maxRequests) {
         logger.warn(`Rate limit exceeded for ${clientId} on ${req.method} ${req.path}`);
-        
-        // Calculate retry after
+
         const ttl = await redisService.getTtl(key);
         const retryAfter = ttl > 0 ? Math.ceil(ttl) : windowSeconds;
 
@@ -67,33 +63,27 @@ export const rateLimiter = (options: RateLimitOptions) => {
         });
       }
 
-      // Increment counter
       const newCount = count + 1;
       await redisService.setString(key, newCount.toString(), windowSeconds);
 
-      // Add rate limit headers
       res.setHeader('X-RateLimit-Limit', maxRequests.toString());
       res.setHeader('X-RateLimit-Remaining', Math.max(0, maxRequests - newCount).toString());
       res.setHeader('X-RateLimit-Reset', new Date(Date.now() + windowMs).toISOString());
 
-      // Store original methods
       const originalJson = res.json.bind(res);
       const originalStatus = res.status.bind(res);
 
-      // Override res.json to track successful/failed requests
       res.json = function(data: any) {
         const statusCode = res.statusCode;
         const isSuccess = statusCode >= 200 && statusCode < 300;
         const isError = statusCode >= 400;
 
-        // Decrement on successful requests if configured
         if (skipSuccessfulRequests && isSuccess) {
           redisService.decrement(key).catch(err => {
             logger.error('Failed to decrement rate limit:', err);
           });
         }
 
-        // Decrement on failed requests if configured
         if (skipFailedRequests && isError) {
           redisService.decrement(key).catch(err => {
             logger.error('Failed to decrement rate limit:', err);
@@ -106,7 +96,7 @@ export const rateLimiter = (options: RateLimitOptions) => {
       next();
     } catch (error) {
       logger.error('Rate limiter error:', error);
-      // On error, allow request to proceed (fail open)
+
       next();
     }
   };

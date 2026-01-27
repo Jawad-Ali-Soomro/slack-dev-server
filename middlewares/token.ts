@@ -124,8 +124,7 @@ export const authenticate = async (req: any, res: any, next: any) => {
     next();
   } catch (error: any) {
     logger.error('Authentication error:', error);
-    
-    // Don't expose internal errors
+
     if (error.name === 'TokenExpiredError') {
       return res.status(401).json({ 
         success: false,

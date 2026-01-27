@@ -55,24 +55,19 @@ app.use(cors({
 }))
 logger.info(`cors is running on ${process.env.FRONTEND_URL}`)
 
-// Static files
 app.use(express.static('public'))
 app.use('/profiles', express.static('uploads/profiles'))
 app.use('/projects', express.static('uploads/projects'))
 app.use('/uploads/posts', express.static('uploads/posts'))
 app.use('/uploads/documents', express.static('uploads/documents'))
 
-// Body parsing
 app.use(express.json({ limit: '10mb' }))
 app.use(express.urlencoded({ extended: true, limit: '10mb' }))
 
-// API routes
 app.use("/api", router)
 
-// Initialize Socket.IO
 const socketService = new SocketService(server);
 
-// Make socketService available globally for use in controllers
 (global as any).socketService = socketService;
 
 const PORT = process.env.PORT || 5000;

@@ -27,7 +27,6 @@ const NoteSchema = new Schema<INote>(
   { timestamps: true }
 );
 
-// Index for faster queries
 NoteSchema.index({ department: 1, subject: 1 });
 NoteSchema.index({ createdBy: 1 });
 NoteSchema.index({ department: 1 });

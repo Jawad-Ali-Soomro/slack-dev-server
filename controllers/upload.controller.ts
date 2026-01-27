@@ -4,7 +4,6 @@ import path from 'path'
 import fs from 'fs'
 import { catchAsync } from '../utils/catchAsync'
 
-// Configure multer for file uploads
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     const uploadPath = 'uploads/posts'
@@ -20,7 +19,7 @@ const storage = multer.diskStorage({
 })
 
 const fileFilter = (req: any, file: any, cb: any) => {
-  // Check if file is an image
+
   if (file.mimetype.startsWith('image/')) {
     cb(null, true)
   } else {
@@ -36,13 +35,10 @@ const upload = multer({
   fileFilter: fileFilter
 })
 
-// Upload single image
 export const uploadSingleImage = upload.single('image')
 
-// Upload multiple images
 export const uploadMultipleImages = upload.array('images', 5) // Max 5 images
 
-// Handle single image upload
 export const uploadImage = catchAsync(async (req: any, res: Response) => {
   if (!req.file) {
     return res.status(400).json({
@@ -61,7 +57,6 @@ export const uploadImage = catchAsync(async (req: any, res: Response) => {
   })
 })
 
-// Handle multiple images upload
 export const uploadImages = catchAsync(async (req: any, res: Response) => {
   if (!req.files || req.files.length === 0) {
     return res.status(400).json({
@@ -82,7 +77,6 @@ export const uploadImages = catchAsync(async (req: any, res: Response) => {
   })
 })
 
-// Delete image
 export const deleteImage = catchAsync(async (req: any, res: Response) => {
   const { filename } = req.params
   const imagePath = path.join('uploads/posts', filename)
@@ -108,7 +102,6 @@ export const deleteImage = catchAsync(async (req: any, res: Response) => {
   }
 })
 
-// Get image
 export const getImage = catchAsync(async (req: any, res: Response) => {
   const { filename } = req.params
   const imagePath = path.join('uploads/posts', filename)

@@ -66,7 +66,6 @@ const ChallengeSchema = new Schema<IChallenge>(
   { timestamps: true }
 );
 
-// Indexes for faster queries
 ChallengeSchema.index({ difficulty: 1, category: 1 });
 ChallengeSchema.index({ createdBy: 1 });
 ChallengeSchema.index({ category: 1 });

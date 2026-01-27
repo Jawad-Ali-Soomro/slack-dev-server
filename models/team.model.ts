@@ -74,17 +74,14 @@ const TeamSchema = new Schema<ITeam>({
   timestamps: true
 })
 
-// Indexes
 TeamSchema.index({ createdBy: 1 })
 TeamSchema.index({ 'members.user': 1 })
 TeamSchema.index({ isActive: 1 })
 
-// Virtual for member count
 TeamSchema.virtual('memberCount').get(function() {
   return this.members.length
 })
 
-// Pre-save middleware to ensure owner is in members
 TeamSchema.pre('save', function(next) {
   const ownerExists = this.members.some(member => 
     member.user.toString() === this.createdBy.toString()

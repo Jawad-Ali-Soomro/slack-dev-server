@@ -11,10 +11,8 @@ import { authenticate } from '../middlewares'
 
 const router = express.Router()
 
-// Apply authentication middleware to all routes
 router.use(authenticate)
 
-// Upload routes
 router.post('/single', uploadSingleImage, uploadImage)
 router.post('/multiple', uploadMultipleImages, uploadImages)
 router.delete('/:filename', deleteImage)

@@ -1496,3 +1496,4 @@
 2026-01-26 11:35:23 error: Redis connection failed: Stream isn't writeable and enableOfflineQueue options is false ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.1.106"]}
 2026-01-26 11:46:19 error: Redis connection failed: Stream isn't writeable and enableOfflineQueue options is false ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.1.106"]}
 2026-01-26 14:50:52 error: Redis connection failed: Stream isn't writeable and enableOfflineQueue options is false ~ host: hewlett-packard-pavillion ~ network address: {"wlp0s20f3":["192.168.1.106"]}
+{"code":8000,"codeName":"AtlasError","connectionGeneration":0,"errorLabelSet":{},"errorResponse":{"code":8000,"codeName":"AtlasError","errmsg":"bad auth : Authentication failed.","ok":0},"level":"error","ok":0}

@@ -1,6 +1,5 @@
 import fs from "fs";
 import path from "path";
-import ts from "typescript";
 
 const ROOT_DIR = process.cwd();
 
@@ -34,18 +33,13 @@ function walk(dir) {
 
     const code = fs.readFileSync(fullPath, "utf8");
 
-    const result = ts.transpileModule(code, {
-      compilerOptions: {
-        target: ts.ScriptTarget.ESNext,
-        module: ts.ModuleKind.ESNext,
-        removeComments: true
-      }
-    });
+    // ✅ remove only `// ` comments (with space)
+    const cleaned = code.replace(/^\s*\/\/\s.*$/gm, "");
 
-    fs.writeFileSync(fullPath, result.outputText, "utf8");
+    fs.writeFileSync(fullPath, cleaned, "utf8");
     console.log(`✔ Cleaned: ${fullPath}`);
   }
 }
 
 walk(ROOT_DIR);
-console.log("✅ All comments removed using TypeScript compiler");
+console.log("✅ Removed only `// ` comments");

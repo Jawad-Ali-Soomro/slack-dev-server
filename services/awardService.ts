@@ -89,11 +89,10 @@ export class AwardService {
     const newlyEarnedAwards: Award[] = [];
     const userAwardIds = user.awards?.map(a => a.awardId) || [];
 
-    // Check each award
     for (const award of AWARDS) {
-      // Check if user has enough points and hasn't earned this award yet
+
       if (totalPoints >= award.pointsRequired && !userAwardIds.includes(award.id)) {
-        // Award the badge
+
         user.awards = user.awards || [];
         user.awards.push({
           awardId: award.id,
@@ -108,7 +107,6 @@ export class AwardService {
       }
     }
 
-    // Update total points
     user.totalChallengePoints = totalPoints;
 
     if (newlyEarnedAwards.length > 0) {

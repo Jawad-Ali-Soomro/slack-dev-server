@@ -20,10 +20,9 @@ class ChatService {
         throw new Error('Group chat must have at least 2 participants');
       }
 
-      // For direct chats, find existing chat between the same two users
       let existingChat = null;
       if (type === 'direct') {
-        // Convert all participant IDs to ObjectIds for proper comparison
+
         const participantObjectIds = uniqueParticipants.map(id => 
           typeof id === 'string' ? new mongoose.Types.ObjectId(id) : id
         );
@@ -189,8 +188,7 @@ class ChatService {
       chat.lastMessage = message._id as any;
       chat.lastMessageAt = new Date();
       await chat.save();
-      
-      // Populate the participants and lastMessage for the response
+
       await chat.populate('participants', 'username email avatar');
       await chat.populate({
         path: 'lastMessage',
@@ -208,7 +206,6 @@ class ChatService {
 
       await this.createMessageNotifications(chat, message, userId);
 
-      // Emit real-time events
       const socketService = (global as any).socketService;
       if (socketService) {
         socketService.emitNewMessage(chatId, messageResponse);
@@ -249,7 +246,6 @@ class ChatService {
 
       const messageResponse = this.formatMessageResponse(message);
 
-      // Emit real-time events
       const socketService = (global as any).socketService;
       if (socketService) {
         socketService.emitMessageUpdate(message.chat.toString(), messageResponse);
@@ -282,7 +278,6 @@ class ChatService {
 
       await redisService.invalidatePattern(`chat:${message.chat}:messages:*`);
 
-      // Emit real-time events
       const socketService = (global as any).socketService;
       if (socketService) {
         socketService.emitMessageDelete(message.chat.toString(), messageId);

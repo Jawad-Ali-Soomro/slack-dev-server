@@ -6,12 +6,10 @@ import { Team } from '../models/team.model'
 import { catchAsync } from '../utils/catchAsync'
 import redisService from '../services/redis.service'
 
-// Create a new post
 export const createPost = catchAsync(async (req: any, res: Response) => {
   const userId = req.user._id || req.user.id
   const { title, content, images, tags, visibility, teamId } = req.body
 
-  // Validate team access if visibility is team
   if (visibility === 'team' && teamId) {
     const team = await Team.findOne({
       _id: teamId,
@@ -29,7 +27,6 @@ export const createPost = catchAsync(async (req: any, res: Response) => {
     }
   }
 
-  // Get user details for author info
   const user = await User.findById(userId).select('username email avatar role')
   if (!user) {
     return res.status(404).json({
@@ -56,7 +53,6 @@ export const createPost = catchAsync(async (req: any, res: Response) => {
 
   await post.save()
 
-  // Invalidate user posts cache
   await redisService.invalidatePattern(`user:${userId}:posts:*`)
 
   res.status(201).json({
@@ -66,20 +62,17 @@ export const createPost = catchAsync(async (req: any, res: Response) => {
   })
 })
 
-// Get posts with pagination and filtering
 export const getPosts = catchAsync(async (req: any, res: Response) => {
   const userId = req.user._id || req.user.id
   const { page = 1, limit = 10, visibility, teamId, tags, search } = req.query
 
-  // Build query
   let query: any = {}
 
-  // Handle visibility filtering
   if (visibility === 'public') {
     query.visibility = 'public'
   } else if (visibility === 'team') {
     if (teamId) {
-      // Check if user is member of the team
+
       const team = await Team.findOne({
         _id: teamId,
         $or: [
@@ -98,7 +91,7 @@ export const getPosts = catchAsync(async (req: any, res: Response) => {
       query.visibility = 'team'
       query.teamId = teamId
     } else {
-      // Get all teams user is member of
+
       const userTeams = await Team.find({
         $or: [
           { createdBy: userId },
@@ -115,7 +108,7 @@ export const getPosts = catchAsync(async (req: any, res: Response) => {
     query.author._id = userId
     query.visibility = 'private'
   } else {
-    // Default: show public posts and team posts user has access to
+
     const userTeams = await Team.find({
       $or: [
         { createdBy: userId },
@@ -129,13 +122,11 @@ export const getPosts = catchAsync(async (req: any, res: Response) => {
     ]
   }
 
-  // Handle tag filtering
   if (tags) {
     const tagArray = Array.isArray(tags) ? tags : [tags]
     query.tags = { $in: tagArray }
   }
 
-  // Handle search
   if (search) {
     query.content = { $regex: search, $options: 'i' }
   }
@@ -151,7 +142,6 @@ export const getPosts = catchAsync(async (req: any, res: Response) => {
 
   const total = await Post.countDocuments(query)
 
-  // Add like status for each post
   const postsWithLikeStatus = posts.map(post => ({
     ...post.toObject(),
     liked: post.likedBy.some(id => id.toString() === userId.toString()),
@@ -170,7 +160,6 @@ export const getPosts = catchAsync(async (req: any, res: Response) => {
   })
 })
 
-// Get a single post
 export const getPost = catchAsync(async (req: any, res: Response) => {
   const { postId } = req.params
   const userId = req.user._id || req.user.id
@@ -187,7 +176,6 @@ export const getPost = catchAsync(async (req: any, res: Response) => {
     })
   }
 
-  // Check access permissions
   if (post.visibility === 'private' && post.author._id.toString() !== userId) {
     return res.status(403).json({
       success: false,
@@ -212,10 +200,8 @@ export const getPost = catchAsync(async (req: any, res: Response) => {
     }
   }
 
-  // Check if current user has liked this post
   const isLiked = post.likedBy.some(id => id.toString() === userId.toString())
 
-  // Get paginated comments
   const skip = (parseInt(commentsPage as string) - 1) * parseInt(commentsLimit as string)
   const paginatedComments = post.comments
     .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
@@ -238,7 +224,6 @@ export const getPost = catchAsync(async (req: any, res: Response) => {
   })
 })
 
-// Like/Unlike a post
 export const toggleLike = catchAsync(async (req: any, res: Response) => {
   const { postId } = req.params
   const userId = req.user._id || req.user.id
@@ -252,13 +237,12 @@ export const toggleLike = catchAsync(async (req: any, res: Response) => {
     })
   }
 
-  // Check if user has already liked the post
   const userIdStr = userId.toString()
   const likedByStr = post.likedBy.map(id => id.toString())
   const isLiked = likedByStr.includes(userIdStr)
 
   if (isLiked) {
-    // Unlike - remove user from likedBy array
+
     post.likedBy = post.likedBy.filter(id => id.toString() !== userIdStr)
     await post.save()
 
@@ -269,7 +253,7 @@ export const toggleLike = catchAsync(async (req: any, res: Response) => {
       likesCount: post.likedBy.length
     })
   } else {
-    // Like - add user to likedBy array
+
     post.likedBy.push(userId)
     await post.save()
 
@@ -282,7 +266,6 @@ export const toggleLike = catchAsync(async (req: any, res: Response) => {
   }
 })
 
-// Add comment to a post
 export const addComment = catchAsync(async (req: any, res: Response) => {
   const { postId } = req.params
   const { content } = req.body
@@ -327,7 +310,6 @@ export const addComment = catchAsync(async (req: any, res: Response) => {
   })
 })
 
-// Like/Unlike a comment
 export const toggleCommentLike = catchAsync(async (req: any, res: Response) => {
   const { postId, commentId } = req.params
   const userId = req.user._id
@@ -354,10 +336,10 @@ export const toggleCommentLike = catchAsync(async (req: any, res: Response) => {
   const existingLike = comment.likes.find((like: any) => like.user.toString() === userId)
 
   if (existingLike) {
-    // Unlike
+
     comment.likes = comment.likes.filter((like: any) => like.user.toString() !== userId)
   } else {
-    // Like
+
     comment.likes.push({ user: userId, likedAt: new Date() })
   }
 
@@ -371,7 +353,6 @@ export const toggleCommentLike = catchAsync(async (req: any, res: Response) => {
   })
 })
 
-// Share a post
 export const sharePost = catchAsync(async (req: any, res: Response) => {
   const { postId } = req.params
   const userId = req.user._id
@@ -384,7 +365,6 @@ export const sharePost = catchAsync(async (req: any, res: Response) => {
     })
   }
 
-  // Check if user already shared this post
   const existingShare = post.shares.find(share => share.user.toString() === userId)
   if (existingShare) {
     return res.status(400).json({
@@ -403,7 +383,6 @@ export const sharePost = catchAsync(async (req: any, res: Response) => {
   })
 })
 
-// Update a post
 export const updatePost = catchAsync(async (req: any, res: Response) => {
   const { postId } = req.params
   const { title, content, images, tags, visibility, teamId } = req.body
@@ -417,7 +396,6 @@ export const updatePost = catchAsync(async (req: any, res: Response) => {
     })
   }
 
-  // Check if user is the author
   if (post.author._id.toString() !== userId) {
     return res.status(403).json({
       success: false,
@@ -425,7 +403,6 @@ export const updatePost = catchAsync(async (req: any, res: Response) => {
     })
   }
 
-  // Update post
   post.title = title || post.title
   post.content = content || post.content
   post.images = images || post.images
@@ -444,7 +421,6 @@ export const updatePost = catchAsync(async (req: any, res: Response) => {
   })
 })
 
-// Delete a post
 export const deletePost = catchAsync(async (req: any, res: Response) => {
   const { postId } = req.params
   const userId = req.user.id
@@ -457,7 +433,6 @@ export const deletePost = catchAsync(async (req: any, res: Response) => {
     })
   }
 
-  // Check if user is the author
   if (post.author._id.toString() !== userId) {
     return res.status(403).json({
       success: false,
@@ -473,7 +448,6 @@ export const deletePost = catchAsync(async (req: any, res: Response) => {
   })
 })
 
-// Pin/Unpin a post (team posts only)
 export const togglePin = catchAsync(async (req: any, res: Response) => {
   const { postId } = req.params
   const userId = req.user._id
@@ -486,7 +460,6 @@ export const togglePin = catchAsync(async (req: any, res: Response) => {
     })
   }
 
-  // Check if user is team admin/owner
   if (post.visibility === 'team' && post.teamId) {
     const team = await Team.findOne({
       _id: post.teamId,
@@ -519,7 +492,6 @@ export const togglePin = catchAsync(async (req: any, res: Response) => {
   })
 })
 
-// Get user's posts
 export const getUserPosts = catchAsync(async (req: any, res: Response) => {
   const { userId } = req.params
   const { page = 1, limit = 10 } = req.query
@@ -547,7 +519,6 @@ export const getUserPosts = catchAsync(async (req: any, res: Response) => {
   })
 })
 
-// Get trending posts
 export const getTrendingPosts = catchAsync(async (req: any, res: Response) => {
   const { limit = 10 } = req.query
 
@@ -583,7 +554,6 @@ export const getTrendingPosts = catchAsync(async (req: any, res: Response) => {
   })
 })
 
-// Get post comments with pagination
 export const getPostComments = catchAsync(async (req: any, res: Response) => {
   const { postId } = req.params
   const { page = 1, limit = 10 } = req.query
@@ -616,7 +586,6 @@ export const getPostComments = catchAsync(async (req: any, res: Response) => {
   })
 })
 
-// Update a comment
 export const updateComment = catchAsync(async (req: any, res: Response) => {
   const { postId, commentId } = req.params
   const { content } = req.body
@@ -638,7 +607,6 @@ export const updateComment = catchAsync(async (req: any, res: Response) => {
     })
   }
 
-  // Check if user is the author of the comment
   if (comment.user._id.toString() !== userId.toString()) {
     return res.status(403).json({
       success: false,
@@ -657,7 +625,6 @@ export const updateComment = catchAsync(async (req: any, res: Response) => {
   })
 })
 
-// Delete a comment
 export const deleteComment = catchAsync(async (req: any, res: Response) => {
   const { postId, commentId } = req.params
   const userId = req.user._id || req.user.id
@@ -682,7 +649,6 @@ export const deleteComment = catchAsync(async (req: any, res: Response) => {
 
   console.log("comment", comment, "userId", userId)
 
-  // Check if user is the author of the comment
   if (comment.user._id.toString() !== userId.toString()) {
     return res.status(403).json({
       success: false,
@@ -699,7 +665,6 @@ export const deleteComment = catchAsync(async (req: any, res: Response) => {
   })
 })
 
-// Add a reply to a comment
 export const addReply = catchAsync(async (req: any, res: Response) => {
   const { postId, commentId } = req.params
   const { content } = req.body
@@ -757,7 +722,6 @@ export const addReply = catchAsync(async (req: any, res: Response) => {
   })
 })
 
-// Add reaction to a comment
 export const addCommentReaction = catchAsync(async (req: any, res: Response) => {
   const { postId, commentId } = req.params
   const { reactionType } = req.body
@@ -783,18 +747,17 @@ export const addCommentReaction = catchAsync(async (req: any, res: Response) => 
     comment.reactions = []
   }
 
-  // Check if user already reacted with this type
   const existingReaction = comment.reactions.find((r: any) => 
     r.user.toString() === userId && r.type === reactionType
   )
 
   if (existingReaction) {
-    // Remove existing reaction
+
     comment.reactions = comment.reactions.filter((r: any) => 
       !(r.user.toString() === userId && r.type === reactionType)
     )
   } else {
-    // Add new reaction
+
     comment.reactions.push({
       user: userId,
       type: reactionType,

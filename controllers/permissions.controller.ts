@@ -24,11 +24,9 @@ const getAdminScopedUserIds = async (adminId: string) => {
   return Array.from(idSet);
 };
 
-// Get all users with their permissions (Admin only)
 export const getAllUsersWithPermissions = catchAsync(async (req: Request, res: Response) => {
   const userId = (req as any).user?.id;
-  
-  // Check if user is admin or superadmin
+
   const adminUser = await User.findById(userId);
   if (!adminUser || (adminUser.role !== Role.Admin && adminUser.role !== Role.Superadmin)) {
     return res.status(403).json({
@@ -80,12 +78,10 @@ export const getAllUsersWithPermissions = catchAsync(async (req: Request, res: R
   });
 });
 
-// Get permissions for a specific user
 export const getUserPermissions = catchAsync(async (req: Request, res: Response) => {
   const userId = (req as any).user?.id;
   const { targetUserId } = req.params;
 
-  // Check if user is admin/superadmin or requesting their own permissions
   const currentUser = await User.findById(userId);
   const isSelfRequest = userId === targetUserId;
   const isPrivileged = currentUser?.role === Role.Admin || currentUser?.role === Role.Superadmin;
@@ -140,13 +136,11 @@ export const getUserPermissions = catchAsync(async (req: Request, res: Response)
   });
 });
 
-// Create or update permissions (Admin only)
 export const createOrUpdatePermissions = catchAsync(async (req: Request, res: Response) => {
   const adminId = (req as any).user?.id;
   const { userId } = req.params;
   const permissionData: CreatePermissionsRequest = req.body;
 
-  // Check if user is admin or superadmin
   const adminUser = await User.findById(adminId);
   if (!adminUser || (adminUser.role !== Role.Admin && adminUser.role !== Role.Superadmin)) {
     return res.status(403).json({
@@ -155,7 +149,6 @@ export const createOrUpdatePermissions = catchAsync(async (req: Request, res: Re
     });
   }
 
-  // Check if target user exists
   const targetUser = await User.findById(userId);
   if (!targetUser) {
     return res.status(404).json({
@@ -181,7 +174,6 @@ export const createOrUpdatePermissions = catchAsync(async (req: Request, res: Re
     }
   }
 
-  // Create or update permissions
   const permissions = await Permissions.findOneAndUpdate(
     { userId },
     {
@@ -215,12 +207,10 @@ export const createOrUpdatePermissions = catchAsync(async (req: Request, res: Re
   });
 });
 
-// Delete permissions (Admin only)
 export const deletePermissions = catchAsync(async (req: Request, res: Response) => {
   const adminId = (req as any).user?.id;
   const { userId } = req.params;
 
-  // Check if user is admin or superadmin
   const adminUser = await User.findById(adminId);
   if (!adminUser || (adminUser.role !== Role.Admin && adminUser.role !== Role.Superadmin)) {
     return res.status(403).json({

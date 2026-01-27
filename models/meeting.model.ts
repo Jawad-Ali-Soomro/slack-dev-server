@@ -27,12 +27,10 @@ const MeetingSchema = new Schema<IMeeting>({
   attendees: [{ type: Schema.Types.ObjectId, ref: "User" }],
 }, { timestamps: true });
 
-// Ensure endDate is after startDate
 MeetingSchema.path('endDate').validate(function (this: IMeeting, value: Date) {
   return this.startDate && value >= this.startDate;
 }, 'End date must be after start date');
 
-// Require location for in-person meetings
 MeetingSchema.pre('save', function (next) {
   if (this.type === MeetingType.IN_PERSON && !this.location) {
     next(new Error('Location is required for in-person meetings'));

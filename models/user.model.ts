@@ -101,13 +101,11 @@ const UserSchema = new Schema<IUser>({
 
 UserSchema.pre("save", async function (next) {
   const user = this as any;
-  
-  // Normalize email to lowercase
+
   if (user.isModified("email") && user.email) {
     user.email = user.email.toLowerCase().trim();
   }
-  
-  // Hash password if modified
+
   if (user.isModified("password")) {
     user.password = await bcrypt.hash(user.password, 10);
   }

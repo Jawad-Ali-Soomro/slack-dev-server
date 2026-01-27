@@ -5,7 +5,6 @@ import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
 
-// Configure multer for PDF uploads
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     const uploadPath = 'uploads/documents';
@@ -21,7 +20,7 @@ const storage = multer.diskStorage({
 });
 
 const fileFilter = (req: any, file: any, cb: any) => {
-  // Only allow PDF files
+
   if (file.mimetype === 'application/pdf' || path.extname(file.originalname).toLowerCase() === '.pdf') {
     cb(null, true);
   } else {
@@ -39,7 +38,6 @@ const upload = multer({
 
 export const uploadNotePDF = upload.single('pdf');
 
-// Create a new note
 export const createNote = catchAsync(async (req: any, res: Response) => {
   const userId = req.user._id;
   const { title, description, department, subject, tags } = req.body;
@@ -51,7 +49,6 @@ export const createNote = catchAsync(async (req: any, res: Response) => {
   let fileUrl = '';
   let fileName = '';
 
-  // Handle PDF upload if provided
   if (req.file) {
     fileUrl = `/uploads/documents/${req.file.filename}`;
     fileName = req.file.originalname;
@@ -76,7 +73,6 @@ export const createNote = catchAsync(async (req: any, res: Response) => {
   });
 });
 
-// Get all notes with filters (visible to all users - contributions)
 export const getNotes = catchAsync(async (req: any, res: Response) => {
   const { department, subject, search, page = 1, limit = 20 } = req.query;
 
@@ -119,7 +115,6 @@ export const getNotes = catchAsync(async (req: any, res: Response) => {
   });
 });
 
-// Get note by ID (visible to all users)
 export const getNoteById = catchAsync(async (req: any, res: Response) => {
   const { id } = req.params;
 
@@ -135,7 +130,6 @@ export const getNoteById = catchAsync(async (req: any, res: Response) => {
   res.status(200).json({ note });
 });
 
-// Update note
 export const updateNote = catchAsync(async (req: any, res: Response) => {
   const { id } = req.params;
   const userId = req.user._id;
@@ -147,9 +141,8 @@ export const updateNote = catchAsync(async (req: any, res: Response) => {
     return res.status(404).json({ message: 'Note not found' });
   }
 
-  // Handle PDF upload if provided
   if (req.file) {
-    // Delete old file if exists
+
     if (note.fileUrl) {
       const oldFilePath = path.join(process.cwd(), note.fileUrl);
       if (fs.existsSync(oldFilePath)) {
@@ -177,7 +170,6 @@ export const updateNote = catchAsync(async (req: any, res: Response) => {
   });
 });
 
-// Delete note (only by creator)
 export const deleteNote = catchAsync(async (req: any, res: Response) => {
   const { id } = req.params;
   const userId = req.user._id;
@@ -188,12 +180,10 @@ export const deleteNote = catchAsync(async (req: any, res: Response) => {
     return res.status(404).json({ message: 'Note not found' });
   }
 
-  // Only the creator can delete their note
   if (note.createdBy.toString() !== userId.toString()) {
     return res.status(403).json({ message: 'You can only delete your own notes' });
   }
 
-  // Delete associated PDF file
   if (note.fileUrl) {
     const filePath = path.join(process.cwd(), note.fileUrl);
     if (fs.existsSync(filePath)) {
@@ -206,7 +196,6 @@ export const deleteNote = catchAsync(async (req: any, res: Response) => {
   res.status(200).json({ message: 'Note deleted successfully' });
 });
 
-// Get all departments
 export const getDepartments = catchAsync(async (req: any, res: Response) => {
   const userId = req.user._id;
 
@@ -215,7 +204,6 @@ export const getDepartments = catchAsync(async (req: any, res: Response) => {
   res.status(200).json({ departments });
 });
 
-// Get subjects by department
 export const getSubjectsByDepartment = catchAsync(async (req: any, res: Response) => {
   const userId = req.user._id;
   const { department } = req.params;

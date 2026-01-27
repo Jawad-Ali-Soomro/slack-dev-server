@@ -237,7 +237,6 @@ const PostSchema = new Schema<IPost>({
   timestamps: true
 })
 
-// Indexes for better performance
 PostSchema.index({ author: 1, createdAt: -1 })
 PostSchema.index({ visibility: 1, createdAt: -1 })
 PostSchema.index({ teamId: 1, createdAt: -1 })

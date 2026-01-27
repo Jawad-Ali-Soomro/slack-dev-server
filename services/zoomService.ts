@@ -22,15 +22,13 @@ class VideoMeetingService {
   private jitsiDomain: string;
 
   constructor() {
-    // Zoom credentials (optional)
+
     this.zoomAccountId = process.env.ZOOM_ACCOUNT_ID || '';
     this.zoomClientId = process.env.ZOOM_CLIENT_ID || '';
     this.zoomClientSecret = process.env.ZOOM_CLIENT_SECRET || '';
-    
-    // Jitsi domain (defaults to public Jitsi Meet)
+
     this.jitsiDomain = process.env.JITSI_DOMAIN || 'meet.jit.si';
-    
-    // Check if Zoom credentials are available
+
     if (this.zoomAccountId && this.zoomClientId && this.zoomClientSecret) {
       this.useZoom = true;
       logger.info('Zoom credentials found. Using Zoom for meeting creation.');
@@ -43,7 +41,7 @@ class VideoMeetingService {
    * Generate a unique meeting room name
    */
   private generateMeetingRoomName(topic: string): string {
-    // Create a URL-friendly room name from topic + random string
+
     const sanitized = topic
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, '-')
@@ -60,8 +58,7 @@ class VideoMeetingService {
   private createJitsiMeeting(topic: string): { joinUrl: string; startUrl: string; meetingId: string; password: string } {
     const roomName = this.generateMeetingRoomName(topic);
     const joinUrl = `https://${this.jitsiDomain}/${roomName}`;
-    
-    // Jitsi doesn't require passwords by default, but we can add config params
+
     const configParams = new URLSearchParams({
       config: JSON.stringify({
         startWithAudioMuted: false,
@@ -88,14 +85,13 @@ class VideoMeetingService {
     agenda?: string,
     timezone: string = 'UTC'
   ): Promise<{ joinUrl: string; startUrl: string; meetingId: string | number; password: string }> {
-    // For now, we'll use Jitsi Meet since it requires no credentials
-    // If you want to use Zoom, you'll need to add the Zoom API integration separately
+
+
     
     if (this.useZoom) {
       logger.warn('Zoom integration requires additional setup. Using Jitsi Meet instead.');
     }
 
-    // Use Jitsi Meet (no credentials required)
     const meeting = this.createJitsiMeeting(topic);
     
     logger.info(`Created Jitsi Meet room: ${meeting.meetingId} for topic: ${topic}`);

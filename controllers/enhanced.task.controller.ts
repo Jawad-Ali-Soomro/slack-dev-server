@@ -38,7 +38,6 @@ const formatTaskResponse = (task: any): TaskResponse => ({
   updatedAt: task.updatedAt
 });
 
-// Create task with Redis caching
 export const createTask = catchAsync(async (req: any, res: any) => {
   const { title, description, priority, assignTo, dueDate, tags, projectId }: CreateTaskRequest = req.body;
   const assignedBy = req.user._id;
@@ -65,32 +64,26 @@ export const createTask = catchAsync(async (req: any, res: any) => {
     { path: "projectId", select: "name logo" }
   ]);
 
-  // Cache the new task
   await redisService.cacheTask((task._id as any).toString(), formatTaskResponse(task));
 
-  // Add task to project if projectId is provided
   if (projectId) {
     const { Project } = await import('../models/project.model');
     await Project.findByIdAndUpdate(projectId, {
       $addToSet: { tasks: task._id }
     });
-    
-    // Invalidate project cache
+
     await redisService.invalidateProject(projectId);
     await redisService.invalidatePattern(`user:${assignedBy}:projects:*`);
     await redisService.invalidatePattern(`user:${assignTo}:projects:*`);
   }
 
-  // Invalidate all task-related caches
   await redisService.invalidateUserTasks(assignedBy.toString());
   await redisService.invalidateUserTasks(assignTo);
   await redisService.invalidateDashboardData(assignedBy.toString());
   await redisService.invalidateDashboardData(assignTo);
-  
-  // Invalidate all task query caches (pattern-based)
+
   await redisService.invalidatePattern('tasks:*');
 
-  // Create notification
   await Notification.create({
     recipient: assignTo,
     sender: assignedBy,
@@ -107,12 +100,10 @@ export const createTask = catchAsync(async (req: any, res: any) => {
   });
 });
 
-// Get tasks with Redis caching
 export const getTasks = catchAsync(async (req: any, res: any) => {
   const { status, priority, assignTo, assignedBy, page = 1, limit = 20 } = req.query;
   const skip = (parseInt(page as string) - 1) * parseInt(limit as string);
 
-  // Try to get from cache first
   const cacheKey = `tasks:${JSON.stringify({ status, priority, assignTo, assignedBy, page, limit })}`;
   const cachedTasks = await redisService.get(cacheKey);
   
@@ -148,17 +139,14 @@ export const getTasks = catchAsync(async (req: any, res: any) => {
     }
   };
 
-  // Cache the response for 5 minutes
   await redisService.set(cacheKey, response, 300);
 
   res.status(200).json(response);
 });
 
-// Get task by ID with Redis caching
 export const getTaskById = catchAsync(async (req: any, res: any) => {
   const { taskId } = req.params;
 
-  // Try cache first
   const cachedTask = await redisService.getTask(taskId);
   if (cachedTask) {
     return res.status(200).json({ task: cachedTask });
@@ -175,14 +163,12 @@ export const getTaskById = catchAsync(async (req: any, res: any) => {
   }
 
   const taskResponse = formatTaskResponse(task);
-  
-  // Cache the task
+
   await redisService.cacheTask(taskId, taskResponse);
 
   res.status(200).json({ task: taskResponse });
 });
 
-// Update task with comprehensive editing
 export const updateTask = catchAsync(async (req: any, res: any) => {
   const { taskId } = req.params;
   const updates: UpdateTaskRequest = req.body;
@@ -193,7 +179,6 @@ export const updateTask = catchAsync(async (req: any, res: any) => {
     return res.status(404).json({ message: "Task not found" });
   }
 
-  // Only the user who assigned the task can update it
   if (originalTask.assignedBy.toString() !== currentUserId.toString()) {
     return res.status(403).json({ message: "Only the user who assigned this task can update it" });
   }
@@ -213,24 +198,20 @@ export const updateTask = catchAsync(async (req: any, res: any) => {
 
   const taskResponse = formatTaskResponse(task);
 
-  // Update cache
   await redisService.cacheTask(taskId, taskResponse);
-  
-  // Invalidate related caches
+
   await redisService.invalidateUserTasks(originalTask.assignedBy.toString());
   await redisService.invalidateUserTasks(originalTask.assignTo.toString());
   await redisService.invalidateDashboardData(originalTask.assignedBy.toString());
   await redisService.invalidateDashboardData(originalTask.assignTo.toString());
   await redisService.invalidatePattern('tasks:*');
-  
-  // Invalidate project cache if task has projectId
+
   if (originalTask.projectId) {
     await redisService.invalidateProject(originalTask.projectId.toString());
     await redisService.invalidatePattern(`user:${originalTask.assignedBy}:projects:*`);
     await redisService.invalidatePattern(`user:${originalTask.assignTo}:projects:*`);
   }
 
-  // Create notification for assignee
   await Notification.create({
     recipient: task.assignTo,
     sender: currentUserId,
@@ -245,7 +226,6 @@ export const updateTask = catchAsync(async (req: any, res: any) => {
   });
 });
 
-// Update task status (only by assignee)
 export const updateTaskStatus = catchAsync(async (req: any, res: any) => {
   const { taskId } = req.params;
   const { status } = req.body;
@@ -256,7 +236,6 @@ export const updateTaskStatus = catchAsync(async (req: any, res: any) => {
     return res.status(404).json({ message: "Task not found" });
   }
 
-  // Only the assigned user can update task status
   if (task.assignTo.toString() !== currentUserId.toString()) {
     return res.status(403).json({ message: "Only the assigned user can update task status" });
   }
@@ -271,24 +250,20 @@ export const updateTaskStatus = catchAsync(async (req: any, res: any) => {
 
   const taskResponse = formatTaskResponse(task);
 
-  // Update cache
   await redisService.cacheTask(taskId, taskResponse);
-  
-  // Invalidate related caches
+
   await redisService.invalidateUserTasks(task.assignedBy.toString());
   await redisService.invalidateUserTasks(task.assignTo.toString());
   await redisService.invalidateDashboardData(task.assignedBy.toString());
   await redisService.invalidateDashboardData(task.assignTo.toString());
   await redisService.invalidatePattern('tasks:*');
-  
-  // Invalidate project cache if task has projectId
+
   if (task.projectId) {
     await redisService.invalidateProject(task.projectId.toString());
     await redisService.invalidatePattern(`user:${task.assignedBy}:projects:*`);
     await redisService.invalidatePattern(`user:${task.assignTo}:projects:*`);
   }
 
-  // Create notification for assigner
   await Notification.create({
     recipient: task.assignedBy,
     sender: currentUserId,
@@ -303,7 +278,6 @@ export const updateTaskStatus = catchAsync(async (req: any, res: any) => {
   });
 });
 
-// Reassign task
 export const reassignTask = catchAsync(async (req: any, res: any) => {
   const { taskId } = req.params;
   const { assignTo } = req.body;
@@ -314,7 +288,6 @@ export const reassignTask = catchAsync(async (req: any, res: any) => {
     return res.status(404).json({ message: "Task not found" });
   }
 
-  // Only the user who assigned the task can reassign it
   if (task.assignedBy.toString() !== currentUserId.toString()) {
     return res.status(403).json({ message: "Only the user who assigned this task can reassign it" });
   }
@@ -335,10 +308,8 @@ export const reassignTask = catchAsync(async (req: any, res: any) => {
 
   const taskResponse = formatTaskResponse(task);
 
-  // Update cache
   await redisService.cacheTask(taskId, taskResponse);
-  
-  // Invalidate related caches
+
   await redisService.invalidateUserTasks(task.assignedBy.toString());
   await redisService.invalidateUserTasks(oldAssignee.toString());
   await redisService.invalidateUserTasks(assignTo);
@@ -347,7 +318,6 @@ export const reassignTask = catchAsync(async (req: any, res: any) => {
   await redisService.invalidateDashboardData(assignTo);
   await redisService.invalidatePattern('tasks:*');
 
-  // Create notifications
   await Notification.create({
     recipient: assignTo,
     sender: currentUserId,
@@ -370,7 +340,6 @@ export const reassignTask = catchAsync(async (req: any, res: any) => {
   });
 });
 
-// Delete task
 export const deleteTask = catchAsync(async (req: any, res: any) => {
   const { taskId } = req.params;
   const currentUserId = req.user._id;
@@ -380,14 +349,12 @@ export const deleteTask = catchAsync(async (req: any, res: any) => {
     return res.status(404).json({ message: "Task not found" });
   }
 
-  // Only the user who assigned the task can delete it
   if (task.assignedBy.toString() !== currentUserId.toString()) {
     return res.status(403).json({ message: "Only the user who assigned this task can delete it" });
   }
 
   await Task.findByIdAndDelete(taskId);
 
-  // Invalidate caches
   await redisService.invalidateTask(taskId);
   await redisService.invalidateUserTasks(task.assignedBy.toString());
   await redisService.invalidateUserTasks(task.assignTo.toString());
@@ -398,7 +365,6 @@ export const deleteTask = catchAsync(async (req: any, res: any) => {
   res.status(200).json({ message: "Task deleted successfully" });
 });
 
-// Clear all task caches
 export const clearTaskCaches = catchAsync(async (req: any, res: any) => {
   await redisService.invalidatePattern('tasks:*');
   await redisService.invalidatePattern('user:*:tasks');
@@ -407,11 +373,9 @@ export const clearTaskCaches = catchAsync(async (req: any, res: any) => {
   res.status(200).json({ message: "All task caches cleared successfully" });
 });
 
-// Get task statistics
 export const getTaskStats = catchAsync(async (req: any, res: any) => {
   const currentUserId = req.user._id;
 
-  // Try cache first
   const cachedStats = await redisService.get(`task_stats:${currentUserId}`);
   if (cachedStats) {
     return res.status(200).json(cachedStats);
@@ -464,7 +428,6 @@ export const getTaskStats = catchAsync(async (req: any, res: any) => {
     completionRate: parseFloat(completionRate.toFixed(2))
   };
 
-  // Cache stats for 5 minutes
   await redisService.set(`task_stats:${currentUserId}`, stats, 300);
 
   res.status(200).json(stats);

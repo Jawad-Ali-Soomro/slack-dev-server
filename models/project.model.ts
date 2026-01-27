@@ -190,19 +190,16 @@ const ProjectSchema = new Schema<IProject>({
   timestamps: true
 })
 
-// Indexes
 ProjectSchema.index({ createdBy: 1 })
 ProjectSchema.index({ 'members.user': 1 })
 ProjectSchema.index({ status: 1 })
 ProjectSchema.index({ priority: 1 })
 ProjectSchema.index({ isPublic: 1 })
 
-// Virtual for member count
 ProjectSchema.virtual('memberCount').get(function() {
   return this.members.length
 })
 
-// Pre-save middleware to update stats
 ProjectSchema.pre('save', function(next) {
   this.stats.totalMembers = this.members.length
   next()

@@ -4,7 +4,7 @@ import redisService from '../services/redis.service';
 
 export const healthCheck = catchAsync(async (req: Request, res: Response) => {
   try {
-    // Test Redis connection
+
     const redisPing = await redisService.ping();
     
     res.status(200).json({
@@ -33,7 +33,7 @@ export const healthCheck = catchAsync(async (req: Request, res: Response) => {
 
 export const redisStats = catchAsync(async (req: Request, res: Response) => {
   try {
-    // Get Redis info
+
     const info = await redisService.get('redis:info') || {};
     
     res.status(200).json({
@@ -63,7 +63,7 @@ export const clearCache = catchAsync(async (req: Request, res: Response) => {
         message: `Cache cleared for pattern: ${pattern}`
       });
     } else {
-      // Clear all cache (be careful with this in production)
+
       await redisService.invalidatePattern('*');
       res.status(200).json({
         status: 'success',
