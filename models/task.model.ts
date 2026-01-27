@@ -66,5 +66,7 @@ TaskSchema.index({ assignedBy: 1 });
 TaskSchema.index({ dueDate: 1 });
 TaskSchema.index({ createdAt: -1 });
 
-const Task = mongoose.model<ITask>("Task", TaskSchema);
+const Task =
+  mongoose.models.Task ||
+  mongoose.model("Task", TaskSchema)
 export default Task;

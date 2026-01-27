@@ -16,6 +16,7 @@
     "@types/socket.io": "^3.0.1",
     "axios": "^1.12.2",
     "bcryptjs": "^3.0.2",
+    "colors": "^1.4.0",
     "cors": "^2.8.5",
     "dotenv": "^17.2.2",
     "express": "^5.1.0",

@@ -43,5 +43,8 @@ MeetingSchema.pre('save', function (next) {
   }
 });
 
-const Meeting = mongoose.model<IMeeting>("Meeting", MeetingSchema);
+const Meeting =
+  mongoose.models.Meeting ||
+  mongoose.model("Meeting", MeetingSchema)
+
 export default Meeting;

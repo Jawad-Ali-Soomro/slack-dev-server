@@ -15,9 +15,7 @@ export const redisConfig = {
   enableReadyCheck: false,
   connectTimeout: 10000,
   commandTimeout: 5000,
-  // Redis cluster configuration (if using cluster)
-  enableOfflineQueue: false,
-  // Redis sentinel configuration (if using sentinel)
+  enableOfflineQueue: true,
   sentinels: process.env.REDIS_SENTINELS ? JSON.parse(process.env.REDIS_SENTINELS) : undefined,
   name: process.env.REDIS_SENTINEL_NAME,
   // Redis URL (alternative to host/port)

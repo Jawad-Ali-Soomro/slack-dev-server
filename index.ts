@@ -15,6 +15,7 @@ import {
   securityHeaders, 
   sanitizeResponse 
 } from './middlewares'
+import { requestLogger } from './helpers/logger'
 
 const swaggerSpec = swaggerJSDoc(swaggerOptions);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
@@ -24,7 +25,8 @@ dotenv.config({
 logger.info('server requested')
 dbConnection()
 
-// Initialize Redis connection
+app.use(requestLogger)
+
 redisService.ping().then(() => {
   logger.info('Redis connection established')
 }).catch((error) => {
@@ -38,13 +40,10 @@ process.on("unhandledRejection", (err: Error, next) => {
   logger.error(`unhandled rejection: ${err.message}`);
   process.exit(1);
 })
-// Security headers - apply first
 app.use(securityHeaders);
 
-// Response sanitization
 app.use(sanitizeResponse);
 
-// CORS configuration
 app.use(cors({
   origin: process.env.FRONTEND_URL || "*",
   credentials: true,

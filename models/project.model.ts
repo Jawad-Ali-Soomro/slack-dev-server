@@ -208,4 +208,8 @@ ProjectSchema.pre('save', function(next) {
   next()
 })
 
-export const Project = mongoose.model<IProject>('Project', ProjectSchema)
+export const Project =
+  mongoose.models.Project ||
+  mongoose.model("Project", ProjectSchema)
+
+

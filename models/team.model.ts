@@ -101,4 +101,7 @@ TeamSchema.pre('save', function(next) {
   next()
 })
 
-export const Team = mongoose.model<ITeam>('Team', TeamSchema)
+export const Team =
+  mongoose.models.Team ||
+  mongoose.model("Team", TeamSchema)
+

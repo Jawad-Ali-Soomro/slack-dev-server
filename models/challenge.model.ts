@@ -72,6 +72,9 @@ ChallengeSchema.index({ createdBy: 1 });
 ChallengeSchema.index({ category: 1 });
 ChallengeSchema.index({ tags: 1 });
 
-export const Challenge = mongoose.model<IChallenge>("Challenge", ChallengeSchema);
+export const Challenge =
+  mongoose.models.Challenge ||
+  mongoose.model("Challenge", ChallengeSchema)
+
 
 
