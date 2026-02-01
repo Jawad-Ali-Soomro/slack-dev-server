@@ -4,3 +4,5 @@ uploads
 logs
 logs/*
 .vercel
+/logs
+logs/

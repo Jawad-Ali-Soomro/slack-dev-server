@@ -46,10 +46,13 @@ class SocketService {
       });
 
       this.io.emit('user_online', {
+        userName: user.name,
         userId: user.id,
         isOnline: true,
+        chatId: user.chatId,
         lastSeen: new Date()
       });
+      console.log(user)
 
       socket.on('join_chat', (chatId: string) => {
         socket.join(`chat:${chatId}`);
@@ -145,6 +148,7 @@ class SocketService {
         this.connectedUsers.delete(user.id);
         
         this.io.emit('user_offline', {
+          userName: user.name,
           userId: user.id,
           isOnline: false,
           lastSeen: new Date()
