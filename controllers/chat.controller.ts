@@ -70,8 +70,8 @@ class ChatController {
       }
 
       const { chatId } = req.params;
-      // const page = parseInt(req.query.page as string) || 1;
-      // const limit = parseInt(req.query.limit as string) || 50;
+
+
 
       const messages = await chatService.getChatMessages(chatId, userId);
 

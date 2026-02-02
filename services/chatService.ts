@@ -121,7 +121,6 @@ class ChatService {
         return cached;
       }
 
-      // const skip = (page - 1) * limit;
       
       const messages = await Message.find({
         chat: chatId,
@@ -130,8 +129,8 @@ class ChatService {
       .populate('sender', 'username email avatar')
       .populate('replyTo', 'content sender')
       .sort({ createdAt: 1 })
-      // .skip(skip)
-      // .limit(limit);
+
+
 
       const messageResponses = messages.map(message => this.formatMessageResponse(message));
 
