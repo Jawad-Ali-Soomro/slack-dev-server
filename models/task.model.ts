@@ -12,6 +12,9 @@ export interface ITask extends Document {
   tags?: string[];
   createdAt: Date;
   updatedAt: Date;
+  overdueEmailSent: {
+    type: Boolean
+  }
 }
 
 const TaskSchema = new Schema<ITask>({
@@ -56,7 +59,12 @@ const TaskSchema = new Schema<ITask>({
   tags: [{
     type: String,
     trim: true
-  }]
+  }],
+  overdueEmailSent: {
+  type: Boolean,
+  default: false,
+}
+
 }, {
   timestamps: true
 });

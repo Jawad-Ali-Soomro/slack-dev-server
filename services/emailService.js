@@ -85,7 +85,7 @@ class EmailService {
 
           <tr>
             <td class="content" style="padding: 16px 24px 8px; text-align:center;">
-              <h1 style="margin:0 0 10px; font-size:16px; color:#111827; font-weight:900;">${title}</h1>
+              <h1 style="margin:0 0 10px; font-size:16px; color:black; font-weight:900;">${title}</h1>
               <p style="margin:0 0 14px; line-height:1.4; color:#6b7280; font-size:10px;font-weight:600">
                 ${message}
               </p>

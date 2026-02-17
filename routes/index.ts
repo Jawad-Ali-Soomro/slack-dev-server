@@ -38,5 +38,6 @@ router.use("/health", healthRouter)
 router.use("/notes", noteRouter)
 router.use("/challenges", challengeRouter)
 router.use("/awards", awardRouter)
+router.use("/awards", awardRouter)
 
 export default router

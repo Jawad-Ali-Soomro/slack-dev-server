@@ -11,6 +11,7 @@ import router from './routes'
 import cors from 'cors'
 import SocketService from './services/socketService'
 import redisService from './services/redis.service'
+import './services/cron'
 import { 
   securityHeaders, 
   sanitizeResponse 
@@ -45,15 +46,14 @@ app.use(securityHeaders);
 app.use(sanitizeResponse);
 
 app.use(cors({
-  origin: process.env.FRONTEND_URL || "*",
+  origin: "*",
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'authorization', 'X-Requested-With'],
   exposedHeaders: ['Content-Type', 'Authorization', 'X-RateLimit-Limit', 'X-RateLimit-Remaining', 'X-RateLimit-Reset'],
   preflightContinue: false,
   optionsSuccessStatus: 200,
 }))
-logger.info(`cors is running on ${process.env.FRONTEND_URL}`)
 
 app.use(express.static('public'))
 app.use('/profiles', express.static('uploads/profiles'))

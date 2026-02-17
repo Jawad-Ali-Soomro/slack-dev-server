@@ -9,7 +9,7 @@ export const dbConnection = () => {
     .connect(mongoUri)
     .then(() => {
       logger.info("connected database");
-      console.log("connected database");
+      console.log("connected database", mongoose.connection.name);
     })
     .catch((error) => {
       logger.error(error);

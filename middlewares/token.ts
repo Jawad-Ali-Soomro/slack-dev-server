@@ -89,7 +89,7 @@ export const generateToken = (
 
 export const authenticate = async (req: any, res: any, next: any) => {
   try {
-    const encryptedToken = req.header('Authorization')?.replace('Bearer ', '');
+    const encryptedToken = req.header('Authorization')?.replace('Bearer ', '') || req.header('authorization')?.replace('Bearer ', '');
     
     if (!encryptedToken) {
       return res.status(401).json({ 
