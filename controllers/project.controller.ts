@@ -399,7 +399,7 @@ export const addMember = catchAsync(async (req: any, res: Response) => {
     })
   }
 
-  const existingMember = project.members.find(member => 
+  const existingMember = project.members.find((member: any) => 
     member.user.toString() === newMemberId
   )
 
@@ -484,7 +484,7 @@ export const removeMember = catchAsync(async (req: any, res: Response) => {
     })
   }
 
-  project.members = project.members.filter(member => 
+  project.members = project.members.filter((member: any) => 
     member.user.toString() !== memberToRemove
   )
 
@@ -538,7 +538,7 @@ export const updateMemberRole = catchAsync(async (req: any, res: Response) => {
     })
   }
 
-  const member = project.members.find(m => m.user.toString() === memberId)
+  const member = project.members.find((m: any) => m.user.toString() === memberId)
   if (!member) {
     return res.status(404).json({
       success: false,
@@ -634,7 +634,7 @@ export const updateLink = catchAsync(async (req: any, res: Response) => {
     })
   }
 
-  const linkIndex = project.links.findIndex(l => l._id?.toString() === linkId)
+  const linkIndex = project.links.findIndex((l: any) => l._id?.toString() === linkId)
   if (linkIndex === -1) {
     return res.status(404).json({
       success: false,
@@ -673,7 +673,7 @@ export const removeLink = catchAsync(async (req: any, res: Response) => {
     })
   }
 
-  project.links = project.links.filter((l, index) => l._id?.toString() !== linkId)
+  project.links = project.links.filter((l: any) => l._id?.toString() !== linkId)
   await project.save()
   await project.populate('createdBy members.user', 'username email avatar role')
 

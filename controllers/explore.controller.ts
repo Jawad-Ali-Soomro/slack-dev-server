@@ -113,7 +113,7 @@ export const createPublicProject = catchAsync(async (req: any, res: Response) =>
     category,
     tags: tags ? (Array.isArray(tags) ? tags : tags.split(',').map((t: string) => t.trim())) : [],
     createdBy: userId,
-    isActive: true
+    isActive: false
   })
 
   res.status(201).json({

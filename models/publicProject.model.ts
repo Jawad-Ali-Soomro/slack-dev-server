@@ -57,7 +57,7 @@ const PublicProjectSchema = new Schema<IPublicProject>({
   },
   isActive: {
     type: Boolean,
-    default: true
+    default: false
   },
   purchaseCount: {
     type: Number,
