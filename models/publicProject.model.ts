@@ -14,6 +14,7 @@ export interface IPublicProject extends Document {
   rating?: number
   createdAt: Date
   updatedAt: Date
+  isRejected: Boolean
 }
 
 const PublicProjectSchema = new Schema<IPublicProject>({
@@ -59,6 +60,10 @@ const PublicProjectSchema = new Schema<IPublicProject>({
     type: Boolean,
     default: false
   },
+  isRejected: {
+  type: Boolean,
+  default: false,
+},
   purchaseCount: {
     type: Number,
     default: 0

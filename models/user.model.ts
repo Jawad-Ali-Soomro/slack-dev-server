@@ -3,100 +3,114 @@ import bcrypt from "bcryptjs";
 import { IUser, Role } from "../interfaces";
 
 const UserSchema = new Schema<IUser>({
-  email: { type: String, required: true},
+  email: { type: String, required: true },
   username: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   role: {
     type: String,
     enum: Role,
-    default: Role.User
+    default: Role.User,
   },
   emailVerificationToken: {
-    type: String
+    type: String,
   },
   emailVerified: {
     type: Boolean,
-    default: false
+    default: false,
   },
   emailVerificationTokenExpires: {
-    type: Date
+    type: Date,
   },
   passwordResetToken: {
-    type: String
+    type: String,
   },
   passwordResetTokenExpires: {
-    type: Date
+    type: Date,
   },
   avatar: {
-    type: String
+    type: String,
   },
   bio: {
     type: String,
-    maxlength: 500
+    maxlength: 500,
   },
   userLocation: {
-    type: String
+    type: String,
   },
   website: {
-    type: String
+    type: String,
   },
   socialLinks: {
     twitter: {
-      type: String
+      type: String,
     },
     linkedin: {
-      type: String
+      type: String,
     },
     github: {
-      type: String
+      id: { type: String },
+      username: { type: String },
+      email: { type: String },
+      avatarUrl: { type: String },
+      profileUrl: { type: String },
+      accessToken: { type: String },
+      refreshToken: { type: String },
+      scope: { type: String },
+      connectedAt: { type: Date },
     },
     instagram: {
-      type: String
+      type: String,
     },
     facebook: {
-      type: String
-    }
+      type: String,
+    },
   },
   dateOfBirth: {
-    type: Date
+    type: Date,
   },
   phone: {
-    type: String
+    type: String,
   },
   isPrivate: {
     type: Boolean,
-    default: false
+    default: false,
   },
   followers: {
     type: [Schema.Types.ObjectId],
     ref: "User",
-    default: []
+    default: [],
   },
   following: {
     type: [Schema.Types.ObjectId],
     ref: "User",
-    default: []
+    default: [],
   },
-  projects: [{
-    type: Schema.Types.ObjectId,
-    ref: "Project"
-  }],
-  teams: [{
-    type: Schema.Types.ObjectId,
-    ref: "Team"
-  }],
-  awards: [{
-    awardId: { type: String, required: true },
-    name: { type: String, required: true },
-    icon: { type: String, required: true },
-    description: { type: String, required: true },
-    pointsRequired: { type: Number, required: true },
-    earnedAt: { type: Date, default: Date.now }
-  }],
+  projects: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Project",
+    },
+  ],
+  teams: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Team",
+    },
+  ],
+  awards: [
+    {
+      awardId: { type: String, required: true },
+      name: { type: String, required: true },
+      icon: { type: String, required: true },
+      description: { type: String, required: true },
+      pointsRequired: { type: Number, required: true },
+      earnedAt: { type: Date, default: Date.now },
+    },
+  ],
   totalChallengePoints: {
     type: Number,
-    default: 0
-  }
+    default: 0,
+  },
 });
 
 UserSchema.pre("save", async function (next) {
@@ -109,12 +123,12 @@ UserSchema.pre("save", async function (next) {
   if (user.isModified("password")) {
     user.password = await bcrypt.hash(user.password, 10);
   }
-  
+
   next();
 });
 
 UserSchema.methods.comparePassword = async function (
-  candidatePassword: string
+  candidatePassword: string,
 ): Promise<boolean> {
   return bcrypt.compare(candidatePassword, this.password);
 };

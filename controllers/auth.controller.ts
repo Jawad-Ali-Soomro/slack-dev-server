@@ -7,6 +7,8 @@ import { buildOtpEmail, buildResetPasswordEmail } from "../templates";
 import path from "path";
 import dotenv from "dotenv";
 import redisService from "../services/redis.service";
+import axios from "axios";
+import { decrypt } from "../middlewares/token";
 dotenv.config({
   path: "../config/.env"
 });
@@ -20,6 +22,7 @@ const formatUserResponse = (user: IUser): UserResponse => ({
   emailVerified: user.emailVerified,
   isPrivate: user.isPrivate,
   createdAt: user.createdAt,
+  socialLinks: user?.socialLinks
 });
 
 
@@ -305,3 +308,56 @@ export const getProfile = catchAsync(async (req: any, res: any) => {
   });
 });
 
+export const connectGithub = catchAsync(async (req: any, res: any) => {
+  const { code, state } = req.query;
+
+  if (!state) return res.status(400).send("Missing user info (state)");
+
+  // ✅ Decrypt & verify the JWT from state
+  let decoded: any;
+  try {
+    const jwtToken = decrypt(state); // your AES decrypt function
+    decoded = jwt.verify(jwtToken, process.env.JWT_SECRET || 'default_secret');
+  } catch (err) {
+    return res.status(401).send("Invalid or expired token in state");
+  }
+
+  const userId = decoded.id;
+
+  // Exchange code for access token
+  const tokenRes = await axios.post(
+    "https://github.com/login/oauth/access_token",
+    {
+      client_id: process.env.GITHUB_CLIENT_ID,
+      client_secret: process.env.GITHUB_CLIENT_SECRET,
+      code,
+    },
+    { headers: { Accept: "application/json" } }
+  );
+
+  const accessToken = tokenRes.data.access_token;
+
+  // Get GitHub user info
+  const githubUser = (await axios.get("https://api.github.com/user", {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  })).data;
+
+  // Save in DB
+  await User.findByIdAndUpdate(userId, {
+    "socialLinks.github": {
+      id: githubUser.id,
+      username: githubUser.login,
+      accessToken,
+    },
+  });
+
+  res.redirect(process.env.PROD_DASH_URL);
+});
+
+export const generateUrl = catchAsync(async (req: any, res: any) => {
+   const state = generateToken({ id: req.user.id }); 
+
+  const githubUrl = `https://github.com/login/oauth/authorize?client_id=${process.env.GITHUB_CLIENT_ID}&scope=repo user&state=${state}`;
+
+  res.json({ url: githubUrl });
+})

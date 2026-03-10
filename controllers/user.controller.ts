@@ -40,7 +40,7 @@ const getAdminScopedUserIds = async (adminId: string) => {
 
   teams.forEach(team => {
     idSet.add(team.createdBy.toString());
-    team.members.forEach(member => idSet.add(member.user.toString()));
+    team.members.forEach((member: any) => idSet.add(member.user.toString()));
   });
 
   return Array.from(idSet);
@@ -609,7 +609,7 @@ export const getAllUsers = catchAsync(async (req: any, res: any) => {
 
     const teams = await Team.find({ createdBy: currentUser._id });
     const teamMemberIds = teams.flatMap(team => 
-      team.members.map(member => member.user.toString())
+      team.members.map((member: any) => member.user.toString())
     );
 
     teamMemberIds.push(currentUser._id.toString());

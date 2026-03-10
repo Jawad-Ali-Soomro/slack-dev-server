@@ -1,6 +1,6 @@
 import express from 'express'
 const authRouter = express.Router()
-import { register, login, verifyEmail, resendOtp, forgotPassword, resetPassword, getProfile, logout } from '../controllers/auth.controller'
+import { register, login, verifyEmail, resendOtp, forgotPassword, resetPassword, getProfile, logout, connectGithub } from '../controllers/auth.controller'
 import { authenticate, authRateLimiter } from '../middlewares'
 
 /**
@@ -191,5 +191,6 @@ authRouter.post('/reset-password', authRateLimiter, resetPassword)
  */
 authRouter.get('/profile', authenticate, getProfile)
 authRouter.post('/logout', authenticate, authRateLimiter, logout)
+authRouter.get("/github/callback", connectGithub)
 
 export default authRouter

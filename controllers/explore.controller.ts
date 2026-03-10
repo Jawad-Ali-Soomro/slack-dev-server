@@ -1,55 +1,52 @@
-import { Request, Response } from 'express'
-import { catchAsync } from '../middlewares/catchAsync'
-import { PublicProject, Purchase } from '../models'
-import multer from 'multer'
-import path from 'path'
-import fs from 'fs'
-import Stripe from 'stripe'
+import { Request, Response } from "express";
+import { catchAsync } from "../middlewares/catchAsync";
+import { PublicProject, Purchase } from "../models";
+import multer from "multer";
+import path from "path";
+import fs from "fs";
+import Stripe from "stripe";
 
-const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY
-const STRIPE_PAYMENT_CURRENCY = process.env.STRIPE_PAYMENT_CURRENCY || 'usd'
+const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
+const STRIPE_PAYMENT_CURRENCY = process.env.STRIPE_PAYMENT_CURRENCY || "usd";
 
 const stripeClient = STRIPE_SECRET_KEY
-  ? new Stripe(STRIPE_SECRET_KEY, { apiVersion: '2025-09-30.clover' })
-  : null
+  ? new Stripe(STRIPE_SECRET_KEY, { apiVersion: "2025-09-30.clover" })
+  : null;
 
 const ensureStripeClient = () => {
   if (!stripeClient) {
-    throw new Error('Stripe is not configured. Please set STRIPE_SECRET_KEY in the server environment.')
+    throw new Error(
+      "Stripe is not configured. Please set STRIPE_SECRET_KEY in the server environment.",
+    );
   }
-  return stripeClient
-}
+  return stripeClient;
+};
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    const uploadPath = 'uploads/projects'
+    const uploadPath = "uploads/projects";
     if (!fs.existsSync(uploadPath)) {
-      fs.mkdirSync(uploadPath, { recursive: true })
+      fs.mkdirSync(uploadPath, { recursive: true });
     }
-    cb(null, uploadPath)
+    cb(null, uploadPath);
   },
   filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
-    cb(null, `project-${uniqueSuffix}${path.extname(file.originalname)}`)
-  }
-})
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    cb(null, `project-${uniqueSuffix}${path.extname(file.originalname)}`);
+  },
+});
 
 const fileFilter = (req: any, file: any, cb: any) => {
-
-  if (file.mimetype === 'application/zip' || file.mimetype === 'application/x-zip-compressed' || path.extname(file.originalname).toLowerCase() === '.zip') {
-    cb(null, true)
+  if (
+    file.mimetype === "application/zip" ||
+    file.mimetype === "application/x-zip-compressed" ||
+    path.extname(file.originalname).toLowerCase() === ".zip"
+  ) {
+    cb(null, true);
   } else {
-    cb(new Error('Only ZIP files are allowed!'), false)
+    cb(new Error("Only ZIP files are allowed!"), false);
   }
-}
-
-const upload = multer({
-  storage: storage,
-  limits: {
-    fileSize: 100 * 1024 * 1024, // 100MB limit for zip files
-  },
-  fileFilter: fileFilter
-})
+};
 
 export const uploadProjectFiles = (req: any, res: any, next: any) => {
   const uploadMultiple = multer({
@@ -58,102 +55,144 @@ export const uploadProjectFiles = (req: any, res: any, next: any) => {
       fileSize: 100 * 1024 * 1024, // 100MB limit
     },
     fileFilter: (req, file, cb) => {
-
-      if (file.fieldname === 'zipFile') {
-        if (file.mimetype === 'application/zip' || 
-            file.mimetype === 'application/x-zip-compressed' || 
-            path.extname(file.originalname).toLowerCase() === '.zip') {
-          cb(null, true)
+      if (file.fieldname === "zipFile") {
+        if (
+          file.mimetype === "application/zip" ||
+          file.mimetype === "application/x-zip-compressed" ||
+          path.extname(file.originalname).toLowerCase() === ".zip"
+        ) {
+          cb(null, true);
         } else {
-          cb(new Error('ZIP file must be a valid zip archive'))
+          cb(new Error("ZIP file must be a valid zip archive"));
         }
-      } else if (file.fieldname === 'previewImages') {
-        if (file.mimetype.startsWith('image/')) {
-          cb(null, true)
+      } else if (file.fieldname === "previewImages") {
+        if (file.mimetype.startsWith("image/")) {
+          cb(null, true);
         } else {
-          cb(new Error('Preview images must be image files'))
+          cb(new Error("Preview images must be image files"));
         }
       } else {
-        cb(null, true)
+        cb(null, true);
       }
-    }
+    },
   }).fields([
-    { name: 'zipFile', maxCount: 1 },
-    { name: 'previewImages', maxCount: 5 }
-  ])
-  
-  uploadMultiple(req, res, next)
-}
+    { name: "zipFile", maxCount: 1 },
+    { name: "previewImages", maxCount: 5 },
+  ]);
 
-export const createPublicProject = catchAsync(async (req: any, res: Response) => {
-  const userId = req.user._id
-  const { title, description, price, category, tags } = req.body
+  uploadMultiple(req, res, next);
+};
 
-  if (!req.files || !req.files.zipFile || req.files.zipFile.length === 0) {
-    return res.status(400).json({
-      success: false,
-      message: 'ZIP file is required'
-    })
-  }
+export const createPublicProject = catchAsync(
+  async (req: any, res: Response) => {
+    const userId = req.user._id;
+    const { title, description, price, category, tags } = req.body;
 
-  const zipFile = `/projects/${req.files.zipFile[0].filename}`
+    if (!req.files || !req.files.zipFile || req.files.zipFile.length === 0) {
+      return res.status(400).json({
+        success: false,
+        message: "ZIP file is required",
+      });
+    }
 
-  let previewImages: string[] = []
-  if (req.files.previewImages && Array.isArray(req.files.previewImages)) {
-    previewImages = req.files.previewImages
-      .map((file: any) => `/projects/${file.filename}`)
-  }
+    const zipFile = `/projects/${req.files.zipFile[0].filename}`;
 
-  const project = await PublicProject.create({
-    title,
-    description,
-    price: parseFloat(price),
-    zipFile,
-    previewImages,
-    category,
-    tags: tags ? (Array.isArray(tags) ? tags : tags.split(',').map((t: string) => t.trim())) : [],
-    createdBy: userId,
-    isActive: false
-  })
+    let previewImages: string[] = [];
+    if (req.files.previewImages && Array.isArray(req.files.previewImages)) {
+      previewImages = req.files.previewImages.map(
+        (file: any) => `/projects/${file.filename}`,
+      );
+    }
 
-  res.status(201).json({
-    success: true,
-    message: 'Project created successfully',
-    project
-  })
-})
+    const project = await PublicProject.create({
+      title,
+      description,
+      price: parseFloat(price),
+      zipFile,
+      previewImages,
+      category,
+      tags: tags
+        ? Array.isArray(tags)
+          ? tags
+          : tags.split(",").map((t: string) => t.trim())
+        : [],
+      createdBy: userId,
+      isActive: false,
+    });
+
+    res.status(201).json({
+      success: true,
+      message: "Project created successfully",
+      project,
+    });
+  },
+);
 
 export const getPublicProjects = catchAsync(async (req: any, res: Response) => {
-  const { category, search, createdBy, page = 1, limit = 12, sortBy = 'createdAt', sortOrder = 'desc' } = req.query
+  const {
+    category,
+    search,
+    createdBy,
+    status, // active / inactive / rejected
+    page = 1,
+    limit = 12,
+    sortBy = "createdAt",
+    sortOrder = "desc",
+  } = req.query;
 
-  const query: any = { isActive: true }
+  const role = req.user?.role?.toLowerCase();
+  const isPrivileged = role === "superadmin";
 
-  if (category) {
-    query.category = category
+  const query: any = {};
+
+  if (!isPrivileged) {
+    query.isActive = true;
+    query.$or = [
+      { isRejected: false },
+      { isRejected: { $exists: false } },
+    ];
+  } else {
+
+    if (status === "active") {
+      query.isActive = true;
+      query.$or = [
+        { isRejected: false },
+        { isRejected: { $exists: false } },
+      ];
+    } else if (status === "inactive") {
+      query.isActive = false;
+      query.$or = [
+        { isRejected: false },
+        { isRejected: { $exists: false } },
+      ];
+    } else if (status === "rejected") {
+      query.isRejected = true;
+    }
+
   }
+
+  if (category) query.category = category;
 
   if (search) {
     query.$or = [
-      { title: { $regex: search, $options: 'i' } },
-      { description: { $regex: search, $options: 'i' } },
-      { tags: { $in: [new RegExp(search, 'i')] } }
-    ]
+      { title: { $regex: search, $options: "i" } },
+      { description: { $regex: search, $options: "i" } },
+      { tags: { $in: [new RegExp(search, "i")] } },
+    ];
   }
 
-  if (createdBy) {
-    query.createdBy = createdBy
-  }
+  if (createdBy) query.createdBy = createdBy;
 
-  const sort: any = {}
-  sort[sortBy] = sortOrder === 'asc' ? 1 : -1
+  const sort: any = {};
+  sort[sortBy] = sortOrder === "asc" ? 1 : -1;
 
   const projects = await PublicProject.find(query)
-    .populate('createdBy', 'username email avatar')
+    .populate("createdBy", "username email avatar")
     .sort(sort)
     .limit(parseInt(limit))
-    .skip((parseInt(page) - 1) * parseInt(limit))
+    .skip((parseInt(page) - 1) * parseInt(limit));
 
-  const total = await PublicProject.countDocuments(query)
+  const total = await PublicProject.countDocuments(query);
 
   res.status(200).json({
     success: true,
@@ -162,148 +201,177 @@ export const getPublicProjects = catchAsync(async (req: any, res: Response) => {
       page: parseInt(page),
       limit: parseInt(limit),
       total,
-      pages: Math.ceil(total / parseInt(limit))
-    }
-  })
-})
+      pages: Math.ceil(total / parseInt(limit)),
+    },
+  });
+});
 
 export const getPublicProject = catchAsync(async (req: any, res: Response) => {
-  const { id } = req.params
-  const userId = req.user?._id
+  const { id } = req.params;
+  const userId = req.user?._id;
 
-  const project = await PublicProject.findById(id)
-    .populate('createdBy', 'username email avatar')
+  const role = req.user?.role?.toLowerCase();
+  const isPrivileged = role === "admin" || role === "superadmin";
 
-  if (!project || !project.isActive) {
+  const project = await PublicProject.findById(id).populate(
+    "createdBy",
+    "username email avatar",
+  );
+
+  if (!project) {
     return res.status(404).json({
       success: false,
-      message: 'Project not found'
-    })
+      message: "Project not found",
+    });
   }
 
-  let hasPurchased = false
+  if (!project.isActive && !isPrivileged) {
+    return res.status(403).json({
+      success: false,
+      message: "Project not approved yet",
+    });
+  }
+
+  let hasPurchased = false;
+
   if (userId) {
-    const purchase = await Purchase.findOne({ user: userId, project: id, status: 'completed' })
-    hasPurchased = !!purchase
+    const purchase = await Purchase.findOne({
+      user: userId,
+      project: id,
+      status: "completed",
+    });
+    hasPurchased = !!purchase;
   }
 
   res.status(200).json({
     success: true,
     project: {
       ...project.toObject(),
-      hasPurchased
-    }
-  })
-})
-
-export const createPaymentIntent = catchAsync(async (req: any, res: Response) => {
-  const stripe = ensureStripeClient()
-  const userId = req.user._id
-  const userEmail = req.user.email
-  const { projectId } = req.body
-
-  if (!projectId) {
-    return res.status(400).json({
-      success: false,
-      message: 'Project ID is required'
-    })
-  }
-
-  const project = await PublicProject.findById(projectId)
-  if (!project || !project.isActive) {
-    return res.status(404).json({
-      success: false,
-      message: 'Project not found'
-    })
-  }
-
-  if (project.createdBy.toString() === userId.toString()) {
-    return res.status(400).json({
-      success: false,
-      message: 'You cannot purchase your own project'
-    })
-  }
-
-  const existingPurchase = await Purchase.findOne({ user: userId, project: projectId, status: 'completed' })
-  if (existingPurchase) {
-    return res.status(400).json({
-      success: false,
-      message: 'You have already purchased this project'
-    })
-  }
-
-  const amountInCents = Math.max(1, Math.round(project.price * 100))
-
-  const paymentIntent = await stripe.paymentIntents.create({
-    amount: amountInCents,
-    currency: STRIPE_PAYMENT_CURRENCY,
-    automatic_payment_methods: { enabled: true },
-    metadata: {
-      projectId: projectId.toString(),
-      userId: userId.toString(),
-      projectTitle: project.title
+      hasPurchased,
     },
-    receipt_email: userEmail || undefined
-  })
+  });
+});
 
-  res.status(200).json({
-    success: true,
-    clientSecret: paymentIntent.client_secret,
-    paymentIntentId: paymentIntent.id,
-    amount: paymentIntent.amount,
-    currency: paymentIntent.currency
-  })
-})
+export const createPaymentIntent = catchAsync(
+  async (req: any, res: Response) => {
+    const stripe = ensureStripeClient();
+    const userId = req.user._id;
+    const userEmail = req.user.email;
+    const { projectId } = req.body;
+
+    if (!projectId) {
+      return res.status(400).json({
+        success: false,
+        message: "Project ID is required",
+      });
+    }
+
+    const project = await PublicProject.findById(projectId);
+    if (!project || !project.isActive) {
+      return res.status(404).json({
+        success: false,
+        message: "Project not found",
+      });
+    }
+
+    if (project.createdBy.toString() === userId.toString()) {
+      return res.status(400).json({
+        success: false,
+        message: "You cannot purchase your own project",
+      });
+    }
+
+    const existingPurchase = await Purchase.findOne({
+      user: userId,
+      project: projectId,
+      status: "completed",
+    });
+    if (existingPurchase) {
+      return res.status(400).json({
+        success: false,
+        message: "You have already purchased this project",
+      });
+    }
+
+    const amountInCents = Math.max(1, Math.round(project.price * 100));
+
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: amountInCents,
+      currency: STRIPE_PAYMENT_CURRENCY,
+      automatic_payment_methods: { enabled: true },
+      metadata: {
+        projectId: projectId.toString(),
+        userId: userId.toString(),
+        projectTitle: project.title,
+      },
+      receipt_email: userEmail || undefined,
+    });
+
+    res.status(200).json({
+      success: true,
+      clientSecret: paymentIntent.client_secret,
+      paymentIntentId: paymentIntent.id,
+      amount: paymentIntent.amount,
+      currency: paymentIntent.currency,
+    });
+  },
+);
 
 export const purchaseProject = catchAsync(async (req: any, res: Response) => {
-  const stripe = ensureStripeClient()
-  const userId = req.user._id
-  const { projectId, paymentIntentId } = req.body
+  const stripe = ensureStripeClient();
+  const userId = req.user._id;
+  const { projectId, paymentIntentId } = req.body;
 
-  const project = await PublicProject.findById(projectId)
+  const project = await PublicProject.findById(projectId);
   if (!project || !project.isActive) {
     return res.status(404).json({
       success: false,
-      message: 'Project not found'
-    })
+      message: "Project not found",
+    });
   }
 
-  const existingPurchase = await Purchase.findOne({ user: userId, project: projectId })
-  if (existingPurchase && existingPurchase.status === 'completed') {
+  const existingPurchase = await Purchase.findOne({
+    user: userId,
+    project: projectId,
+  });
+  if (existingPurchase && existingPurchase.status === "completed") {
     return res.status(400).json({
       success: false,
-      message: 'You have already purchased this project'
-    })
+      message: "You have already purchased this project",
+    });
   }
 
   if (!paymentIntentId) {
     return res.status(400).json({
       success: false,
-      message: 'PaymentIntent ID is required to complete the purchase'
-    })
+      message: "PaymentIntent ID is required to complete the purchase",
+    });
   }
 
-  const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId)
-  if (paymentIntent.status !== 'succeeded') {
+  const paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId);
+  if (paymentIntent.status !== "succeeded") {
     return res.status(400).json({
       success: false,
-      message: 'Payment has not been completed'
-    })
+      message: "Payment has not been completed",
+    });
   }
 
-  if (paymentIntent.metadata?.projectId !== projectId.toString() || paymentIntent.metadata?.userId !== userId.toString()) {
+  if (
+    paymentIntent.metadata?.projectId !== projectId.toString() ||
+    paymentIntent.metadata?.userId !== userId.toString()
+  ) {
     return res.status(400).json({
       success: false,
-      message: 'Payment does not match this project or user'
-    })
+      message: "Payment does not match this project or user",
+    });
   }
 
-  const expectedAmount = Math.max(1, Math.round(project.price * 100))
+  const expectedAmount = Math.max(1, Math.round(project.price * 100));
   if (paymentIntent.amount !== expectedAmount) {
     return res.status(400).json({
       success: false,
-      message: 'Payment amount does not match project price'
-    })
+      message: "Payment amount does not match project price",
+    });
   }
 
   const purchase = await Purchase.findOneAndUpdate(
@@ -312,49 +380,65 @@ export const purchaseProject = catchAsync(async (req: any, res: Response) => {
       user: userId,
       project: projectId,
       price: project.price,
-      status: 'completed',
-      purchasedAt: new Date()
+      status: "completed",
+      purchasedAt: new Date(),
     },
-    { upsert: true, new: true }
-  )
+    { upsert: true, new: true },
+  );
 
-  await PublicProject.findByIdAndUpdate(projectId, { $inc: { purchaseCount: 1 } })
+  await PublicProject.findByIdAndUpdate(projectId, {
+    $inc: { purchaseCount: 1 },
+  });
 
   res.status(200).json({
     success: true,
-    message: 'Project purchased successfully',
-    purchase
-  })
-})
+    message: "Project purchased successfully",
+    purchase,
+  });
+});
 
 export const getMyPurchases = catchAsync(async (req: any, res: Response) => {
-  const userId = req.user._id
-  const { page = 1, limit = 12 } = req.query
+  const userId = req.user._id;
+  const { page = 1, limit = 12 } = req.query;
 
-  const purchases = await Purchase.find({ user: userId, status: 'completed' })
+  const purchases = await Purchase.find({ user: userId, status: "completed" })
     .populate({
-      path: 'project',
+      path: "project",
       populate: {
-        path: 'createdBy',
-        select: 'username email avatar'
-      }
+        path: "createdBy",
+        select: "username email avatar",
+      },
     })
-    .sort({ purchasedAt: -1 })
+    .sort({ purchasedAt: -1 });
 
-  const createdProjects = await PublicProject.find({ createdBy: userId, isActive: true })
-    .populate('createdBy', 'username email avatar')
-    .sort({ createdAt: -1 })
+  const createdProjects = await PublicProject.find({
+    createdBy: userId,
+    isActive: true,
+  })
+    .populate("createdBy", "username email avatar")
+    .sort({ createdAt: -1 });
 
   const allProjects = [
-    ...purchases.map(p => ({ ...p.toObject(), type: 'purchased', purchaseDate: p.purchasedAt })),
-    ...createdProjects.map(p => ({ project: p.toObject(), type: 'created', purchaseDate: p.createdAt }))
-  ].sort((a, b) => new Date(b.purchaseDate).getTime() - new Date(a.purchaseDate).getTime())
+    ...purchases.map((p) => ({
+      ...p.toObject(),
+      type: "purchased",
+      purchaseDate: p.purchasedAt,
+    })),
+    ...createdProjects.map((p) => ({
+      project: p.toObject(),
+      type: "created",
+      purchaseDate: p.createdAt,
+    })),
+  ].sort(
+    (a, b) =>
+      new Date(b.purchaseDate).getTime() - new Date(a.purchaseDate).getTime(),
+  );
 
-  const total = allProjects.length
+  const total = allProjects.length;
   const paginatedProjects = allProjects.slice(
     (parseInt(page) - 1) * parseInt(limit),
-    parseInt(page) * parseInt(limit)
-  )
+    parseInt(page) * parseInt(limit),
+  );
 
   res.status(200).json({
     success: true,
@@ -363,94 +447,185 @@ export const getMyPurchases = catchAsync(async (req: any, res: Response) => {
       page: parseInt(page),
       limit: parseInt(limit),
       total,
-      pages: Math.ceil(total / parseInt(limit))
-    }
-  })
-})
+      pages: Math.ceil(total / parseInt(limit)),
+    },
+  });
+});
 
 export const downloadProject = catchAsync(async (req: any, res: Response) => {
-  const userId = req.user._id
-  const { projectId } = req.params
+  const userId = req.user._id;
+  const { projectId } = req.params;
 
-  const project = await PublicProject.findById(projectId)
+  const project = await PublicProject.findById(projectId);
   if (!project) {
     return res.status(404).json({
       success: false,
-      message: 'Project not found'
-    })
+      message: "Project not found",
+    });
   }
 
-  const isCreator = project.createdBy.toString() === userId.toString()
+  const isCreator = project.createdBy.toString() === userId.toString();
 
   if (!isCreator) {
-    const purchase = await Purchase.findOne({ user: userId, project: projectId, status: 'completed' })
+    const purchase = await Purchase.findOne({
+      user: userId,
+      project: projectId,
+      status: "completed",
+    });
     if (!purchase) {
       return res.status(403).json({
         success: false,
-        message: 'You have not purchased this project'
-      })
+        message: "You have not purchased this project",
+      });
     }
   }
 
-  const filePath = path.join('uploads', 'projects', path.basename(project.zipFile))
-  
+  const filePath = path.join(
+    "uploads",
+    "projects",
+    path.basename(project.zipFile),
+  );
+
   if (!fs.existsSync(filePath)) {
     return res.status(404).json({
       success: false,
-      message: 'Project file not found'
-    })
+      message: "Project file not found",
+    });
   }
 
-  res.download(filePath, `${project.title}.zip`)
-})
+  res.download(filePath, `${project.title}.zip`);
+});
 
-export const deletePublicProject = catchAsync(async (req: any, res: Response) => {
-  const userId = req.user._id
-  const { projectId } = req.params
+export const deletePublicProject = catchAsync(
+  async (req: any, res: Response) => {
+    const userId = req.user._id;
+    const { projectId } = req.params;
 
-  const project = await PublicProject.findById(projectId)
+    const project = await PublicProject.findById(projectId);
+    if (!project) {
+      return res.status(404).json({
+        success: false,
+        message: "Project not found",
+      });
+    }
+
+    if (project.createdBy.toString() !== userId.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: "You can only delete your own projects",
+      });
+    }
+
+    const filePath = path.join(
+      "uploads",
+      "projects",
+      path.basename(project.zipFile),
+    );
+    if (fs.existsSync(filePath)) {
+      fs.unlinkSync(filePath);
+    }
+
+    if (project.previewImages && project.previewImages.length > 0) {
+      project.previewImages.forEach((imgPath) => {
+        const imgFilePath = path.join(
+          "uploads",
+          "projects",
+          path.basename(imgPath),
+        );
+        if (fs.existsSync(imgFilePath)) {
+          fs.unlinkSync(imgFilePath);
+        }
+      });
+    }
+
+    await PublicProject.findByIdAndDelete(projectId);
+
+    res.status(200).json({
+      success: true,
+      message: "Project deleted successfully",
+    });
+  },
+);
+
+export const getCategories = catchAsync(async (req: any, res: Response) => {
+  const categories = await PublicProject.distinct("category", {
+    isActive: true,
+  });
+
+  res.status(200).json({
+    success: true,
+    categories,
+  });
+});
+
+export const approveProject = catchAsync(async (req: any, res: Response) => {
+  const role = req.user?.role?.toLowerCase();
+
+  if (role !== "admin" && role !== "superadmin") {
+    return res.status(403).json({ success: false, message: "Unauthorized" });
+  }
+
+  const { projectId } = req.params;
+
+  const project = await PublicProject.findByIdAndUpdate(
+    projectId,
+    { isActive: true },
+    { new: true }
+  );
+
+  if (!project) {
+    return res.status(404).json({ success: false, message: "Project not found" });
+  }
+
+  res.status(200).json({
+    success: true,
+    message: "Project approved successfully",
+    project,
+  });
+});
+
+
+export const rejectProject = catchAsync(async (req: any, res: Response) => {
+  const { projectId } = req.params;
+
+  const project = await PublicProject.findById(projectId);
+
   if (!project) {
     return res.status(404).json({
       success: false,
-      message: 'Project not found'
-    })
+      message: "Project not found",
+    });
   }
 
-  if (project.createdBy.toString() !== userId.toString()) {
-    return res.status(403).json({
+  if (project.isActive) {
+    return res.status(400).json({
       success: false,
-      message: 'You can only delete your own projects'
-    })
+      message: "Cannot reject an approved project",
+    });
   }
 
-  const filePath = path.join('uploads', 'projects', path.basename(project.zipFile))
-  if (fs.existsSync(filePath)) {
-    fs.unlinkSync(filePath)
+  const deleteFileIfExists = (filePath: string) => {
+    if (!filePath) return;
+
+    const absolutePath = path.join(process.cwd(), filePath);
+
+    if (fs.existsSync(absolutePath)) {
+      fs.unlinkSync(absolutePath);
+    }
+  };
+
+  deleteFileIfExists(project.zipFile);
+
+  if (Array.isArray(project.previewImages)) {
+    project.previewImages.forEach((img: string) => {
+      deleteFileIfExists(img);
+    });
   }
 
-  if (project.previewImages && project.previewImages.length > 0) {
-    project.previewImages.forEach((imgPath) => {
-      const imgFilePath = path.join('uploads', 'projects', path.basename(imgPath))
-      if (fs.existsSync(imgFilePath)) {
-        fs.unlinkSync(imgFilePath)
-      }
-    })
-  }
-
-  await PublicProject.findByIdAndDelete(projectId)
+  await project.deleteOne();
 
   res.status(200).json({
     success: true,
-    message: 'Project deleted successfully'
-  })
-})
-
-export const getCategories = catchAsync(async (req: any, res: Response) => {
-  const categories = await PublicProject.distinct('category', { isActive: true })
-  
-  res.status(200).json({
-    success: true,
-    categories
-  })
-})
-
+    message: "Project rejected and deleted successfully",
+  });
+});
