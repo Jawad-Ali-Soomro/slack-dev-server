@@ -5,7 +5,7 @@ const buildTaskOverdueEmail = (data: EmailTemplateData) => {
     type = "TASK_OVERDUE",
 
     username = "USER",
-    siteName = "CORE STACK",
+    siteName = "Skack Developers",
     buttonUrl = "#",
     supportEmail = "support@slackdev.com",
     logoUrl,

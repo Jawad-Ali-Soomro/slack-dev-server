@@ -207,7 +207,10 @@ class ChatService {
 
       const socketService = (global as any).socketService;
       if (socketService) {
-        socketService.emitNewMessage(chatId, messageResponse);
+        const participantIds = chat.participants.map((p: any) =>
+          p._id.toString(),
+        );
+        socketService.emitNewMessage(chatId, messageResponse, participantIds);
         const chatResponse = this.formatChatResponse(chat, userId);
         socketService.emitChatUpdate(chatId, chatResponse);
       }

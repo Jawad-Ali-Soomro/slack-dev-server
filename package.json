@@ -13,10 +13,13 @@
   "author": "Jawad-Ali-Soomro",
   "license": "ISC",
   "dependencies": {
+    "@socket.io/redis-adapter": "^8.3.0",
+    "@types/compression": "^1.8.1",
     "@types/socket.io": "^3.0.1",
     "axios": "^1.12.2",
     "bcryptjs": "^3.0.2",
     "colors": "^1.4.0",
+    "compression": "^1.8.1",
     "cors": "^2.8.5",
     "dotenv": "^17.2.2",
     "express": "^5.1.0",

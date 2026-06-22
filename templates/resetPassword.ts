@@ -4,7 +4,7 @@ export const buildResetPasswordEmail = (data: OtpTemplateData) => {
   const {
     username = "USER",
     otp,
-    siteName = "CORE STACK",
+    siteName = "Skack Developers",
     buttonText = "RESET PASSWORD",
     buttonUrl = "#",
     supportEmail = "SUPPORT@EXAMPLE.COM",

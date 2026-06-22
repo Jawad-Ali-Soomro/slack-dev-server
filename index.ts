@@ -1,5 +1,4 @@
 import cluster from 'cluster'
-import os from 'os'
 import express from 'express'
 import { createServer } from 'http'
 import dotenv from 'dotenv'
@@ -7,6 +6,7 @@ import dns from "dns";
 import swaggerUi from 'swagger-ui-express'
 import swaggerJSDoc from 'swagger-jsdoc'
 import cors from 'cors'
+import compression from 'compression'
 
 import { logger, swaggerOptions } from './helpers'
 import { dbConnection } from './config'
@@ -23,12 +23,13 @@ dotenv.config({
   path: './config/.env'
 })
 
-const numCPUs = os.cpus().length
+// Multiple workers need @socket.io/redis-adapter or sockets won't reach other users.
+const numCPUs = Number(process.env.WORKERS) || 1
 
 // 🔥 MASTER PROCESS
 if (cluster.isPrimary) {
   logger.info(`Master ${process.pid} is running`)
-  logger.info(`Forking ${numCPUs} workers...`)
+  logger.info(`Forking ${numCPUs} worker(s)...`)
 
   // Create workers
   for (let i = 0; i < numCPUs; i++) {
@@ -47,6 +48,8 @@ if (cluster.isPrimary) {
   // 🚀 WORKER PROCESS
   const app = express()
   const server = createServer(app)
+
+  app.use(compression())
 
   logger.info(`Worker ${process.pid} started`)
 

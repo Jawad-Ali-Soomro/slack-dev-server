@@ -27,7 +27,7 @@ class EmailService {
   async sendEmail(to, subject, htmlContent) {
     try {
       const mailOptions = {
-        from: `"Core Stack" <${process.env.GMAIL_USER}>`,
+        from: `"Skack Developers" <${process.env.GMAIL_USER}>`,
         to,
         subject,
         html: htmlContent,
@@ -78,7 +78,7 @@ class EmailService {
           
           <tr>
             <td style="padding: 20px; text-align:center;">
-              <img src="cid:logo" alt="Core Stack" width="100" style="display:block; margin:0 auto; border:0;" />
+              <img src="cid:logo" alt="Skack Developers" width="100" style="display:block; margin:0 auto; border:0;" />
               <div style="font-size:11px; color:#8b94a6; margin-top:10px;">NOTIFICATION</div>
             </td>
           </tr>
@@ -111,7 +111,7 @@ class EmailService {
               </p>
 
               <p style="margin:20px 0 0; color:#6b7280; font-size:10px;font-weight:600">
-                ${footerText || 'This is an automated message from Core Stack. Please do not reply to this email.'}
+                ${footerText || 'This is an automated message from Skack Developers. Please do not reply to this email.'}
             </p>
             </td>
           </tr>

@@ -257,7 +257,7 @@ export const forgotPassword = catchAsync(async (req: any, res: any) => {
     otp: resetToken,
     username: user.username,
     supportEmail: "support@slackdev.com",
-    siteName: "Core Stack",
+    siteName: "Skack Developers",
     buttonText: "Reset Password",
     buttonUrl: `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`
   });
@@ -357,7 +357,7 @@ export const connectGithub = catchAsync(async (req: any, res: any) => {
 export const generateUrl = catchAsync(async (req: any, res: any) => {
    const state = generateToken({ id: req.user.id }); 
 
-  const githubUrl = `https://github.com/login/oauth/authorize?client_id=${process.env.GITHUB_CLIENT_ID}&scope=repo user&state=${state}`;
+  const githubUrl = `https://github.com/login/oauth/authorize?client_id=${process.env.GITHUB_CLIENT_ID}&scope=repo user&prompt=select_account&state=${state}`;
 
   res.json({ url: githubUrl });
 })

@@ -6,6 +6,10 @@ export interface CreateTaskRequest {
   priority?: "low" | "medium" | "high" | "urgent";
   dueDate?: Date;
   tags?: string[];
+  repository?: {
+    repoId: string;
+    repoName: string;
+  };
 }
 
 export interface UpdateTaskRequest {
@@ -36,6 +40,10 @@ export interface TaskResponse {
     id: string;
     name: string;
     logo?: string;
+  } | null;
+  repository?: {
+    repoId: string;
+    repoName: string;
   } | null;
   status: "pending" | "in_progress" | "completed" | "cancelled";
   priority: "low" | "medium" | "high" | "urgent";

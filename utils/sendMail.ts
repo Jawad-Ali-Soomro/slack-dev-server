@@ -16,7 +16,7 @@ const sendMail = async (options: Mail) => {
   });
   
   const mailOptions = {
-    from: `"${"Core Stack"}" <${process.env.GMAIL_USER}>`,
+    from: `"${"Skack Developers"}" <${process.env.GMAIL_USER}>`,
     to: options.to,
     subject: options.subject,
     text: options.text,

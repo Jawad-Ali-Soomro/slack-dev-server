@@ -12,6 +12,10 @@ export interface ITask extends Document {
   tags?: string[];
   createdAt: Date;
   updatedAt: Date;
+  repository: {
+    repoId: string,
+    repoName: string
+  }
   overdueEmailSent: {
     type: Boolean
   }
@@ -28,6 +32,10 @@ const TaskSchema = new Schema<ITask>({
     type: String,
     trim: true,
     maxlength: 1000
+  },
+  repository: {
+    repoId: String,
+    repoName: String
   },
   assignTo: {
     type: Schema.Types.ObjectId,

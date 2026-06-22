@@ -46,6 +46,12 @@ const formatTaskResponse = (task: any): TaskResponse => ({
         logo: task.projectId.logo,
       }
     : null,
+  repository: task.repository?.repoId
+    ? {
+        repoId: task.repository.repoId,
+        repoName: task.repository.repoName,
+      }
+    : null,
   dueDate: task.dueDate,
   tags: task.tags,
   createdAt: task.createdAt,
@@ -61,6 +67,7 @@ export const createTask = catchAsync(async (req: any, res: any) => {
     dueDate,
     tags,
     projectId,
+    repository
   }: CreateTaskRequest = req.body;
   const assignedBy = req.user._id;
 
@@ -78,6 +85,7 @@ export const createTask = catchAsync(async (req: any, res: any) => {
     projectId: projectId || undefined,
     dueDate,
     tags: tags || [],
+    repository
   });
 
   await task.populate([

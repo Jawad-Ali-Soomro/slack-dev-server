@@ -133,9 +133,9 @@ export const getPublicProjects = catchAsync(async (req: any, res: Response) => {
     category,
     search,
     createdBy,
-    status, // active / inactive / rejected
+    status,
     page = 1,
-    limit = 12,
+    limit = 6,
     sortBy = "createdAt",
     sortOrder = "desc",
   } = req.query;
@@ -145,66 +145,82 @@ export const getPublicProjects = catchAsync(async (req: any, res: Response) => {
 
   const query: any = {};
 
+  /* ------------------ STATUS FILTER ------------------ */
+
   if (!isPrivileged) {
     query.isActive = true;
-    query.$or = [
-      { isRejected: false },
-      { isRejected: { $exists: false } },
-    ];
+    query.isRejected = { $ne: true };
   } else {
-
     if (status === "active") {
       query.isActive = true;
-      query.$or = [
-        { isRejected: false },
-        { isRejected: { $exists: false } },
-      ];
-    } else if (status === "inactive") {
+      query.isRejected = { $ne: true };
+    } 
+    else if (status === "inactive") {
       query.isActive = false;
-      query.$or = [
-        { isRejected: false },
-        { isRejected: { $exists: false } },
-      ];
-    } else if (status === "rejected") {
+      query.isRejected = { $ne: true };
+    } 
+    else if (status === "rejected") {
       query.isRejected = true;
     }
-
   }
+
+  /* ------------------ CATEGORY ------------------ */
 
   if (category) query.category = category;
 
+  /* ------------------ CREATED BY ------------------ */
+
+  if (createdBy) query.createdBy = createdBy;
+
+  /* ------------------ SEARCH ------------------ */
+
   if (search) {
-    query.$or = [
-      { title: { $regex: search, $options: "i" } },
-      { description: { $regex: search, $options: "i" } },
-      { tags: { $in: [new RegExp(search, "i")] } },
+    query.$and = [
+      ...(query.$and || []),
+      {
+        $or: [
+          { title: { $regex: search, $options: "i" } },
+          { description: { $regex: search, $options: "i" } },
+          { tags: { $in: [new RegExp(search, "i")] } },
+        ],
+      },
     ];
   }
 
-  if (createdBy) query.createdBy = createdBy;
+  /* ------------------ SORT ------------------ */
 
   const sort: any = {};
   sort[sortBy] = sortOrder === "asc" ? 1 : -1;
 
-  const projects = await PublicProject.find(query)
-    .populate("createdBy", "username email avatar")
-    .sort(sort)
-    .limit(parseInt(limit))
-    .skip((parseInt(page) - 1) * parseInt(limit));
+  const pageNumber = parseInt(page);
+  const limitNumber = parseInt(limit);
+  const skip = (pageNumber - 1) * limitNumber;
 
-  const total = await PublicProject.countDocuments(query);
+  /* ------------------ QUERY ------------------ */
+
+  const [projects, total] = await Promise.all([
+    PublicProject.find(query)
+      .populate("createdBy", "username email avatar")
+      .sort(sort)
+      .skip(skip)
+      .limit(limitNumber),
+
+    PublicProject.countDocuments(query),
+  ]);
 
   res.status(200).json({
     success: true,
     projects,
     pagination: {
-      page: parseInt(page),
-      limit: parseInt(limit),
+      page: pageNumber,
+      limit: limitNumber,
       total,
-      pages: Math.ceil(total / parseInt(limit)),
+      pages: Math.ceil(total / limitNumber),
+      hasMore: pageNumber * limitNumber < total,
     },
   });
 });
+
 
 export const getPublicProject = catchAsync(async (req: any, res: Response) => {
   const { id } = req.params;

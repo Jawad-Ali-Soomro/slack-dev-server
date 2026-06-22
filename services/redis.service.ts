@@ -283,6 +283,10 @@ class RedisService {
     await this.del(`user:${userId}:friendStats`);
   }
 
+  async invalidateFriendSearch(userId: string): Promise<void> {
+    await this.invalidatePattern(`search:friends:${userId}:*`);
+  }
+
   async cacheUserFriends(userId: string, friends: any[], ttl: number = 1800): Promise<void> {
     await this.set(`user:${userId}:friends`, friends, ttl);
   }
