@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import { catchAsync } from '../middlewares';
-import { Challenge, User } from '../models';
+import { catchAsync } from '../middlewares/index';
+import { Challenge, User } from '../models/index';
 import { AwardService } from '../services/awardService';
 
 export const getChallenges = catchAsync(async (req: any, res: Response) => {

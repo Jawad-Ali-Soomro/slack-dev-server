@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { healthCheck, redisStats, clearCache } from '../controllers/health.controller';
-import { authenticate } from '../middlewares';
+import { authenticate } from '../middlewares/index';
 
 const router = Router();
 

@@ -1,4 +1,4 @@
-import { logger } from '../helpers';
+import { logger } from '../helpers/index';
 import crypto from 'crypto';
 
 interface MeetingRequest {

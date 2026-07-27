@@ -4,9 +4,9 @@ import { Project } from "../models/project.model";
 import User from "../models/user.model";
 import Notification from "../models/notification.model";
 import Invitation from "../models/invitation.model";
-import { catchAsync } from "../middlewares";
+import { catchAsync } from "../middlewares/index";
 import redisService from "../services/redis.service";
-import { Role } from "../interfaces";
+import { Role } from "../interfaces/index";
 
 const emitNotification = (recipientId: string, notification: any) => {
   try {

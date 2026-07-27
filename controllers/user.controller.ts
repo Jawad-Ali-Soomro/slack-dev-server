@@ -1,6 +1,6 @@
-import { catchAsync, invalidateUserCache } from "../middlewares";
-import { User } from "../models";
-import { UpdateProfileRequest, ChangePasswordRequest, UserResponse, IUser, Role, Availability, JobRole } from "../interfaces";
+import { catchAsync, invalidateUserCache } from "../middlewares/index";
+import { User } from "../models/index";
+import { UpdateProfileRequest, ChangePasswordRequest, UserResponse, IUser, Role, Availability, JobRole } from "../interfaces/index";
 import redisService from "../services/redis.service";
 import path from "path";
 import fs from "fs";

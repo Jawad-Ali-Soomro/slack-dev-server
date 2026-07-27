@@ -1,5 +1,5 @@
-import { catchAsync } from "../middlewares";
-import { Notification } from "../models";
+import { catchAsync } from "../middlewares/index";
+import { Notification } from "../models/index";
 import redisService from "../services/redis.service";
 
 export const getNotifications = catchAsync(async (req: any, res: any) => {

@@ -3,11 +3,11 @@ import { Server as HTTPServer } from "http";
 import { createAdapter } from "@socket.io/redis-adapter";
 import Redis from "ioredis";
 import jwt from "jsonwebtoken";
-import { User } from "../models";
-import { logger } from "../helpers";
-import { SocketUser } from "../interfaces";
+import { User } from "../models/index";
+import { logger } from "../helpers/index";
+import { SocketUser } from "../interfaces/index";
 import { decrypt } from "../middlewares/token";
-import { redisConfig } from "../config";
+import { redisConfig } from "../config/index";
 import redisService from "./redis.service";
 
 class SocketService {

@@ -1,6 +1,6 @@
-import { Chat, Message, User, Notification } from '../models';
-import { CreateChatRequest, SendMessageRequest, UpdateMessageRequest, ChatResponse, MessageResponse } from '../interfaces';
-import { logger } from '../helpers';
+import { Chat, Message, User, Notification } from '../models/index';
+import { CreateChatRequest, SendMessageRequest, UpdateMessageRequest, ChatResponse, MessageResponse } from '../interfaces/index';
+import { logger } from '../helpers/index';
 import redisService from './redis.service';
 import mongoose from 'mongoose';
 

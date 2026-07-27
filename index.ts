@@ -8,13 +8,13 @@ import swaggerJSDoc from 'swagger-jsdoc'
 import cors from 'cors'
 import compression from 'compression'
 
-import { logger, swaggerOptions } from './helpers'
-import { dbConnection } from './config'
-import router from './routes'
+import { logger, swaggerOptions } from './helpers/index'
+import { dbConnection } from './config/index'
+import router from './routes/index'
 import SocketService from './services/socketService'
 import redisService from './services/redis.service'
 import './services/cron'
-import { securityHeaders, sanitizeResponse } from './middlewares'
+import { securityHeaders, sanitizeResponse } from './middlewares/index'
 import { requestLogger } from './helpers/logger'
 
 dns.setDefaultResultOrder("verbatim");

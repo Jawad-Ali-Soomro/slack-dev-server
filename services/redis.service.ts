@@ -1,6 +1,6 @@
 import Redis from 'ioredis';
-import { logger } from '../helpers';
-import { redisConfig } from '../config';
+import { logger } from '../helpers/index';
+import { redisConfig } from '../config/index';
 
 class RedisService {
   private client: Redis;

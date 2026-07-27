@@ -4,7 +4,7 @@ import { Project } from '../models/project.model'
 import User from '../models/user.model'
 import Task from '../models/task.model'
 import Meeting from '../models/meeting.model'
-import { catchAsync } from '../middlewares'
+import { catchAsync } from '../middlewares/index'
 import redisService from '../services/redis.service'
 import { 
   CreateProjectRequest, 
@@ -17,7 +17,7 @@ import {
   UpdateLinkRequest,
   RemoveLinkRequest,
   RemoveMemberRequest
-} from '../interfaces'
+} from '../interfaces/index'
 import path from 'path'
 import fs from 'fs'
 

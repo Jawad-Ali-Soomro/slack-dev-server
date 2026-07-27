@@ -10,7 +10,7 @@ import {
   PublicProject,
   Note,
   Challenge,
-} from '../models';
+} from '../models/index';
 
 dotenv.config({ path: path.join(__dirname, '../config/.env') });
 

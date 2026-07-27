@@ -1,6 +1,6 @@
-import { catchAsync } from "../middlewares";
-import { Meeting, User, Notification } from "../models";
-import { CreateMeetingRequest, UpdateMeetingRequest, MeetingResponse, MeetingStatus, MeetingType } from "../interfaces";
+import { catchAsync } from "../middlewares/index";
+import { Meeting, User, Notification } from "../models/index";
+import { CreateMeetingRequest, UpdateMeetingRequest, MeetingResponse, MeetingStatus, MeetingType } from "../interfaces/index";
 import redisService from "../services/redis.service";
 import videoMeetingService from "../services/zoomService";
 

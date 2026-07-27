@@ -1,13 +1,13 @@
 import getOverdueInfo from "../utils/formatDate";
-import { sendMail } from "../utils";
-import { catchAsync } from "../middlewares";
-import { Task, User, Notification } from "../models";
+import { sendMail } from "../utils/index";
+import { catchAsync } from "../middlewares/index";
+import { Task, User, Notification } from "../models/index";
 import {
   CreateTaskRequest,
   UpdateTaskRequest,
   TaskResponse,
   Availability,
-} from "../interfaces";
+} from "../interfaces/index";
 import redisService from "../services/redis.service";
 import buildTaskOverdueEmail from "../templates/taskOverdue";
 import path from "path";

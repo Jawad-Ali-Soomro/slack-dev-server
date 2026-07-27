@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { catchAsync } from '../middlewares';
+import { catchAsync } from '../middlewares/index';
 import redisService from '../services/redis.service';
 
 export const healthCheck = catchAsync(async (req: Request, res: Response) => {

@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import redisService from '../services/redis.service';
-import { logger } from '../helpers';
+import { logger } from '../helpers/index';
 
 interface AuthenticatedRequest extends Request {
   user?: {

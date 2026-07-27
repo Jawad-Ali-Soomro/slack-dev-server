@@ -1,5 +1,5 @@
 import nodemailer from "nodemailer";
-import { Mail } from "../interfaces";
+import { Mail } from "../interfaces/index";
 import dotenv from "dotenv";
 import path from "path";
 dotenv.config({

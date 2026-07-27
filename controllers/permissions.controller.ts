@@ -1,9 +1,9 @@
 import { Request, Response } from 'express';
-import { catchAsync, invalidateCachePattern, invalidateUserCache } from '../middlewares';
+import { catchAsync, invalidateCachePattern, invalidateUserCache } from '../middlewares/index';
 import { Permissions } from '../models/permissions.model';
-import { User } from '../models';
+import { User } from '../models/index';
 import { CreatePermissionsRequest } from '../interfaces/permissions.interface';
-import { Role } from '../interfaces';
+import { Role } from '../interfaces/index';
 import { Team } from '../models/team.model';
 
 const invalidateUserPermissionCaches = async (userId: string) => {

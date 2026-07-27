@@ -1,4 +1,4 @@
-import { OtpTemplateData } from "../interfaces";
+import { OtpTemplateData } from "../interfaces/index";
 
 export const buildOtpEmail = (data: OtpTemplateData) => {
   const {

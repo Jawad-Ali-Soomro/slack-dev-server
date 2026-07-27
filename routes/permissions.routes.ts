@@ -5,7 +5,7 @@ import {
   createOrUpdatePermissions,
   deletePermissions
 } from '../controllers/permissions.controller';
-import { authenticate } from '../middlewares';
+import { authenticate } from '../middlewares/index';
 
 const router = Router();
 

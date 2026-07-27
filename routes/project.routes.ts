@@ -1,5 +1,5 @@
 import express from 'express'
-import { authenticate, upload } from '../middlewares'
+import { authenticate, upload } from '../middlewares/index'
 import {
   createProject,
   getProjects,

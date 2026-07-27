@@ -1,7 +1,7 @@
 import express from 'express'
 const userRouter = express.Router()
 import { updateProfile, uploadAvatar, deleteAvatar, changePassword, getUsers, getUserById, searchUsers, getProfile, getUserDetails, assignUserRole, getAllUsers, deleteUser, updateUserVerification, updateStatus } from '../controllers/user.controller'
-import { authenticate, upload, requireSuperadmin, requireAdmin } from '../middlewares'
+import { authenticate, upload, requireSuperadmin, requireAdmin } from '../middlewares/index'
 
 /**
  * @openapi

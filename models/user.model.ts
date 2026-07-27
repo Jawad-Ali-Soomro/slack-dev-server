@@ -1,6 +1,6 @@
 import mongoose, { Document, Schema } from "mongoose";
 import bcrypt from "bcryptjs";
-import { IUser, Role, Availability, JobRole } from "../interfaces";
+import { IUser, Role, Availability, JobRole } from "../interfaces/index";
 
 const UserSchema = new Schema<IUser>({
   email: { type: String, required: true },

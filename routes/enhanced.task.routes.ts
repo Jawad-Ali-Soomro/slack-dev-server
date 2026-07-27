@@ -11,7 +11,7 @@ import {
   getTaskStats,
   clearTaskCaches
 } from '../controllers/enhanced.task.controller'
-import { authenticate } from '../middlewares'
+import { authenticate } from '../middlewares/index'
 
 /**
  * @openapi

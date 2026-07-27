@@ -1,9 +1,9 @@
-import { catchAsync, generateToken, invalidateCachePattern } from "../middlewares";
+import { catchAsync, generateToken, invalidateCachePattern } from "../middlewares/index";
 import jwt from "jsonwebtoken";
-import { IUser, UserResponse, Availability, JobRole } from "../interfaces";
-import { User } from "../models";
-import { generateOtp, sendMail } from "../utils";
-import { buildOtpEmail, buildResetPasswordEmail } from "../templates";
+import { IUser, UserResponse, Availability, JobRole } from "../interfaces/index";
+import { User } from "../models/index";
+import { generateOtp, sendMail } from "../utils/index";
+import { buildOtpEmail, buildResetPasswordEmail } from "../templates/index";
 import path from "path";
 import dotenv from "dotenv";
 import redisService from "../services/redis.service";

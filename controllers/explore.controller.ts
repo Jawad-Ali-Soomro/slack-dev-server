@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { catchAsync } from "../middlewares/catchAsync";
-import { PublicProject, Purchase } from "../models";
+import { PublicProject, Purchase } from "../models/index";
 import multer from "multer";
 import path from "path";
 import fs from "fs";

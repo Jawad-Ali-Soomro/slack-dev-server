@@ -1,5 +1,5 @@
 import express from 'express';
-import { authenticate } from '../middlewares';
+import { authenticate } from '../middlewares/index';
 import {
   createChallenge,
   getChallenges,

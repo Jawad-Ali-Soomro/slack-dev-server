@@ -1,7 +1,7 @@
 import express from 'express'
 const notificationRouter = express.Router()
 import { getNotifications, markAsRead, markAllAsRead, deleteNotification } from '../controllers/notification.controller'
-import { authenticate } from '../middlewares'
+import { authenticate } from '../middlewares/index'
 
 /**
  * @openapi

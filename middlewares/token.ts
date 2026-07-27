@@ -1,7 +1,7 @@
 import jwt, { SignOptions, Secret } from 'jsonwebtoken';
 import crypto from 'crypto';
-import { User } from '../models';
-import { logger } from '../helpers';
+import { User } from '../models/index';
+import { logger } from '../helpers/index';
 
 function getEncryptionKey(): Buffer {
   let key = process.env.ENCRYPTION_KEY;
