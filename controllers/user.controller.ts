@@ -1,10 +1,11 @@
 import { catchAsync, invalidateUserCache } from "../middlewares";
 import { User } from "../models";
-import { UpdateProfileRequest, ChangePasswordRequest, UserResponse, IUser, Role } from "../interfaces";
+import { UpdateProfileRequest, ChangePasswordRequest, UserResponse, IUser, Role, Availability, JobRole } from "../interfaces";
 import redisService from "../services/redis.service";
 import path from "path";
 import fs from "fs";
 import { Team } from "../models/team.model";
+import { Friendship } from "../models/friend.model";
 
 const formatUserResponse = (user: IUser): UserResponse => ({
   id: user._id,
@@ -23,15 +24,44 @@ const formatUserResponse = (user: IUser): UserResponse => ({
   followersCount: user.followers?.length || 0,
   followingCount: user.following?.length || 0,
   awards: (user as any).awards || [],
-  totalChallengePoints: (user as any).totalChallengePoints || 0
+  totalChallengePoints: (user as any).totalChallengePoints || 0,
+  availability: user.availability || Availability.Available,
+  jobRole: user.jobRole || JobRole.Unassigned,
+  statusMessage: user.statusMessage
 });
 
 const invalidateUserListingCaches = async () => {
   await Promise.all([
     redisService.invalidatePattern('admin:users:*'),
     redisService.invalidatePattern('cache:*users*'),
+    redisService.invalidatePattern('users:*'),
     redisService.invalidatePattern('search:users:*')
   ]);
+};
+
+/**
+ * When a user's presence-related fields (availability / jobRole) change,
+ * their friends' cached friend lists become stale. Invalidate the friend
+ * cache for the user and every one of their friends so others see the update.
+ */
+const invalidateFriendsOfUser = async (userId: string) => {
+  try {
+    const friendships = await Friendship.find({
+      $or: [{ user1: userId }, { user2: userId }]
+    }).select('user1 user2');
+
+    const ids = new Set<string>([userId]);
+    friendships.forEach((f: any) => {
+      ids.add(f.user1.toString());
+      ids.add(f.user2.toString());
+    });
+
+    await Promise.all(
+      Array.from(ids).map((id) => redisService.invalidateUserFriends(id))
+    );
+  } catch (err) {
+    console.error('Failed to invalidate friend caches:', err);
+  }
 };
 
 const getAdminScopedUserIds = async (adminId: string) => {
@@ -213,7 +243,7 @@ export const getUserDetails = catchAsync(async (req: any, res: any) => {
 });
 
 export const updateProfile = catchAsync(async (req: any, res: any) => {
-  const { username, bio, userLocation, website, socialLinks, dateOfBirth, phone, isPrivate }: UpdateProfileRequest = req.body;
+  const { username, bio, userLocation, website, socialLinks, dateOfBirth, phone, isPrivate, availability, jobRole, statusMessage }: UpdateProfileRequest = req.body;
   const userId = req.user._id;
 
   const updateData: any = {};
@@ -225,13 +255,20 @@ export const updateProfile = catchAsync(async (req: any, res: any) => {
   if (dateOfBirth !== undefined) updateData.dateOfBirth = dateOfBirth;
   if (phone !== undefined) updateData.phone = phone;
   if (isPrivate !== undefined) updateData.isPrivate = isPrivate;
-
-  if (username) {
-    const existingUser = await User.findOne({ username, _id: { $ne: userId } });
-    if (existingUser) {
-      return res.status(400).json({ message: "username already taken" });
+  if (statusMessage !== undefined) updateData.statusMessage = statusMessage;
+  if (availability !== undefined) {
+    if (!Object.values(Availability).includes(availability as Availability)) {
+      return res.status(400).json({ message: "Invalid availability status" });
     }
+    updateData.availability = availability;
   }
+  if (jobRole !== undefined) {
+    if (!Object.values(JobRole).includes(jobRole as JobRole)) {
+      return res.status(400).json({ message: "Invalid job role" });
+    }
+    updateData.jobRole = jobRole;
+  }
+
 
   const user = await User.findByIdAndUpdate(userId, updateData, { new: true });
   
@@ -240,9 +277,64 @@ export const updateProfile = catchAsync(async (req: any, res: any) => {
   }
 
   await invalidateUserCache(userId);
+  await invalidateUserListingCaches();
+  await invalidateFriendsOfUser(userId.toString());
 
   res.status(200).json({
     message: "profile updated successfully",
+    user: formatUserResponse(user)
+  });
+});
+
+/**
+ * Update the current user's availability status and/or job role.
+ * Used for the quick status switcher (available / busy / away / meeting).
+ * When a user is "busy" they cannot be assigned new tasks.
+ */
+export const updateStatus = catchAsync(async (req: any, res: any) => {
+  const userId = req.user._id;
+  const { availability, jobRole, statusMessage } = req.body;
+
+  const updateData: any = {};
+
+  if (availability !== undefined) {
+    if (!Object.values(Availability).includes(availability)) {
+      return res.status(400).json({
+        message: `Invalid availability. Must be one of: ${Object.values(Availability).join(", ")}`
+      });
+    }
+    updateData.availability = availability;
+  }
+
+  if (jobRole !== undefined) {
+    if (!Object.values(JobRole).includes(jobRole)) {
+      return res.status(400).json({
+        message: `Invalid job role. Must be one of: ${Object.values(JobRole).join(", ")}`
+      });
+    }
+    updateData.jobRole = jobRole;
+  }
+
+  if (statusMessage !== undefined) {
+    updateData.statusMessage = statusMessage;
+  }
+
+  if (Object.keys(updateData).length === 0) {
+    return res.status(400).json({ message: "No status fields provided to update" });
+  }
+
+  const user = await User.findByIdAndUpdate(userId, updateData, { new: true });
+
+  if (!user) {
+    return res.status(404).json({ message: "user not found" });
+  }
+
+  await invalidateUserCache(userId);
+  await invalidateUserListingCaches();
+  await invalidateFriendsOfUser(userId.toString());
+
+  res.status(200).json({
+    message: "status updated successfully",
     user: formatUserResponse(user)
   });
 });
@@ -358,7 +450,7 @@ export const getUsers = catchAsync(async (req: any, res: any) => {
   }
 
   const users = await User.find(filter)
-    .select('username email avatar role bio userLocation')
+    .select('username email avatar role bio userLocation availability jobRole statusMessage')
     .sort({ createdAt: -1 })
     .skip(skip)
     .limit(parseInt(limit as string));
@@ -372,7 +464,10 @@ export const getUsers = catchAsync(async (req: any, res: any) => {
     avatar: user.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.username)}&background=random&color=fff&size=128`,
     role: user.role,
     bio: user.bio,
-    userLocation: user.userLocation
+    userLocation: user.userLocation,
+    availability: user.availability || Availability.Available,
+    jobRole: user.jobRole || JobRole.Unassigned,
+    statusMessage: user.statusMessage
   }));
 
   const response = {
@@ -399,7 +494,7 @@ export const getUserById = catchAsync(async (req: any, res: any) => {
   }
 
   const user = await User.findById(userId)
-    .select('username email avatar role bio userLocation website socialLinks dateOfBirth phone isPrivate emailVerified awards totalChallengePoints');
+    .select('username email avatar role bio userLocation website socialLinks dateOfBirth phone isPrivate emailVerified awards totalChallengePoints availability jobRole statusMessage');
   
   if (!user) {
     return res.status(404).json({ message: "user not found" });
@@ -434,7 +529,7 @@ export const searchUsers = catchAsync(async (req: any, res: any) => {
       { email: { $regex: q, $options: 'i' } }
     ]
   })
-    .select('username email avatar role bio userLocation')
+    .select('username email avatar role bio userLocation availability jobRole statusMessage')
     .limit(10);
 
   const userResponses = users.map(user => ({
@@ -444,7 +539,10 @@ export const searchUsers = catchAsync(async (req: any, res: any) => {
     avatar: user.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.username)}&background=random&color=fff&size=128`,
     role: user.role,
     bio: user.bio,
-    userLocation: user.userLocation
+    userLocation: user.userLocation,
+    availability: user.availability || Availability.Available,
+    jobRole: user.jobRole || JobRole.Unassigned,
+    statusMessage: user.statusMessage
   }));
 
   const response = {
@@ -641,7 +739,7 @@ export const getAllUsers = catchAsync(async (req: any, res: any) => {
   }
 
   const users = await User.find(filter)
-    .select('username email avatar role bio userLocation emailVerified createdAt')
+    .select('username email avatar role bio userLocation emailVerified createdAt availability jobRole statusMessage')
     .sort({ createdAt: -1 })
     .skip(skip)
     .limit(parseInt(limit as string));
@@ -657,7 +755,10 @@ export const getAllUsers = catchAsync(async (req: any, res: any) => {
     bio: user.bio,
     userLocation: user.userLocation,
     emailVerified: user.emailVerified,
-    createdAt: user.createdAt
+    createdAt: user.createdAt,
+    availability: user.availability || Availability.Available,
+    jobRole: user.jobRole || JobRole.Unassigned,
+    statusMessage: user.statusMessage
   }));
 
   const response = {

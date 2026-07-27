@@ -1,6 +1,6 @@
 import express from 'express'
 const userRouter = express.Router()
-import { updateProfile, uploadAvatar, deleteAvatar, changePassword, getUsers, getUserById, searchUsers, getProfile, getUserDetails, assignUserRole, getAllUsers, deleteUser, updateUserVerification } from '../controllers/user.controller'
+import { updateProfile, uploadAvatar, deleteAvatar, changePassword, getUsers, getUserById, searchUsers, getProfile, getUserDetails, assignUserRole, getAllUsers, deleteUser, updateUserVerification, updateStatus } from '../controllers/user.controller'
 import { authenticate, upload, requireSuperadmin, requireAdmin } from '../middlewares'
 
 /**
@@ -82,6 +82,40 @@ import { authenticate, upload, requireSuperadmin, requireAdmin } from '../middle
 userRouter.get('/profile', authenticate, getProfile)
 
 userRouter.put('/profile', authenticate, updateProfile)
+
+/**
+ * @openapi
+ * /api/user/status:
+ *   put:
+ *     summary: Update current user's availability status and/or job role
+ *     tags:
+ *       - User
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               availability:
+ *                 type: string
+ *                 enum: [available, busy, away, meeting]
+ *               jobRole:
+ *                 type: string
+ *                 enum: [frontend, backend, qa, devops, fullstack, designer, unassigned]
+ *               statusMessage:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Status updated successfully
+ *       400:
+ *         description: Invalid status value
+ *       401:
+ *         description: Unauthorized
+ */
+userRouter.put('/status', authenticate, updateStatus)
 
 /**
  * @openapi

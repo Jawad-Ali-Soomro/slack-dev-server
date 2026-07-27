@@ -6,6 +6,7 @@ import {
   CreateTaskRequest,
   UpdateTaskRequest,
   TaskResponse,
+  Availability,
 } from "../interfaces";
 import redisService from "../services/redis.service";
 import buildTaskOverdueEmail from "../templates/taskOverdue";
@@ -74,6 +75,13 @@ export const createTask = catchAsync(async (req: any, res: any) => {
   const assignToUser = await User.findById(assignTo);
   if (!assignToUser) {
     return res.status(404).json({ message: "AssignedTo user not found" });
+  }
+
+  if ((assignToUser as any).availability === Availability.Busy) {
+    return res.status(409).json({
+      message: `${assignToUser.username} is currently busy and cannot be assigned new tasks`,
+      code: "USER_BUSY",
+    });
   }
 
   const task = await Task.create({

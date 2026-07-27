@@ -1,6 +1,6 @@
 import { catchAsync, generateToken, invalidateCachePattern } from "../middlewares";
 import jwt from "jsonwebtoken";
-import { IUser, UserResponse } from "../interfaces";
+import { IUser, UserResponse, Availability, JobRole } from "../interfaces";
 import { User } from "../models";
 import { generateOtp, sendMail } from "../utils";
 import { buildOtpEmail, buildResetPasswordEmail } from "../templates";
@@ -22,7 +22,10 @@ const formatUserResponse = (user: IUser): UserResponse => ({
   emailVerified: user.emailVerified,
   isPrivate: user.isPrivate,
   createdAt: user.createdAt,
-  socialLinks: user?.socialLinks
+  socialLinks: user?.socialLinks,
+  availability: (user as any).availability || Availability.Available,
+  jobRole: (user as any).jobRole || JobRole.Unassigned,
+  statusMessage: (user as any).statusMessage
 });
 
 
@@ -39,10 +42,6 @@ export const register = catchAsync(async (req: any, res: any) => {
   const findUserByEmail = await User.findOne({ email: normalizedEmail });
   if (findUserByEmail) {
     return res.status(400).json({ message: "email already in use" });
-  }
-  const findUserByUsername = await User.findOne({ username: trimmedUsername });
-  if (findUserByUsername) {
-    return res.status(400).json({ message: "username already taken" });
   }
   const emailVerificationToken = generateOtp();
   const emailVerificationTokenExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); 
@@ -96,9 +95,9 @@ export const register = catchAsync(async (req: any, res: any) => {
     });
   } catch (err: any) {
     if (err.code === 11000) {
-      if (err.keyPattern?.username) {
-        return res.status(400).json({ message: "username already taken" });
-      }
+      // if (err.keyPattern?.username) {
+      //   return res.status(400).json({ message: "username already taken" });
+      // }
       if (err.keyPattern?.email) {
         return res.status(400).json({ message: "email already in use" });
       }

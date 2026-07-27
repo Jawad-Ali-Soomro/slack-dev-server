@@ -26,6 +26,8 @@ export interface FriendshipResponse {
     username: string
     email: string
     avatar?: string
+    availability?: string
+    jobRole?: string
   }
   createdAt: Date
 }

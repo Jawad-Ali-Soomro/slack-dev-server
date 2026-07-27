@@ -46,7 +46,9 @@ const formatFriendshipResponse = (friendship: any, currentUserId: any): Friendsh
       id: friend._id,
       username: (friend as any).username,
       email: (friend as any).email,
-      avatar: (friend as any).avatar
+      avatar: (friend as any).avatar,
+      availability: (friend as any).availability || 'available',
+      jobRole: (friend as any).jobRole || 'unassigned'
     },
     createdAt: friendship.createdAt
   }
@@ -318,7 +320,7 @@ export const getFriends = catchAsync(async (req: any, res: Response) => {
       { user2: userId }
     ]
   })
-    .populate('user1 user2', 'username email avatar')
+    .populate('user1 user2', 'username email avatar availability jobRole')
     .sort({ createdAt: -1 })
 
   const formattedFriends = friendships

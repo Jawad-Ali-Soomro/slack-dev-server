@@ -39,6 +39,9 @@ export interface IUser extends Document {
     earnedAt: Date;
   }>;
   totalChallengePoints?: number;
+  availability?: Availability;
+  jobRole?: JobRole;
+  statusMessage?: string;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -47,4 +50,21 @@ export enum Role {
   User = "user",
   Admin = "admin",
   Superadmin = "superadmin"
+}
+
+export enum Availability {
+  Available = "available",
+  Busy = "busy",
+  Away = "away",
+  InMeeting = "meeting",
+}
+
+export enum JobRole {
+  Frontend = "frontend",
+  Backend = "backend",
+  QA = "qa",
+  DevOps = "devops",
+  FullStack = "fullstack",
+  Designer = "designer",
+  Unassigned = "unassigned",
 }

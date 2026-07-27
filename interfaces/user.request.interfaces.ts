@@ -13,6 +13,9 @@ export interface UpdateProfileRequest {
   dateOfBirth?: Date;
   phone?: string;
   isPrivate?: boolean;
+  availability?: string;
+  jobRole?: string;
+  statusMessage?: string;
 }
 
 export interface ChangePasswordRequest {
@@ -42,6 +45,9 @@ export interface UserResponse {
   followersCount?: number;
   followingCount?: number;
   emailVerified?: boolean;
+  availability?: string;
+  jobRole?: string;
+  statusMessage?: string;
   awards?: Array<{
     awardId: string;
     name: string;
