@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import path from 'path';
-import { Challenge } from '../models';
+import { Challenge } from '../models/index';
 import User from '../models/user.model';
 
 dotenv.config({ path: path.join(__dirname, '../config/.env') });

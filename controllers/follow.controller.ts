@@ -1,6 +1,6 @@
-import { catchAsync, invalidateUserCache } from "../middlewares";
-import { User, Notification } from "../models";
-import { FollowRequest, UserFollowStats, FollowersResponse, FollowingResponse } from "../interfaces";
+import { catchAsync, invalidateUserCache } from "../middlewares/index";
+import { User, Notification } from "../models/index";
+import { FollowRequest, UserFollowStats, FollowersResponse, FollowingResponse } from "../interfaces/index";
 import redisService from "../services/redis.service";
 
 export const followUser = catchAsync(async (req: any, res: any) => {

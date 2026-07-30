@@ -46,7 +46,9 @@ const formatFriendshipResponse = (friendship: any, currentUserId: any): Friendsh
       id: friend._id,
       username: (friend as any).username,
       email: (friend as any).email,
-      avatar: (friend as any).avatar
+      avatar: (friend as any).avatar,
+      availability: (friend as any).availability || 'available',
+      jobRole: (friend as any).jobRole || 'unassigned'
     },
     createdAt: friendship.createdAt
   }
@@ -127,6 +129,8 @@ export const sendFriendRequest = catchAsync(async (req: any, res: Response) => {
   await redisService.invalidateFriendRequests(receiverId.toString())
   await redisService.invalidateFriendStats(senderId.toString())
   await redisService.invalidateFriendStats(receiverId.toString())
+  await redisService.invalidateFriendSearch(senderId.toString())
+  await redisService.invalidateFriendSearch(receiverId.toString())
 
   
 
@@ -271,6 +275,8 @@ export const respondToFriendRequest = catchAsync(async (req: any, res: Response)
     await redisService.invalidateFriendRequests(request.receiver._id.toString())
     await redisService.invalidateFriendStats(request.sender._id.toString())
     await redisService.invalidateFriendStats(request.receiver._id.toString())
+    await redisService.invalidateFriendSearch(request.sender._id.toString())
+    await redisService.invalidateFriendSearch(request.receiver._id.toString())
    
   } else {
 
@@ -286,6 +292,8 @@ export const respondToFriendRequest = catchAsync(async (req: any, res: Response)
     await redisService.invalidateFriendRequests(request.receiver._id.toString())
     await redisService.invalidateFriendStats(request.sender._id.toString())
     await redisService.invalidateFriendStats(request.receiver._id.toString())
+    await redisService.invalidateFriendSearch(request.sender._id.toString())
+    await redisService.invalidateFriendSearch(request.receiver._id.toString())
   }
 
   res.status(200).json({
@@ -312,7 +320,7 @@ export const getFriends = catchAsync(async (req: any, res: Response) => {
       { user2: userId }
     ]
   })
-    .populate('user1 user2', 'username email avatar')
+    .populate('user1 user2', 'username email avatar availability jobRole')
     .sort({ createdAt: -1 })
 
   const formattedFriends = friendships
@@ -349,6 +357,8 @@ export const removeFriend = catchAsync(async (req: any, res: Response) => {
 
   await redisService.invalidateUserFriends(userId)
   await redisService.invalidateUserFriends(friendId)
+  await redisService.invalidateFriendSearch(userId.toString())
+  await redisService.invalidateFriendSearch(friendId.toString())
 
   res.status(200).json({
     success: true,
@@ -417,9 +427,13 @@ export const searchUsersForFriends = catchAsync(async (req: any, res: Response) 
     ]
   })
 
-  const friendIds = friendships.map(f => 
-    f.user1._id.toString() === userId ? f.user2._id : f.user1._id
-  )
+  const uid = userId.toString()
+
+  const friendIds = friendships.map((f) => {
+    const u1 = (f.user1._id ?? f.user1).toString()
+    const u2 = (f.user2._id ?? f.user2).toString()
+    return u1 === uid ? u2 : u1
+  })
 
   const pendingRequests = await FriendRequest.find({
     $or: [
@@ -429,9 +443,11 @@ export const searchUsersForFriends = catchAsync(async (req: any, res: Response) 
     status: 'pending'
   })
 
-  const pendingUserIds = pendingRequests.map(r => 
-    r.sender._id.toString() === userId ? r.receiver._id : r.sender._id
-  )
+  const pendingUserIds = pendingRequests.map((r) => {
+    const senderId = (r.sender._id ?? r.sender).toString()
+    const receiverId = (r.receiver._id ?? r.receiver).toString()
+    return senderId === uid ? receiverId : senderId
+  })
 
   const searchQuery: any = {
     _id: { 

@@ -1,5 +1,5 @@
 import express from 'express'
-import { authenticate, authorize, requireAdmin, requireSuperadmin } from '../middlewares'
+import { authenticate, authorize, requireAdmin, requireSuperadmin } from '../middlewares/index'
 import {
   createPublicProject,
   getPublicProjects,

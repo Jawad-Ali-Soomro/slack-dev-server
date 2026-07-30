@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import chatService from '../services/chatService';
-import { logger } from '../helpers';
-import { IChatRequest, CreateChatRequest, SendMessageRequest, UpdateMessageRequest } from '../interfaces';
+import { logger } from '../helpers/index';
+import { IChatRequest, CreateChatRequest, SendMessageRequest, UpdateMessageRequest } from '../interfaces/index';
 
 class ChatController {
   async createChat(req: IChatRequest, res: Response): Promise<void> {

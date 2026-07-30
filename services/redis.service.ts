@@ -1,6 +1,6 @@
 import Redis from 'ioredis';
-import { logger } from '../helpers';
-import { redisConfig } from '../config';
+import { logger } from '../helpers/index';
+import { redisConfig } from '../config/index';
 
 class RedisService {
   private client: Redis;
@@ -281,6 +281,10 @@ class RedisService {
 
   async invalidateFriendStats(userId: string): Promise<void> {
     await this.del(`user:${userId}:friendStats`);
+  }
+
+  async invalidateFriendSearch(userId: string): Promise<void> {
+    await this.invalidatePattern(`search:friends:${userId}:*`);
   }
 
   async cacheUserFriends(userId: string, friends: any[], ttl: number = 1800): Promise<void> {

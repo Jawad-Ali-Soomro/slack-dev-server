@@ -9,7 +9,7 @@ import {
   checkFollowStatus,
   getFollowNotifications
 } from '../controllers/follow.controller'
-import { authenticate } from '../middlewares'
+import { authenticate } from '../middlewares/index'
 
 /**
  * @openapi

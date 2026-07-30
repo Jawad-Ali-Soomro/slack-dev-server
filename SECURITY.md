@@ -1,6 +1,6 @@
 # Security Features
 
-This document outlines the security features implemented in the Core Stack server.
+This document outlines the security features implemented in the Skack Developers server.
 
 ## 🔐 Double Encryption for Tokens
 

@@ -1,9 +1,9 @@
-import { catchAsync, generateToken, invalidateCachePattern } from "../middlewares";
+import { catchAsync, generateToken, invalidateCachePattern } from "../middlewares/index";
 import jwt from "jsonwebtoken";
-import { IUser, UserResponse } from "../interfaces";
-import { User } from "../models";
-import { generateOtp, sendMail } from "../utils";
-import { buildOtpEmail, buildResetPasswordEmail } from "../templates";
+import { IUser, UserResponse, Availability, JobRole } from "../interfaces/index";
+import { User } from "../models/index";
+import { generateOtp, sendMail } from "../utils/index";
+import { buildOtpEmail, buildResetPasswordEmail } from "../templates/index";
 import path from "path";
 import dotenv from "dotenv";
 import redisService from "../services/redis.service";
@@ -22,7 +22,10 @@ const formatUserResponse = (user: IUser): UserResponse => ({
   emailVerified: user.emailVerified,
   isPrivate: user.isPrivate,
   createdAt: user.createdAt,
-  socialLinks: user?.socialLinks
+  socialLinks: user?.socialLinks,
+  availability: (user as any).availability || Availability.Available,
+  jobRole: (user as any).jobRole || JobRole.Unassigned,
+  statusMessage: (user as any).statusMessage
 });
 
 
@@ -39,10 +42,6 @@ export const register = catchAsync(async (req: any, res: any) => {
   const findUserByEmail = await User.findOne({ email: normalizedEmail });
   if (findUserByEmail) {
     return res.status(400).json({ message: "email already in use" });
-  }
-  const findUserByUsername = await User.findOne({ username: trimmedUsername });
-  if (findUserByUsername) {
-    return res.status(400).json({ message: "username already taken" });
   }
   const emailVerificationToken = generateOtp();
   const emailVerificationTokenExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); 
@@ -96,9 +95,9 @@ export const register = catchAsync(async (req: any, res: any) => {
     });
   } catch (err: any) {
     if (err.code === 11000) {
-      if (err.keyPattern?.username) {
-        return res.status(400).json({ message: "username already taken" });
-      }
+      // if (err.keyPattern?.username) {
+      //   return res.status(400).json({ message: "username already taken" });
+      // }
       if (err.keyPattern?.email) {
         return res.status(400).json({ message: "email already in use" });
       }
@@ -257,7 +256,7 @@ export const forgotPassword = catchAsync(async (req: any, res: any) => {
     otp: resetToken,
     username: user.username,
     supportEmail: "support@slackdev.com",
-    siteName: "Core Stack",
+    siteName: "Skack Developers",
     buttonText: "Reset Password",
     buttonUrl: `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`
   });
@@ -357,7 +356,7 @@ export const connectGithub = catchAsync(async (req: any, res: any) => {
 export const generateUrl = catchAsync(async (req: any, res: any) => {
    const state = generateToken({ id: req.user.id }); 
 
-  const githubUrl = `https://github.com/login/oauth/authorize?client_id=${process.env.GITHUB_CLIENT_ID}&scope=repo user&state=${state}`;
+  const githubUrl = `https://github.com/login/oauth/authorize?client_id=${process.env.GITHUB_CLIENT_ID}&scope=repo user&prompt=select_account&state=${state}`;
 
   res.json({ url: githubUrl });
 })

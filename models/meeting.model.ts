@@ -1,5 +1,5 @@
 import mongoose, { Document, Schema } from "mongoose";
-import { IMeeting, MeetingStatus, MeetingType } from "../interfaces";
+import { IMeeting, MeetingStatus, MeetingType } from "../interfaces/index";
 
 const MeetingSchema = new Schema<IMeeting>({
   title: { type: String, required: true, trim: true },

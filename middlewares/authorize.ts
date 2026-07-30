@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import { Role } from '../interfaces';
-import { logger } from '../helpers';
+import { Role } from '../interfaces/index';
+import { logger } from '../helpers/index';
 
 /**
  * Role-based authorization middleware

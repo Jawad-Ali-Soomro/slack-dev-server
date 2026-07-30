@@ -1,10 +1,10 @@
-import { OtpTemplateData } from "../interfaces";
+import { OtpTemplateData } from "../interfaces/index";
 
 export const buildOtpEmail = (data: OtpTemplateData) => {
   const {
     username = "USER",
     otp,
-    siteName = "CORE STACK",
+    siteName = "Skack Developers",
     buttonText = "VERIFY EMAIL",
     buttonUrl = "#",
     supportEmail = "support@slackdev.com",

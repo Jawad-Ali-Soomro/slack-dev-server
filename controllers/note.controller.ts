@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
-import { catchAsync } from '../middlewares';
-import { Note } from '../models';
+import { catchAsync } from '../middlewares/index';
+import { Note } from '../models/index';
 import multer from 'multer';
 import path from 'path';
 import fs from 'fs';

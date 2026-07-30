@@ -1,6 +1,6 @@
-import { Chat, Message, User, Notification } from '../models';
-import { CreateChatRequest, SendMessageRequest, UpdateMessageRequest, ChatResponse, MessageResponse } from '../interfaces';
-import { logger } from '../helpers';
+import { Chat, Message, User, Notification } from '../models/index';
+import { CreateChatRequest, SendMessageRequest, UpdateMessageRequest, ChatResponse, MessageResponse } from '../interfaces/index';
+import { logger } from '../helpers/index';
 import redisService from './redis.service';
 import mongoose from 'mongoose';
 
@@ -207,7 +207,10 @@ class ChatService {
 
       const socketService = (global as any).socketService;
       if (socketService) {
-        socketService.emitNewMessage(chatId, messageResponse);
+        const participantIds = chat.participants.map((p: any) =>
+          p._id.toString(),
+        );
+        socketService.emitNewMessage(chatId, messageResponse, participantIds);
         const chatResponse = this.formatChatResponse(chat, userId);
         socketService.emitChatUpdate(chatId, chatResponse);
       }

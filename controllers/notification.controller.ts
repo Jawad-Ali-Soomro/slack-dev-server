@@ -1,5 +1,5 @@
-import { catchAsync } from "../middlewares";
-import { Notification } from "../models";
+import { catchAsync } from "../middlewares/index";
+import { Notification } from "../models/index";
 import redisService from "../services/redis.service";
 
 export const getNotifications = catchAsync(async (req: any, res: any) => {
@@ -16,6 +16,7 @@ export const getNotifications = catchAsync(async (req: any, res: any) => {
 
   const notifications = await Notification.find({ recipient: userId })
     .populate('sender', 'username avatar')
+    .populate('invitationId', 'status targetType targetName role')
     .sort({ createdAt: -1 })
     .skip(skip)
     .limit(parseInt(limit as string));

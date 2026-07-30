@@ -1,7 +1,7 @@
 import express from 'express'
 const authRouter = express.Router()
 import { register, login, verifyEmail, resendOtp, forgotPassword, resetPassword, getProfile, logout, connectGithub } from '../controllers/auth.controller'
-import { authenticate, authRateLimiter } from '../middlewares'
+import { authenticate, authRateLimiter } from '../middlewares/index'
 
 /**
  * @openapi

@@ -7,7 +7,7 @@ import {
   deleteImage,
   getImage
 } from '../controllers/upload.controller'
-import { authenticate } from '../middlewares'
+import { authenticate } from '../middlewares/index'
 
 const router = express.Router()
 

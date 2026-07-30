@@ -17,6 +17,7 @@ import exploreRouter from './explore.routes'
 import noteRouter from './note.routes'
 import challengeRouter from './challenge.routes'
 import awardRouter from './award.routes'
+import invitationRouter from './invitation.routes'
 const router = express.Router()
 
 router.use("/auth", authRouter)
@@ -29,6 +30,7 @@ router.use("/follow", followRouter)
 router.use("/projects", projectRouter)
 router.use("/teams", teamRouter)
 router.use("/friends", friendRouter)
+router.use("/invitations", invitationRouter)
 router.use("/chat", chatRouter)
 router.use("/posts", postRouter)
 router.use("/upload", uploadRouter)

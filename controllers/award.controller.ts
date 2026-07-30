@@ -1,7 +1,7 @@
 import { Response } from 'express';
-import { catchAsync } from '../middlewares';
+import { catchAsync } from '../middlewares/index';
 import { AwardService } from '../services/awardService';
-import { User } from '../models';
+import { User } from '../models/index';
 
 export const getUserAwards = catchAsync(async (req: any, res: Response) => {
   const userId = req.user._id;

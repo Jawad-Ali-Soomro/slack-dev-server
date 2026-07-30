@@ -2,9 +2,9 @@ import { Request, Response } from 'express'
 import mongoose from 'mongoose'
 import { Team } from '../models/team.model'
 import User from '../models/user.model'
-import { catchAsync, invalidateUserCache } from '../middlewares'
+import { catchAsync, invalidateUserCache } from '../middlewares/index'
 import redisService from '../services/redis.service'
-import { Role } from '../interfaces'
+import { Role } from '../interfaces/index'
 import { 
   CreateTeamRequest, 
   UpdateTeamRequest, 
@@ -13,7 +13,7 @@ import {
   AddTeamMemberRequest,
   UpdateTeamMemberRoleRequest,
   RemoveTeamMemberRequest
-} from '../interfaces'
+} from '../interfaces/index'
 
 const formatTeamResponse = (team: any): TeamResponse => ({
   id: team._id,

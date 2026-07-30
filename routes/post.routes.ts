@@ -18,7 +18,7 @@ import {
   addReply,
   addCommentReaction
 } from '../controllers/post.controller'
-import { authenticate } from '../middlewares'
+import { authenticate } from '../middlewares/index'
 
 
 const router = express.Router()

@@ -1,12 +1,13 @@
 import getOverdueInfo from "../utils/formatDate";
-import { sendMail } from "../utils";
-import { catchAsync } from "../middlewares";
-import { Task, User, Notification } from "../models";
+import { sendMail } from "../utils/index";
+import { catchAsync } from "../middlewares/index";
+import { Task, User, Notification } from "../models/index";
 import {
   CreateTaskRequest,
   UpdateTaskRequest,
   TaskResponse,
-} from "../interfaces";
+  Availability,
+} from "../interfaces/index";
 import redisService from "../services/redis.service";
 import buildTaskOverdueEmail from "../templates/taskOverdue";
 import path from "path";
@@ -46,6 +47,12 @@ const formatTaskResponse = (task: any): TaskResponse => ({
         logo: task.projectId.logo,
       }
     : null,
+  repository: task.repository?.repoId
+    ? {
+        repoId: task.repository.repoId,
+        repoName: task.repository.repoName,
+      }
+    : null,
   dueDate: task.dueDate,
   tags: task.tags,
   createdAt: task.createdAt,
@@ -61,12 +68,20 @@ export const createTask = catchAsync(async (req: any, res: any) => {
     dueDate,
     tags,
     projectId,
+    repository
   }: CreateTaskRequest = req.body;
   const assignedBy = req.user._id;
 
   const assignToUser = await User.findById(assignTo);
   if (!assignToUser) {
     return res.status(404).json({ message: "AssignedTo user not found" });
+  }
+
+  if ((assignToUser as any).availability === Availability.Busy) {
+    return res.status(409).json({
+      message: `${assignToUser.username} is currently busy and cannot be assigned new tasks`,
+      code: "USER_BUSY",
+    });
   }
 
   const task = await Task.create({
@@ -78,6 +93,7 @@ export const createTask = catchAsync(async (req: any, res: any) => {
     projectId: projectId || undefined,
     dueDate,
     tags: tags || [],
+    repository
   });
 
   await task.populate([
