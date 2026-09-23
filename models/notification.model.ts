@@ -8,6 +8,7 @@ export interface INotification extends Document {
   isRead: boolean;
   taskId?: mongoose.Types.ObjectId;
   invitationId?: mongoose.Types.ObjectId;
+  meetingId?: mongoose.Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -42,6 +43,10 @@ const NotificationSchema = new Schema<INotification>({
   invitationId: {
     type: Schema.Types.ObjectId,
     ref: "Invitation"
+  },
+  meetingId: {
+    type: Schema.Types.ObjectId,
+    ref: "Meeting"
   }
 }, {
   timestamps: true

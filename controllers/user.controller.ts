@@ -64,13 +64,27 @@ const invalidateFriendsOfUser = async (userId: string) => {
   }
 };
 
-const getAdminScopedUserIds = async (adminId: string) => {
-  const teams = await Team.find({ createdBy: adminId }).select('members createdBy');
-  const idSet = new Set<string>([adminId]);
+const memberUserId = (value: any): string | null => {
+  if (!value) return null;
+  if (typeof value === "string") return value;
+  const id = value._id?.toString?.() || value.id || value.toString?.();
+  if (!id || id === "[object Object]") return null;
+  return String(id);
+};
 
-  teams.forEach(team => {
-    idSet.add(team.createdBy.toString());
-    team.members.forEach((member: any) => idSet.add(member.user.toString()));
+const getAdminScopedUserIds = async (adminId: string) => {
+  const teams = await Team.find({
+    $or: [{ createdBy: adminId }, { "members.user": adminId }],
+  }).select("members createdBy");
+
+  const idSet = new Set<string>([String(adminId)]);
+  teams.forEach((team) => {
+    const creatorId = memberUserId(team.createdBy);
+    if (creatorId) idSet.add(creatorId);
+    (team.members || []).forEach((member: any) => {
+      const id = memberUserId(member.user);
+      if (id) idSet.add(id);
+    });
   });
 
   return Array.from(idSet);
@@ -680,6 +694,38 @@ export const updateUserVerification = catchAsync(async (req: any, res: any) => {
   });
 });
 
+const escapeRegex = (value: string) =>
+  String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+const applyUserListFilters = (filter: any, query: any) => {
+  const search = typeof query.search === "string" ? query.search.trim() : "";
+  const role = typeof query.role === "string" ? query.role.trim() : "";
+  const namePrefix = String(
+    query.usernameStartsWith || query.nameStartsWith || "",
+  ).trim();
+  const emailSuffix = String(query.emailEndsWith || "").trim();
+  const availability = String(query.availability || "").trim().toLowerCase();
+
+  if (search) {
+    filter.$or = [
+      { username: { $regex: escapeRegex(search), $options: "i" } },
+      { email: { $regex: escapeRegex(search), $options: "i" } },
+    ];
+  }
+  if (role) {
+    filter.role = role;
+  }
+  if (namePrefix) {
+    filter.username = { $regex: `^${escapeRegex(namePrefix)}`, $options: "i" };
+  }
+  if (emailSuffix) {
+    filter.email = { $regex: `${escapeRegex(emailSuffix)}$`, $options: "i" };
+  }
+  if (availability && Object.values(Availability).includes(availability as Availability)) {
+    filter.availability = availability;
+  }
+};
+
 /**
  * Superadmin: Get all users with role filtering
  * Superadmin can see all users
@@ -687,43 +733,26 @@ export const updateUserVerification = catchAsync(async (req: any, res: any) => {
  */
 export const getAllUsers = catchAsync(async (req: any, res: any) => {
   const currentUser = req.user;
-  const { page = 1, limit = 20, search, role } = req.query;
+  const {
+    page = 1,
+    limit = 20,
+    search,
+    role,
+    usernameStartsWith,
+    nameStartsWith,
+    emailEndsWith,
+    availability,
+  } = req.query;
   const skip = (parseInt(page as string) - 1) * parseInt(limit as string);
 
   let filter: any = {};
 
   if (currentUser.role === Role.Superadmin) {
-
-    if (search) {
-      filter.$or = [
-        { username: { $regex: search, $options: 'i' } },
-        { email: { $regex: search, $options: 'i' } }
-      ];
-    }
-    if (role) {
-      filter.role = role;
-    }
+    applyUserListFilters(filter, req.query);
   } else if (currentUser.role === Role.Admin) {
-
-    const teams = await Team.find({ createdBy: currentUser._id });
-    const teamMemberIds = teams.flatMap(team => 
-      team.members.map((member: any) => member.user.toString())
-    );
-
-    teamMemberIds.push(currentUser._id.toString());
-    
+    const teamMemberIds = await getAdminScopedUserIds(currentUser._id.toString());
     filter._id = { $in: teamMemberIds };
-    
-    if (search) {
-      filter.$and = [
-        {
-          $or: [
-            { username: { $regex: search, $options: 'i' } },
-            { email: { $regex: search, $options: 'i' } }
-          ]
-        }
-      ];
-    }
+    applyUserListFilters(filter, req.query);
   } else {
     return res.status(403).json({
       success: false,
@@ -731,7 +760,18 @@ export const getAllUsers = catchAsync(async (req: any, res: any) => {
     });
   }
 
-  const cacheKey = `admin:users:${JSON.stringify({ page, limit, search, role, userRole: currentUser.role })}`;
+  const cacheKey = `admin:users:${JSON.stringify({
+    page,
+    limit,
+    search,
+    role,
+    usernameStartsWith,
+    nameStartsWith,
+    emailEndsWith,
+    availability,
+    userRole: currentUser.role,
+    adminId: currentUser._id.toString(),
+  })}`;
   const cached = await redisService.get(cacheKey);
   
   if (cached) {

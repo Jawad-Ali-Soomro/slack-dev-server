@@ -9,8 +9,10 @@ export interface ITeam {
       username: string
       email: string
       avatar?: string
+      availability?: string
     }
     role: 'owner' | 'admin' | 'member'
+    jobRole?: string
     joinedAt: Date
   }>
   projects: string[]
@@ -59,8 +61,10 @@ export interface TeamResponse {
       username: string
       email: string
       avatar?: string
+      availability?: string
     }
     role: 'owner' | 'admin' | 'member'
+    jobRole?: string
     joinedAt: Date
   }>
   projects: Array<{
@@ -81,11 +85,13 @@ export interface TeamResponse {
 export interface AddTeamMemberRequest {
   userId: string
   role?: 'admin' | 'member'
+  jobRole?: string
 }
 
 export interface UpdateTeamMemberRoleRequest {
   userId: string
-  role: 'admin' | 'member'
+  role?: 'admin' | 'member'
+  jobRole?: string
 }
 
 export interface RemoveTeamMemberRequest {

@@ -790,3 +790,21 @@ export const getProjectStats = catchAsync(async (req: any, res: Response) => {
     stats
   })
 })
+
+/** Ensures multer writes into uploads/projects */
+export const setProjectsUploadFolder = (req: any, _res: Response, next: Function) => {
+  req.params.folder = "projects";
+  next();
+};
+
+export const uploadProjectLogo = catchAsync(async (req: any, res: Response) => {
+  if (!req.file) {
+    return res.status(400).json({ message: "No file uploaded" });
+  }
+
+  const fileUrl = `/projects/${req.file.filename}`;
+  res.status(200).json({
+    message: "Logo uploaded successfully",
+    url: fileUrl,
+  });
+});

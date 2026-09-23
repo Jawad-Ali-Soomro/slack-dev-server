@@ -1,14 +1,13 @@
-import { Router } from 'express';
+import express from 'express';
 import { healthCheck, redisStats, clearCache } from '../controllers/health.controller';
 import { authenticate } from '../middlewares/index';
 
-const router = Router();
+const healthRouter = express.Router();
+// global authentication middleware
+healthRouter.use(authenticate)
+healthRouter.get('/health', healthCheck);
+healthRouter.get('/redis/stats',  redisStats);
+healthRouter.delete('/cache',  clearCache);
 
-router.get('/health', healthCheck);
-
-router.get('/redis/stats', authenticate, redisStats);
-
-router.delete('/cache', authenticate, clearCache);
-
-export default router;
+export default healthRouter;
 

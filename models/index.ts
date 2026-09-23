@@ -10,7 +10,7 @@ import { Permissions } from "./permissions.model";
 import { PublicProject } from "./publicProject.model";
 import { Purchase } from "./purchase.model";
 import { Note } from "./note.model";
-import { Challenge } from "./challenge.model";
 import Invitation from "./invitation.model";
+import Automation from "./automation.model";
 
-export { User, Task, Meeting, Notification, Project, Chat, Message, CodeSession, Permissions, PublicProject, Purchase, Note, Challenge, Invitation };
+export { User, Task, Meeting, Notification, Project, Chat, Message, CodeSession, Permissions, PublicProject, Purchase, Note, Invitation, Automation };

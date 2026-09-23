@@ -6,18 +6,15 @@ import Notification from "../models/notification.model";
 import Invitation from "../models/invitation.model";
 import { catchAsync } from "../middlewares/index";
 import redisService from "../services/redis.service";
-import { Role } from "../interfaces/index";
-
-const emitNotification = (recipientId: string, notification: any) => {
-  try {
-    const socketService = (global as any).socketService;
-    if (socketService) {
-      socketService.emitNotification(recipientId, notification);
-    }
-  } catch (err) {
-    console.error("Failed to emit notification socket event:", err);
-  }
-};
+import { JobRole, Role } from "../interfaces/index";
+import { logger } from "../helpers/index";
+import { sendTeamInviteEmail } from "../templates/renderEmail";
+import { welcomeNewTeamMember } from "../services/automationRunner";
+import {
+  notifyUser,
+  emitNotificationUpdate,
+  emitNotificationRemoved,
+} from "../utils/notify";
 
 const getTargetModel = (targetType: string) =>
   targetType === "team" ? Team : Project;
@@ -35,7 +32,7 @@ const canManageTarget = (target: any, userId: any, userRole: Role) => {
 export const sendInvitation = catchAsync(async (req: any, res: Response) => {
   const userId = req.user._id;
   const userRole = req.user.role as Role;
-  const { targetType, targetId, inviteeId, role } = req.body;
+  const { targetType, targetId, inviteeId, role, jobRole } = req.body;
 
   if (!["project", "team"].includes(targetType)) {
     return res.status(400).json({ success: false, message: "Invalid target type" });
@@ -45,6 +42,23 @@ export const sendInvitation = catchAsync(async (req: any, res: Response) => {
   }
   if (inviteeId.toString() === userId.toString()) {
     return res.status(400).json({ success: false, message: "You cannot invite yourself" });
+  }
+
+  let parsedJobRole = JobRole.Unassigned;
+  if (targetType === "team") {
+    if (!jobRole) {
+      return res.status(400).json({
+        success: false,
+        message: "Select a job role for this teammate",
+      });
+    }
+    if (!Object.values(JobRole).includes(jobRole as JobRole)) {
+      return res.status(400).json({
+        success: false,
+        message: `Invalid job role. Must be one of: ${Object.values(JobRole).join(", ")}`,
+      });
+    }
+    parsedJobRole = jobRole as JobRole;
   }
 
   const Model = getTargetModel(targetType);
@@ -95,10 +109,11 @@ export const sendInvitation = catchAsync(async (req: any, res: Response) => {
     targetId,
     targetName: (target as any).name || "",
     role: role || "member",
+    jobRole: parsedJobRole,
     status: "pending",
   });
 
-  const notification = await Notification.create({
+  await notifyUser({
     recipient: inviteeId,
     sender: userId,
     type: `${targetType}_invite`,
@@ -106,14 +121,18 @@ export const sendInvitation = catchAsync(async (req: any, res: Response) => {
     invitationId: invitation._id,
   });
 
-  await redisService.invalidateUserNotifications(inviteeId.toString());
-  await redisService.invalidatePattern(`user:${inviteeId}:notifications:*`);
-
-  const populatedNotification = await Notification.findById(notification._id)
-    .populate("sender", "username avatar")
-    .populate("invitationId", "status targetType targetName role");
-
-  emitNotification(inviteeId.toString(), populatedNotification);
+  if (targetType === "team") {
+    sendTeamInviteEmail({
+      to: invitee.email,
+      username: invitee.username,
+      teamName: (target as any).name || "a team",
+      inviterName: req.user.username,
+      role: role || "member",
+      jobRole: parsedJobRole,
+    }).catch((err: any) =>
+      logger.error(`Team invite email failed: ${err?.message || err}`),
+    );
+  }
 
   res.status(201).json({
     success: true,
@@ -124,16 +143,40 @@ export const sendInvitation = catchAsync(async (req: any, res: Response) => {
 
 export const getInvitations = catchAsync(async (req: any, res: Response) => {
   const userId = req.user._id;
-  const { type = "received", status } = req.query;
+  const userRole = req.user.role as Role;
+  const { type = "received", status, targetId, targetType } = req.query;
 
   const filter: any = {};
-  if (type === "sent") {
+
+  if (targetId) {
+    const resolvedType = targetType === "project" ? "project" : "team";
+    const Model = getTargetModel(resolvedType);
+    const target = await Model.findById(targetId);
+    if (!target) {
+      return res.status(404).json({ success: false, message: `${resolvedType} not found` });
+    }
+    if (!canManageTarget(target, userId, userRole) ||
+        (resolvedType === "team" &&
+          userRole !== Role.Superadmin &&
+          target.createdBy?.toString() !== userId.toString())) {
+      return res.status(403).json({
+        success: false,
+        message: "Only the team owner can view invitation status",
+      });
+    }
+    filter.targetId = targetId;
+    filter.targetType = resolvedType;
+  } else if (type === "sent") {
     filter.inviter = userId;
   } else {
     filter.invitee = userId;
   }
+
   if (status) {
     filter.status = status;
+  }
+  if (!targetId && targetType) {
+    filter.targetType = targetType;
   }
 
   const invitations = await Invitation.find(filter)
@@ -195,6 +238,7 @@ export const respondToInvitation = catchAsync(async (req: any, res: Response) =>
       (target.members as any).push({
         user: userId,
         role: role || "member",
+        jobRole: (invitation as any).jobRole || JobRole.Unassigned,
         joinedAt: new Date(),
       });
       await target.save();
@@ -204,6 +248,17 @@ export const respondToInvitation = catchAsync(async (req: any, res: Response) =>
       await redisService.invalidateAllTeamCaches(userId);
       await redisService.invalidateAllTeamCaches(invitation.inviter);
       await redisService.invalidatePattern(`cache:*teams*`);
+      const inviterUser = await User.findById(invitation.inviter).select(
+        "username email",
+      );
+      welcomeNewTeamMember({
+        team: target,
+        member: req.user,
+        inviter: inviterUser || { _id: invitation.inviter, username: "A teammate" },
+        jobRole: (invitation as any).jobRole,
+      }).catch((err: any) =>
+        logger.error(`Welcome member automation failed: ${err?.message || err}`),
+      );
     } else {
       await redisService.invalidateAllProjectCaches(userId);
       await redisService.invalidateAllProjectCaches(invitation.inviter);
@@ -218,7 +273,7 @@ export const respondToInvitation = catchAsync(async (req: any, res: Response) =>
       : `${targetType}_invite_rejected`;
   const verb = action === "accept" ? "accepted" : "declined";
 
-  const notification = await Notification.create({
+  await notifyUser({
     recipient: inviterId,
     sender: userId,
     type: responseType,
@@ -226,16 +281,21 @@ export const respondToInvitation = catchAsync(async (req: any, res: Response) =>
     invitationId: invitation._id,
   });
 
-  await redisService.invalidateUserNotifications(inviterId);
-  await redisService.invalidatePattern(`user:${inviterId}:notifications:*`);
-  await redisService.invalidateUserNotifications(userId.toString());
-  await redisService.invalidatePattern(`user:${userId}:notifications:*`);
+  const inviteeId = userId.toString();
+  await redisService.invalidateUserNotifications(inviteeId);
+  await redisService.invalidatePattern(`user:${inviteeId}:notifications:*`);
 
-  const populatedNotification = await Notification.findById(notification._id)
+  const inviteeNotifications = await Notification.find({
+    recipient: userId,
+    invitationId: invitation._id,
+  })
     .populate("sender", "username avatar")
-    .populate("invitationId", "status targetType targetName role");
+    .populate("invitationId", "status targetType targetName role targetId")
+    .lean();
 
-  emitNotification(inviterId, populatedNotification);
+  inviteeNotifications.forEach((note) => {
+    emitNotificationUpdate(inviteeId, note);
+  });
 
   res.status(200).json({
     success: true,
@@ -269,6 +329,15 @@ export const cancelInvitation = catchAsync(async (req: any, res: Response) => {
 
   invitation.status = "cancelled";
   await invitation.save();
+
+  const existing = await Notification.find({ invitationId: invitation._id });
+  await Notification.deleteMany({ invitationId: invitation._id });
+  existing.forEach((note) => {
+    emitNotificationRemoved(
+      note.recipient.toString(),
+      (note._id as any).toString(),
+    );
+  });
 
   res.status(200).json({
     success: true,

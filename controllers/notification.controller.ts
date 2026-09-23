@@ -17,6 +17,7 @@ export const getNotifications = catchAsync(async (req: any, res: any) => {
   const notifications = await Notification.find({ recipient: userId })
     .populate('sender', 'username avatar')
     .populate('invitationId', 'status targetType targetName role')
+    .populate('taskId', 'title status')
     .sort({ createdAt: -1 })
     .skip(skip)
     .limit(parseInt(limit as string));

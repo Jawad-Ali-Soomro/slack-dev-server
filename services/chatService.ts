@@ -3,6 +3,7 @@ import { CreateChatRequest, SendMessageRequest, UpdateMessageRequest, ChatRespon
 import { logger } from '../helpers/index';
 import redisService from './redis.service';
 import mongoose from 'mongoose';
+import path from 'path';
 
 class ChatService {
   async createChat(userId: string, chatData: CreateChatRequest): Promise<ChatResponse> {
@@ -144,7 +145,9 @@ class ChatService {
 
   async sendMessage(userId: string, messageData: SendMessageRequest): Promise<MessageResponse> {
     try {
-      const { chatId, content, type = 'text', attachments, replyTo } = messageData;
+      const { chatId, type = 'text', replyTo } = messageData;
+      const attachments = this.sanitizeAttachments(messageData.attachments);
+      const content = (messageData.content || "").trim();
 
 
       if (!chatId) {
@@ -155,7 +158,7 @@ class ChatService {
         throw new Error('Invalid chat ID format');
       }
 
-      if (!content || !content.trim()) {
+      if (!content && attachments.length === 0) {
         throw new Error('Message content is required');
       }
 
@@ -172,7 +175,7 @@ class ChatService {
       const message = new Message({
         chat: chatId,
         sender: userId,
-        content,
+        content: content || this.attachmentCaption(attachments),
         type,
         attachments,
         replyTo
@@ -275,6 +278,7 @@ class ChatService {
       message.isDeleted = true;
       message.deletedAt = new Date();
       message.content = 'This message was deleted';
+      message.attachments = [];
 
       await message.save();
 
@@ -418,6 +422,30 @@ class ChatService {
       createdAt: chat.createdAt,
       updatedAt: chat.updatedAt
     };
+  }
+
+  private sanitizeAttachments(attachments?: SendMessageRequest["attachments"]) {
+    if (!Array.isArray(attachments)) return [];
+
+    return attachments
+      .map((item) => {
+        if (!item || typeof item !== "object") return null;
+        const url = String(item.url || "");
+        if (!url.startsWith("/uploads/chat/") || url.includes("..")) return null;
+        return {
+          url,
+          name: String(item.name || path.basename(url)).slice(0, 180),
+          mimetype: String(item.mimetype || "").slice(0, 120),
+          size: Number(item.size) || 0,
+        };
+      })
+      .filter((item): item is NonNullable<typeof item> => Boolean(item))
+      .slice(0, 5);
+  }
+
+  private attachmentCaption(attachments: Array<{ name?: string }>) {
+    if (attachments.length === 1) return attachments[0].name || "Sent a file";
+    return `Sent ${attachments.length} files`;
   }
 
   private formatMessageResponse(message: any): MessageResponse {

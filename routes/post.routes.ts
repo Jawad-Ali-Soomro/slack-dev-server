@@ -21,29 +21,30 @@ import {
 import { authenticate } from '../middlewares/index'
 
 
-const router = express.Router()
+const postRouter = express.Router()
 
-router.use(authenticate)
+// global authentication middleware
+postRouter.use(authenticate)
 
-router.post('/', createPost)
-router.get('/', getPosts)
-router.get('/trending', getTrendingPosts)
-router.get('/user/:userId', getUserPosts)
-router.get('/:postId', getPost)
-router.put('/:postId', updatePost)
-router.delete('/:postId', deletePost)
+postRouter.post('/', createPost)
+postRouter.get('/', getPosts)
+postRouter.get('/trending', getTrendingPosts)
+postRouter.get('/user/:userId', getUserPosts)
+postRouter.get('/:postId', getPost)
+postRouter.put('/:postId', updatePost)
+postRouter.delete('/:postId', deletePost)
 
-router.post('/:postId/like', toggleLike)
-router.post('/:postId/share', sharePost)
-router.post('/:postId/pin', togglePin)
+postRouter.post('/:postId/like', toggleLike)
+postRouter.post('/:postId/share', sharePost)
+postRouter.post('/:postId/pin', togglePin)
 
-router.post('/:postId/comments', addComment)
-router.get('/:postId/comments', getPostComments)
-router.put('/:postId/comments/:commentId', updateComment)
-router.delete('/:postId/comments/:commentId', deleteComment)
-router.post('/:postId/comments/:commentId/like', toggleCommentLike)
-router.post('/:postId/comments/:commentId/replies', addReply)
-router.post('/:postId/comments/:commentId/reactions', addCommentReaction)
+postRouter.post('/:postId/comments', addComment)
+postRouter.get('/:postId/comments', getPostComments)
+postRouter.put('/:postId/comments/:commentId', updateComment)
+postRouter.delete('/:postId/comments/:commentId', deleteComment)
+postRouter.post('/:postId/comments/:commentId/like', toggleCommentLike)
+postRouter.post('/:postId/comments/:commentId/replies', addReply)
+postRouter.post('/:postId/comments/:commentId/reactions', addCommentReaction)
 
-export default router
+export default postRouter
 

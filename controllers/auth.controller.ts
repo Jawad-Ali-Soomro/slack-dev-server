@@ -2,13 +2,13 @@ import { catchAsync, generateToken, invalidateCachePattern } from "../middleware
 import jwt from "jsonwebtoken";
 import { IUser, UserResponse, Availability, JobRole } from "../interfaces/index";
 import { User } from "../models/index";
-import { generateOtp, sendMail } from "../utils/index";
-import { buildOtpEmail, buildResetPasswordEmail } from "../templates/index";
-import path from "path";
+import { generateOtp } from "../utils/index";
+import { sendOtpEmail } from "../templates/index";
 import dotenv from "dotenv";
 import redisService from "../services/redis.service";
 import axios from "axios";
-import { decrypt } from "../middlewares/token";
+import { decrypt, setAuthCookie, clearAuthCookie, readAuthToken } from "../middlewares/token";
+
 dotenv.config({
   path: "../config/.env"
 });
@@ -44,35 +44,18 @@ export const register = catchAsync(async (req: any, res: any) => {
     return res.status(400).json({ message: "email already in use" });
   }
   const emailVerificationToken = generateOtp();
-  const emailVerificationTokenExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); 
-  const { html, text } = buildOtpEmail({
-    otp: emailVerificationToken,
-    username: username,
-    supportEmail: "support@slackdev.com",
-    siteName: "Slack Dev",
-    buttonText: "Verify Email",
-    buttonUrl: `${process.env.FRONTEND_URL}/verify-email?token=${emailVerificationToken}`,
-    logoUrl: `${process.env.BASE_URL || 'http://localhost:4000'}/logo.png`
-  })
-
-  sendMail({
-    subject: "Verify Email",
+  const emailVerificationTokenExpires = new Date(Date.now() + 24 * 60 * 60 * 1000);
+  sendOtpEmail({
     to: email,
-    text,
-    html,
-    attachments: [{
-      filename: 'logo.png',
-      path: path.join(__dirname, '../public/logo.png'),
-      cid: 'logo'
-    }]
-  })
+    username: trimmedUsername,
+    otp: emailVerificationToken,
+    kind: "signup",
+  }).catch((err) => console.error("Signup OTP email failed:", err));
   try {
-
     const userData = { ...req.body };
     if (!userData.role || userData.role !== 'user') {
       userData.role = 'user';
     }
-
     userData.email = normalizedEmail;
     userData.username = trimmedUsername;
     
@@ -95,9 +78,6 @@ export const register = catchAsync(async (req: any, res: any) => {
     });
   } catch (err: any) {
     if (err.code === 11000) {
-      // if (err.keyPattern?.username) {
-      //   return res.status(400).json({ message: "username already taken" });
-      // }
       if (err.keyPattern?.email) {
         return res.status(400).json({ message: "email already in use" });
       }
@@ -113,11 +93,11 @@ export const login = catchAsync(async (req: any, res: any) => {
 
   const normalizedEmail = email?.toLowerCase().trim();
   const trimmedPassword = password?.trim();
-  
+
   if (!normalizedEmail || !trimmedPassword) {
     return res.status(400).json({ message: "email and password are required" });
   }
-  
+
   const user = await User.findOne({ email: normalizedEmail });
   if (!user || !(await user.comparePassword(trimmedPassword))) {
     return res.status(401).json({ message: "invalid credentials" });
@@ -131,27 +111,12 @@ export const login = catchAsync(async (req: any, res: any) => {
     user.emailVerificationTokenExpires = emailVerificationTokenExpires;
     await user.save();
 
-    const { html, text } = buildOtpEmail({
-      otp: emailVerificationToken,
-      username: user.username,
-      supportEmail: "support@slackdev.com",
-      siteName: "Slack Dev",
-      buttonText: "Verify Email",
-      buttonUrl: `${process.env.FRONTEND_URL}/verify-email?token=${emailVerificationToken}`,
-      logoUrl: `${process.env.BASE_URL || 'http://localhost:4000'}/logo.png`
-    })
-  
-    sendMail({
-      subject: "Verify Email - Login Attempt",
+    sendOtpEmail({
       to: normalizedEmail,
-      text,
-      html,
-      attachments: [{
-        filename: 'logo.png',
-        path: path.join(__dirname, '../public/logo.png'),
-        cid: 'logo'
-      }]
-    })
+      username: user.username,
+      otp: emailVerificationToken,
+      kind: "login",
+    }).catch((err) => console.error("Login OTP email failed:", err));
 
     res.status(200).json({ 
       message: "verification email sent", 
@@ -161,9 +126,9 @@ export const login = catchAsync(async (req: any, res: any) => {
     return;
   }
   const token = generateToken({ id: user._id });
+  setAuthCookie(res, token);
   res.status(200).json({
     message: "login successful",
-    token,
     user: formatUserResponse(user)
   });
 });
@@ -172,6 +137,7 @@ export const login = catchAsync(async (req: any, res: any) => {
 export const verifyEmail = catchAsync(async (req: any, res: any) => {
   const { email, otp } = req.body;
   const normalizedEmail = email?.toLowerCase().trim();
+
   if (!normalizedEmail || !otp) {
     return res.status(400).json({ message: "email and otp are required" });
   }
@@ -180,6 +146,7 @@ export const verifyEmail = catchAsync(async (req: any, res: any) => {
     emailVerificationToken: otp,
     emailVerificationTokenExpires: { $gt: new Date() }
   });
+
   if (!user) {
     return res.status(400).json({ message: "invalid or expired verification code" });
   }
@@ -212,27 +179,12 @@ export const resendOtp = catchAsync(async (req: any, res: any) => {
   user.emailVerificationTokenExpires = emailVerificationTokenExpires;
   await user.save();
   
-  const { html, text } = buildOtpEmail({
-    otp: emailVerificationToken,
-    username: user.username,
-    supportEmail: "support@slackdev.com",
-    siteName: "Slack Dev",
-    buttonText: "Verify Email",
-    buttonUrl: `${process.env.FRONTEND_URL}/verify-email?token=${emailVerificationToken}`,
-    logoUrl: `${process.env.BASE_URL || 'http://localhost:4000'}/logo.png`
-  });
-
-  sendMail({
-    subject: "Verify Email - New Code",
+  sendOtpEmail({
     to: normalizedEmail,
-    text,
-    html,
-    attachments: [{
-      filename: 'logo.png',
-      path: path.join(__dirname, '../public/logo.png'),
-      cid: 'logo'
-    }]
-  });
+    username: user.username,
+    otp: emailVerificationToken,
+    kind: "resend",
+  }).catch((err) => console.error("Resend OTP email failed:", err));
   
   res.status(200).json({ message: "verification code resent to email" });
 });
@@ -252,25 +204,12 @@ export const forgotPassword = catchAsync(async (req: any, res: any) => {
   user.passwordResetToken = resetToken;
   user.passwordResetTokenExpires = resetTokenExpires;
   await user.save();
-  const { html, text } = buildResetPasswordEmail({
-    otp: resetToken,
-    username: user.username,
-    supportEmail: "support@slackdev.com",
-    siteName: "Skack Developers",
-    buttonText: "Reset Password",
-    buttonUrl: `${process.env.FRONTEND_URL}/reset-password?token=${resetToken}`
-  });
-  sendMail({
-    subject: "Reset Password",
+  sendOtpEmail({
     to: normalizedEmail,
-    text,
-    html,
-    attachments: [{
-      filename: 'logo.png',
-      path: path.join(__dirname, '../public/logo.png'),
-      cid: 'logo'
-    }]
-  });
+    username: user.username,
+    otp: resetToken,
+    kind: "reset",
+  }).catch((err) => console.error("Reset password email failed:", err));
   res.status(200).json({ message: "password reset code sent to email" });
 });
 
@@ -297,7 +236,31 @@ export const resetPassword = catchAsync(async (req: any, res: any) => {
 
 export const logout = catchAsync(async (_req: any, res: any) => {
   await redisService.flushAll();
+  clearAuthCookie(res);
   res.status(200).json({ success: true, message: 'logout successful' });
+});
+
+export const proxyAssistant = catchAsync(async (req: any, res: any) => {
+  const token = readAuthToken(req);
+  if (!token) {
+    return res.status(401).json({ message: "Sign in as admin" });
+  }
+
+  const agentUrl = process.env.AGENT_URL || "http://localhost:5055";
+  try {
+    const response = await axios.post(
+      `${agentUrl}/ask`,
+      { prompt: req.body?.prompt },
+      {
+        headers: { Authorization: `Bearer ${token}` },
+        timeout: 45000,
+        validateStatus: () => true,
+      },
+    );
+    res.status(response.status).json(response.data);
+  } catch {
+    res.status(502).json({ message: "Assistant failed" });
+  }
 });
 
 export const getProfile = catchAsync(async (req: any, res: any) => {
@@ -312,10 +275,9 @@ export const connectGithub = catchAsync(async (req: any, res: any) => {
 
   if (!state) return res.status(400).send("Missing user info (state)");
 
-  // ✅ Decrypt & verify the JWT from state
   let decoded: any;
   try {
-    const jwtToken = decrypt(state); // your AES decrypt function
+    const jwtToken = decrypt(state);
     decoded = jwt.verify(jwtToken, process.env.JWT_SECRET || 'default_secret');
   } catch (err) {
     return res.status(401).send("Invalid or expired token in state");
@@ -323,7 +285,6 @@ export const connectGithub = catchAsync(async (req: any, res: any) => {
 
   const userId = decoded.id;
 
-  // Exchange code for access token
   const tokenRes = await axios.post(
     "https://github.com/login/oauth/access_token",
     {
@@ -336,12 +297,10 @@ export const connectGithub = catchAsync(async (req: any, res: any) => {
 
   const accessToken = tokenRes.data.access_token;
 
-  // Get GitHub user info
   const githubUser = (await axios.get("https://api.github.com/user", {
     headers: { Authorization: `Bearer ${accessToken}` },
   })).data;
 
-  // Save in DB
   await User.findByIdAndUpdate(userId, {
     "socialLinks.github": {
       id: githubUser.id,

@@ -8,10 +8,11 @@ import {
 } from "../controllers/invitation.controller";
 
 const invitationRouter = express.Router();
-
-invitationRouter.post("/", authenticate, sendInvitation);
-invitationRouter.get("/", authenticate, getInvitations);
-invitationRouter.post("/respond", authenticate, respondToInvitation);
-invitationRouter.delete("/:invitationId", authenticate, cancelInvitation);
+// global authentication middleware
+invitationRouter.use(authenticate)
+invitationRouter.post("/", sendInvitation);
+invitationRouter.get("/", getInvitations);
+invitationRouter.post("/respond", respondToInvitation);
+invitationRouter.delete("/:invitationId", cancelInvitation);
 
 export default invitationRouter;

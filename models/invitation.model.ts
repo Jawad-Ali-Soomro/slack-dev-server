@@ -1,4 +1,5 @@
 import mongoose, { Document, Schema } from "mongoose";
+import { JobRole } from "../interfaces/index";
 
 export type InvitationTargetType = "project" | "team";
 export type InvitationStatus = "pending" | "accepted" | "rejected" | "cancelled";
@@ -10,6 +11,7 @@ export interface IInvitation extends Document {
   targetId: mongoose.Types.ObjectId;
   targetName: string;
   role: string;
+  jobRole?: string;
   status: InvitationStatus;
   createdAt: Date;
   updatedAt: Date;
@@ -43,6 +45,11 @@ const InvitationSchema = new Schema<IInvitation>(
     role: {
       type: String,
       default: "member",
+    },
+    jobRole: {
+      type: String,
+      enum: Object.values(JobRole),
+      default: JobRole.Unassigned,
     },
     status: {
       type: String,

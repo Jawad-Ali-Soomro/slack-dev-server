@@ -15,17 +15,20 @@ import {
 
 const teamRouter = express.Router()
 
-teamRouter.post('/', authenticate, createTeam)
-teamRouter.get('/', authenticate, getTeams)
-teamRouter.get('/stats', authenticate, getTeamStats)
-teamRouter.get('/:teamId', authenticate, getTeamById)
-teamRouter.put('/:teamId', authenticate, updateTeam)
-teamRouter.delete('/:teamId', authenticate, deleteTeam)
+// global authentication middleware
+teamRouter.use(authenticate)
 
-teamRouter.post('/:teamId/members', authenticate, addMember)
-teamRouter.delete('/:teamId/members', authenticate, removeMember)
-teamRouter.put('/:teamId/members/role', authenticate, updateMemberRole)
+teamRouter.post('/', createTeam)
+teamRouter.get('/', getTeams)
+teamRouter.get('/stats', getTeamStats)
+teamRouter.get('/:teamId', getTeamById)
+teamRouter.put('/:teamId', updateTeam)
+teamRouter.delete('/:teamId', deleteTeam)
 
-teamRouter.get('/:teamId/members', authenticate, getTeamMembers)
+teamRouter.post('/:teamId/members', addMember)
+teamRouter.delete('/:teamId/members', removeMember)
+teamRouter.put('/:teamId/members/role', updateMemberRole)
+
+teamRouter.get('/:teamId/members', getTeamMembers)
 
 export default teamRouter

@@ -10,6 +10,7 @@ export interface CreateTaskRequest {
     repoId: string;
     repoName: string;
   };
+  captureMetadata?: Record<string, unknown>;
 }
 
 export interface UpdateTaskRequest {
@@ -49,6 +50,7 @@ export interface TaskResponse {
   priority: "low" | "medium" | "high" | "urgent";
   dueDate?: Date;
   tags?: string[];
+  captureMetadata?: Record<string, unknown> | null;
   createdAt: Date;
   updatedAt: Date;
 }

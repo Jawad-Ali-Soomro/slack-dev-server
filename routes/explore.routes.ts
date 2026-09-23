@@ -1,5 +1,5 @@
 import express from 'express'
-import { authenticate, authorize, requireAdmin, requireSuperadmin } from '../middlewares/index'
+import { authenticate, requireSuperadmin } from '../middlewares/index'
 import {
   createPublicProject,
   getPublicProjects,
@@ -15,22 +15,21 @@ import {
   rejectProject
 } from '../controllers/explore.controller'
 
-const router = express.Router()
-router.use(authenticate)
+const exploreRouter = express.Router()
+// global authentication middleware
+exploreRouter.use(authenticate)
 
-router.get('/projects', authenticate, getPublicProjects)
-router.get('/categories', getCategories)
+exploreRouter.get('/projects', uploadProjectFiles, getPublicProjects)
+exploreRouter.get('/categories', getCategories)
+exploreRouter.get('/projects/:id', getPublicProject)
+exploreRouter.post('/projects', uploadProjectFiles, createPublicProject)
+exploreRouter.post('/checkout/payment-intent', createPaymentIntent)
+exploreRouter.post('/purchase', purchaseProject)
+exploreRouter.get('/my-purchases', getMyPurchases)
+exploreRouter.get('/download/:projectId', downloadProject)
+exploreRouter.delete('/projects/:projectId', deletePublicProject)
+exploreRouter.patch('/projects/:projectId/approve', requireSuperadmin,  approveProject)
+exploreRouter.patch('/projects/:projectId/reject', requireSuperadmin, rejectProject)
 
-
-router.get('/projects/:id', getPublicProject)
-router.post('/projects', uploadProjectFiles, createPublicProject)
-router.post('/checkout/payment-intent', createPaymentIntent)
-router.post('/purchase', purchaseProject)
-router.get('/my-purchases', getMyPurchases)
-router.get('/download/:projectId', downloadProject)
-router.delete('/projects/:projectId', deletePublicProject)
-router.patch('/projects/:projectId/approve', requireSuperadmin, approveProject)
-router.patch('/projects/:projectId/reject', requireSuperadmin, rejectProject)
-
-export default router
+export default exploreRouter
 

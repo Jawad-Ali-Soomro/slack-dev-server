@@ -6,8 +6,8 @@ import jwt from "jsonwebtoken";
 import { User } from "../models/index";
 import { logger } from "../helpers/index";
 import { SocketUser } from "../interfaces/index";
-import { decrypt } from "../middlewares/token";
-import { redisConfig } from "../config/index";
+import { decrypt, readAuthToken } from "../middlewares/token";
+import { redisConfig, createRedisOptions } from "../config/redis";
 import redisService from "./redis.service";
 
 class SocketService {
@@ -17,22 +17,40 @@ class SocketService {
   constructor(server: HTTPServer) {
     this.io = new SocketIOServer(server, {
       cors: {
-        origin: process.env.CLIENT_URL || "http://localhost:5173",
+        origin: true,
         methods: ["GET", "POST"],
         credentials: true,
       },
     });
 
-    try {
-      const pubClient = new Redis(redisConfig);
-      const subClient = pubClient.duplicate();
-      this.io.adapter(createAdapter(pubClient, subClient));
-      logger.info("Socket.IO Redis adapter enabled");
-    } catch (error) {
-      logger.warn(
-        "Socket.IO Redis adapter unavailable; use WORKERS=1 for reliable real-time chat",
-        error,
-      );
+    if (redisConfig.enabled) {
+      try {
+        const { url, options } = createRedisOptions();
+        const pubClient = url ? new Redis(url, options) : new Redis(options);
+        const subClient = pubClient.duplicate();
+
+        // ioredis requires an 'error' listener on every client (including duplicates)
+        const attachRedisHandlers = (client: Redis, label: string) => {
+          client.on("connect", () => {
+            logger.info(`Socket.IO Redis ${label} connected`);
+          });
+          client.on("error", (error) => {
+            logger.error(`Socket.IO Redis ${label} error:`, error);
+          });
+        };
+        attachRedisHandlers(pubClient, "pub");
+        attachRedisHandlers(subClient, "sub");
+
+        this.io.adapter(createAdapter(pubClient, subClient));
+        logger.info("Socket.IO Redis adapter enabled");
+      } catch (error) {
+        logger.warn(
+          "Socket.IO Redis adapter unavailable; sockets run in-process only",
+          error,
+        );
+      }
+    } else {
+      logger.info("Socket.IO Redis adapter skipped (Redis disabled)");
     }
 
     this.setupSocketHandlers();
@@ -225,7 +243,8 @@ class SocketService {
     try {
       const encryptedToken =
         socket.handshake.auth.token ||
-        socket.handshake.headers.authorization?.split(" ")[1];
+        socket.handshake.headers.authorization?.split(" ")[1] ||
+        readAuthToken({ headers: socket.handshake.headers, header: () => undefined });
 
       logger.info("Socket authentication attempt:", {
         hasToken: !!encryptedToken,
@@ -341,6 +360,12 @@ class SocketService {
 
   public emitNotification(userId: string, notification: any): void {
     this.emitToUser(userId, "new_notification", notification);
+  }
+
+  public emitTaskUpdated(userIds: string[], task: any): void {
+    userIds.forEach((userId) => {
+      this.emitToUser(userId, "task_updated", task);
+    });
   }
 
   public emitChatUpdate(chatId: string, chat: any): void {

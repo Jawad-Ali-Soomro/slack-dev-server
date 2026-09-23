@@ -3,8 +3,19 @@ import { catchAsync } from '../middlewares/index';
 import redisService from '../services/redis.service';
 
 export const healthCheck = catchAsync(async (req: Request, res: Response) => {
-  try {
+  if (!redisService.isEnabled()) {
+    return res.status(200).json({
+      status: 'healthy',
+      timestamp: new Date().toISOString(),
+      services: {
+        redis: {
+          status: 'disabled'
+        }
+      }
+    });
+  }
 
+  try {
     const redisPing = await redisService.ping();
     
     res.status(200).json({
@@ -32,14 +43,24 @@ export const healthCheck = catchAsync(async (req: Request, res: Response) => {
 });
 
 export const redisStats = catchAsync(async (req: Request, res: Response) => {
-  try {
+  if (!redisService.isEnabled()) {
+    return res.status(200).json({
+      status: 'success',
+      redis: {
+        connected: false,
+        enabled: false
+      }
+    });
+  }
 
+  try {
     const info = await redisService.get('redis:info') || {};
     
     res.status(200).json({
       status: 'success',
       redis: {
         connected: true,
+        enabled: true,
         info
       }
     });

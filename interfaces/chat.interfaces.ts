@@ -14,11 +14,18 @@ export interface CreateChatRequest {
   description?: string;
 }
 
+export interface ChatAttachment {
+  url: string;
+  name?: string;
+  mimetype?: string;
+  size?: number;
+}
+
 export interface SendMessageRequest {
   chatId: string;
   content: string;
   type?: 'text' | 'image' | 'file' | 'audio' | 'video';
-  attachments?: string[];
+  attachments?: ChatAttachment[];
   replyTo?: string;
 }
 
@@ -62,7 +69,7 @@ export interface MessageResponse {
   };
   content: string;
   type: 'text' | 'image' | 'file' | 'audio' | 'video';
-  attachments?: string[];
+  attachments?: ChatAttachment[];
   replyTo?: {
     _id: string;
     content: string;

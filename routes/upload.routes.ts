@@ -9,14 +9,15 @@ import {
 } from '../controllers/upload.controller'
 import { authenticate } from '../middlewares/index'
 
-const router = express.Router()
+const uploadRouter = express.Router()
 
-router.use(authenticate)
+// global authentication middleware
+uploadRouter.use(authenticate)
 
-router.post('/single', uploadSingleImage, uploadImage)
-router.post('/multiple', uploadMultipleImages, uploadImages)
-router.delete('/:filename', deleteImage)
-router.get('/:filename', getImage)
+uploadRouter.post('/single', uploadSingleImage, uploadImage)
+uploadRouter.post('/multiple', uploadMultipleImages, uploadImages)
+uploadRouter.delete('/:filename', deleteImage)
+uploadRouter.get('/:filename', getImage)
 
-export default router
+export default uploadRouter
 

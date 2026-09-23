@@ -9,7 +9,8 @@
     "build": "tsc",
     "vercel-build": "echo 'Building for Vercel...'",
     "seed:challenges": "ts-node scripts/seedChallenges.ts",
-    "seed": "tsx scripts/seed.ts"
+    "seed": "tsx scripts/seed.ts",
+    "seed:workspace": "tsx scripts/seedWorkspace.ts"
   },
   "author": "Jawad-Ali-Soomro",
   "license": "ISC",
@@ -24,6 +25,7 @@
     "cors": "^2.8.5",
     "dotenv": "^17.2.2",
     "express": "^5.1.0",
+    "handlebars": "^4.7.9",
     "ioredis": "^5.7.0",
     "jsonwebtoken": "^9.0.2",
     "llama-node": "^0.1.6",

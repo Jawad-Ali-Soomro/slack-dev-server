@@ -1,4 +1,4 @@
-import { Router } from 'express';
+import express from 'express';
 import {
   getAllUsersWithPermissions,
   getUserPermissions,
@@ -7,16 +7,14 @@ import {
 } from '../controllers/permissions.controller';
 import { authenticate } from '../middlewares/index';
 
-const router = Router();
+const permissionsRouter = express.Router();
 
-router.use(authenticate);
+// global authentication middleware
+permissionsRouter.use(authenticate)
 
-router.get('/users', getAllUsersWithPermissions);
+permissionsRouter.get('/users', getAllUsersWithPermissions);
+permissionsRouter.get('/user/:targetUserId', getUserPermissions);
+permissionsRouter.post('/user/:userId', createOrUpdatePermissions);
+permissionsRouter.delete('/user/:userId', deletePermissions);
 
-router.get('/user/:targetUserId', getUserPermissions);
-
-router.post('/user/:userId', createOrUpdatePermissions);
-
-router.delete('/user/:userId', deletePermissions);
-
-export default router;
+export default permissionsRouter;

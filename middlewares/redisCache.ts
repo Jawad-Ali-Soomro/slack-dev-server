@@ -1,12 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
 import redisService from '../services/redis.service';
 import { logger } from '../helpers/index';
+import { JwtPayload } from '../interfaces/user.interface';
 
 interface AuthenticatedRequest extends Request {
-  user?: {
-    _id: string;
-    [key: string]: any;
-  };
+  user?: JwtPayload
 }
 
 interface CacheOptions {
