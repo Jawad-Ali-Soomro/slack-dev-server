@@ -4,10 +4,7 @@ import path from "path";
 import fs from "fs";
 import os from "os";
 import { networkInterfaces } from "os";
-import dotenv from "dotenv";
-import colors from "colors"; // npm install colors
-
-dotenv.config({ path: "./config/.env" });
+import colors from "colors";
 
 const LOG_ENABLED = process.env.LOG_ENABLED === "true";
 

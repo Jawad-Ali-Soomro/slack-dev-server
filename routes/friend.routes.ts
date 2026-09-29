@@ -1,5 +1,5 @@
 import express from 'express'
-import { authenticate } from '../middlewares'
+import { authenticate } from '../middlewares/index'
 import { 
   sendFriendRequest,
   getFriendRequests,
@@ -11,20 +11,16 @@ import {
 } from '../controllers/friend.controller'
 
 const friendRouter = express.Router()
+// global authentication middleware
+friendRouter.use(authenticate)
 
-friendRouter.post('/request', authenticate, sendFriendRequest)
-
-friendRouter.get('/requests', authenticate, getFriendRequests)
-
-friendRouter.post('/respond', authenticate, respondToFriendRequest)
-
-friendRouter.get('/', authenticate, getFriends)
-
-friendRouter.delete('/:friendId', authenticate, removeFriend)
-
-friendRouter.get('/stats', authenticate, getFriendStats)
-
-friendRouter.get('/search', authenticate, searchUsersForFriends)
+friendRouter.post('/request', sendFriendRequest)
+friendRouter.get('/requests', getFriendRequests)
+friendRouter.post('/respond', respondToFriendRequest)
+friendRouter.get('/', getFriends)
+friendRouter.delete('/:friendId', removeFriend)
+friendRouter.get('/stats', getFriendStats)
+friendRouter.get('/search', searchUsersForFriends)
 
 export default friendRouter
 

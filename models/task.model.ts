@@ -10,11 +10,15 @@ export interface ITask extends Document {
   priority: "low" | "medium" | "high" | "urgent";
   dueDate?: Date;
   tags?: string[];
+  /** Browser/page capture from Chrome extension — shown in task drawer only */
+  captureMetadata?: Record<string, unknown>;
   createdAt: Date;
   updatedAt: Date;
-  overdueEmailSent: {
-    type: Boolean
+  repository: {
+    repoId: string,
+    repoName: string
   }
+  overdueEmailSent: boolean;
 }
 
 const TaskSchema = new Schema<ITask>({
@@ -28,6 +32,10 @@ const TaskSchema = new Schema<ITask>({
     type: String,
     trim: true,
     maxlength: 1000
+  },
+  repository: {
+    repoId: String,
+    repoName: String
   },
   assignTo: {
     type: Schema.Types.ObjectId,
@@ -60,10 +68,13 @@ const TaskSchema = new Schema<ITask>({
     type: String,
     trim: true
   }],
+  captureMetadata: {
+    type: Schema.Types.Mixed,
+  },
   overdueEmailSent: {
-  type: Boolean,
-  default: false,
-}
+    type: Boolean,
+    default: false,
+  },
 
 }, {
   timestamps: true
@@ -73,6 +84,7 @@ TaskSchema.index({ assignTo: 1, status: 1 });
 TaskSchema.index({ assignedBy: 1 });
 TaskSchema.index({ dueDate: 1 });
 TaskSchema.index({ createdAt: -1 });
+TaskSchema.index({ overdueEmailSent: 1, status: 1, dueDate: 1 });
 
 const Task =
   mongoose.models.Task ||

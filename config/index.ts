@@ -1,4 +1,5 @@
+import "./env";
 import { dbConnection } from "./db";
-import { redisConfig } from "./redis";
+import { redisConfig, createRedisOptions } from "./redis";
 
-export { dbConnection, redisConfig };
+export { dbConnection, redisConfig, createRedisOptions };

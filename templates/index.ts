@@ -1,4 +1,15 @@
 import { buildOtpEmail } from "./verifyEmail";
 import { buildResetPasswordEmail } from "./resetPassword";
 
-export { buildOtpEmail, buildResetPasswordEmail }
+export {
+  renderEmail,
+  sendBrandEmail,
+  sendOtpEmail,
+  sendTeamInviteEmail,
+  sendWelcomeMemberEmail,
+  sendOverdueTaskEmail,
+  getLogoAttachments,
+  appLink,
+} from "./renderEmail";
+
+export { buildOtpEmail, buildResetPasswordEmail };

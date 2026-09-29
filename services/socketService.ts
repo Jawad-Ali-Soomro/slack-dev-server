@@ -1,10 +1,13 @@
 import { Server as SocketIOServer } from "socket.io";
 import { Server as HTTPServer } from "http";
+import { createAdapter } from "@socket.io/redis-adapter";
+import Redis from "ioredis";
 import jwt from "jsonwebtoken";
-import { User } from "../models";
-import { logger } from "../helpers";
-import { SocketUser } from "../interfaces";
-import { decrypt } from "../middlewares/token";
+import { User } from "../models/index";
+import { logger } from "../helpers/index";
+import { SocketUser } from "../interfaces/index";
+import { decrypt, readAuthToken } from "../middlewares/token";
+import { redisConfig, createRedisOptions } from "../config/redis";
 import redisService from "./redis.service";
 
 class SocketService {
@@ -14,19 +17,73 @@ class SocketService {
   constructor(server: HTTPServer) {
     this.io = new SocketIOServer(server, {
       cors: {
-        origin: process.env.CLIENT_URL || "http://localhost:5173",
+        origin: true,
         methods: ["GET", "POST"],
         credentials: true,
       },
     });
 
+    if (redisConfig.enabled) {
+      try {
+        const { url, options } = createRedisOptions();
+        const pubClient = url ? new Redis(url, options) : new Redis(options);
+        const subClient = pubClient.duplicate();
+
+        // ioredis requires an 'error' listener on every client (including duplicates)
+        const attachRedisHandlers = (client: Redis, label: string) => {
+          client.on("connect", () => {
+            logger.info(`Socket.IO Redis ${label} connected`);
+          });
+          client.on("error", (error) => {
+            logger.error(`Socket.IO Redis ${label} error:`, error);
+          });
+        };
+        attachRedisHandlers(pubClient, "pub");
+        attachRedisHandlers(subClient, "sub");
+
+        this.io.adapter(createAdapter(pubClient, subClient));
+        logger.info("Socket.IO Redis adapter enabled");
+      } catch (error) {
+        logger.warn(
+          "Socket.IO Redis adapter unavailable; sockets run in-process only",
+          error,
+        );
+      }
+    } else {
+      logger.info("Socket.IO Redis adapter skipped (Redis disabled)");
+    }
+
     this.setupSocketHandlers();
+  }
+
+  private async getOnlineUsersSnapshot(): Promise<SocketUser[]> {
+    try {
+      const sockets = await this.io.fetchSockets();
+      const usersById = new Map<string, SocketUser>();
+
+      for (const remoteSocket of sockets) {
+        const socketUser = remoteSocket.data?.user;
+        if (!socketUser?.id) continue;
+
+        usersById.set(socketUser.id, {
+          userId: socketUser.id,
+          socketId: remoteSocket.id,
+          isOnline: true,
+          lastSeen: new Date(),
+        });
+      }
+
+      return Array.from(usersById.values());
+    } catch (error) {
+      logger.warn("Failed to fetch cluster sockets, using local map", error);
+      return Array.from(this.connectedUsers.values());
+    }
   }
 
   private setupSocketHandlers(): void {
     this.io.use(this.authenticateSocket.bind(this));
 
-    this.io.on("connection", (socket) => {
+    this.io.on("connection", async (socket) => {
       const user = socket.data.user;
       if (!user) return;
 
@@ -46,9 +103,10 @@ class SocketService {
         userId: user.id,
       });
 
-      socket.emit("online_users", Array.from(this.connectedUsers.values()));
+      const onlineUsers = await this.getOnlineUsersSnapshot();
+      socket.emit("online_users", onlineUsers);
 
-      this.io.emit("user_online", {
+      socket.broadcast.emit("user_online", {
         userName: user.name,
         userId: user.id,
         isOnline: true,
@@ -169,7 +227,7 @@ class SocketService {
       socket.on("disconnect", () => {
         this.connectedUsers.delete(user.id);
 
-        this.io.emit("user_offline", {
+        socket.broadcast.emit("user_offline", {
           userName: user.name,
           userId: user.id,
           isOnline: false,
@@ -185,7 +243,8 @@ class SocketService {
     try {
       const encryptedToken =
         socket.handshake.auth.token ||
-        socket.handshake.headers.authorization?.split(" ")[1];
+        socket.handshake.headers.authorization?.split(" ")[1] ||
+        readAuthToken({ headers: socket.handshake.headers, header: () => undefined });
 
       logger.info("Socket authentication attempt:", {
         hasToken: !!encryptedToken,
@@ -210,7 +269,7 @@ class SocketService {
 
       const decoded = jwt.verify(
         jwtToken,
-        process.env.JWT_SECRET || "default_secret",
+        process.env.JWT_SECRET as string,
       ) as any;
       logger.info("Token decoded successfully:", { userId: decoded.id });
 
@@ -253,10 +312,7 @@ class SocketService {
   }
 
   public emitToUser(userId: string, event: string, data: any): void {
-    const user = this.connectedUsers.get(userId);
-    if (user) {
-      this.io.to(user.socketId).emit(event, data);
-    }
+    this.io.to(`user:${userId}`).emit(event, data);
   }
 
   public emitToChat(chatId: string, event: string, data: any): void {
@@ -279,8 +335,17 @@ class SocketService {
     return this.connectedUsers.size;
   }
 
-  public emitNewMessage(chatId: string, message: any): void {
+  public emitNewMessage(
+    chatId: string,
+    message: any,
+    participantIds: string[] = [],
+  ): void {
     this.emitToChat(chatId, "new_message", message);
+
+    participantIds.forEach((userId) => {
+      this.io.to(`user:${userId}`).emit("new_message", message);
+    });
+
     redisService.invalidatePattern(`chat:${chatId}:messages:*`);
     redisService.invalidatePattern(`user:*:chats:*`);
   }
@@ -295,6 +360,12 @@ class SocketService {
 
   public emitNotification(userId: string, notification: any): void {
     this.emitToUser(userId, "new_notification", notification);
+  }
+
+  public emitTaskUpdated(userIds: string[], task: any): void {
+    userIds.forEach((userId) => {
+      this.emitToUser(userId, "task_updated", task);
+    });
   }
 
   public emitChatUpdate(chatId: string, chat: any): void {

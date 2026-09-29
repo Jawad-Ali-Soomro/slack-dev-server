@@ -15,8 +15,8 @@ import permissionsRouter from './permissions.routes'
 import healthRouter from './health.routes'
 import exploreRouter from './explore.routes'
 import noteRouter from './note.routes'
-import challengeRouter from './challenge.routes'
-import awardRouter from './award.routes'
+import invitationRouter from './invitation.routes'
+import automationRouter from './automation.routes'
 const router = express.Router()
 
 router.use("/auth", authRouter)
@@ -29,15 +29,14 @@ router.use("/follow", followRouter)
 router.use("/projects", projectRouter)
 router.use("/teams", teamRouter)
 router.use("/friends", friendRouter)
+router.use("/invitations", invitationRouter)
+router.use("/automations", automationRouter)
+router.use("/notes", noteRouter)
 router.use("/chat", chatRouter)
 router.use("/posts", postRouter)
 router.use("/upload", uploadRouter)
 router.use("/explore", exploreRouter)
 router.use("/permissions", permissionsRouter)
 router.use("/health", healthRouter)
-router.use("/notes", noteRouter)
-router.use("/challenges", challengeRouter)
-router.use("/awards", awardRouter)
-router.use("/awards", awardRouter)
 
 export default router

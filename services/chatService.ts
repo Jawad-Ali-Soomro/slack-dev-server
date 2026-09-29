@@ -1,8 +1,11 @@
-import { Chat, Message, User, Notification } from '../models';
-import { CreateChatRequest, SendMessageRequest, UpdateMessageRequest, ChatResponse, MessageResponse } from '../interfaces';
-import { logger } from '../helpers';
+import { Chat, Message, User } from '../models/index';
+import { CreateChatRequest, SendMessageRequest, UpdateMessageRequest, ChatResponse, MessageResponse } from '../interfaces/index';
+import { logger } from '../helpers/index';
 import redisService from './redis.service';
+import { notifyUser } from '../utils/notify';
+import { publishChatNotification } from './chatNotificationQueue';
 import mongoose from 'mongoose';
+import path from 'path';
 
 class ChatService {
   async createChat(userId: string, chatData: CreateChatRequest): Promise<ChatResponse> {
@@ -144,7 +147,9 @@ class ChatService {
 
   async sendMessage(userId: string, messageData: SendMessageRequest): Promise<MessageResponse> {
     try {
-      const { chatId, content, type = 'text', attachments, replyTo } = messageData;
+      const { chatId, type = 'text', replyTo } = messageData;
+      const attachments = this.sanitizeAttachments(messageData.attachments);
+      const content = (messageData.content || "").trim();
 
 
       if (!chatId) {
@@ -155,7 +160,7 @@ class ChatService {
         throw new Error('Invalid chat ID format');
       }
 
-      if (!content || !content.trim()) {
+      if (!content && attachments.length === 0) {
         throw new Error('Message content is required');
       }
 
@@ -172,7 +177,7 @@ class ChatService {
       const message = new Message({
         chat: chatId,
         sender: userId,
-        content,
+        content: content || this.attachmentCaption(attachments),
         type,
         attachments,
         replyTo
@@ -207,7 +212,10 @@ class ChatService {
 
       const socketService = (global as any).socketService;
       if (socketService) {
-        socketService.emitNewMessage(chatId, messageResponse);
+        const participantIds = chat.participants.map((p: any) =>
+          p._id.toString(),
+        );
+        socketService.emitNewMessage(chatId, messageResponse, participantIds);
         const chatResponse = this.formatChatResponse(chat, userId);
         socketService.emitChatUpdate(chatId, chatResponse);
       }
@@ -272,6 +280,7 @@ class ChatService {
       message.isDeleted = true;
       message.deletedAt = new Date();
       message.content = 'This message was deleted';
+      message.attachments = [];
 
       await message.save();
 
@@ -360,23 +369,24 @@ class ChatService {
         })
         .map((participant: any) => participant._id ? participant._id.toString() : participant.toString());
       
-      logger.info('Creating notifications for recipients:', recipients);
-      
+      const senderName = message.sender?.username || "Someone";
+      const text = `${senderName} just messaged you`;
+
       for (const recipientId of recipients) {
         if (!recipientId) {
           logger.warn('Skipping undefined recipient ID');
           continue;
         }
 
-        const notification = new Notification({
+        const notification = await notifyUser({
           recipient: recipientId,
           sender: senderId,
-          type: 'message',
-          message: `New message in ${chat.type === 'direct' ? 'chat' : chat.name}`,
-          isRead: false
+          type: "message",
+          message: text,
+          skipEmit: true,
         });
 
-        await notification.save();
+        await publishChatNotification(recipientId, notification);
       }
     } catch (error) {
       logger.error('Error creating message notifications:', error);
@@ -415,6 +425,30 @@ class ChatService {
       createdAt: chat.createdAt,
       updatedAt: chat.updatedAt
     };
+  }
+
+  private sanitizeAttachments(attachments?: SendMessageRequest["attachments"]) {
+    if (!Array.isArray(attachments)) return [];
+
+    return attachments
+      .map((item) => {
+        if (!item || typeof item !== "object") return null;
+        const url = String(item.url || "");
+        if (!url.startsWith("/uploads/chat/") || url.includes("..")) return null;
+        return {
+          url,
+          name: String(item.name || path.basename(url)).slice(0, 180),
+          mimetype: String(item.mimetype || "").slice(0, 120),
+          size: Number(item.size) || 0,
+        };
+      })
+      .filter((item): item is NonNullable<typeof item> => Boolean(item))
+      .slice(0, 5);
+  }
+
+  private attachmentCaption(attachments: Array<{ name?: string }>) {
+    if (attachments.length === 1) return attachments[0].name || "Sent a file";
+    return `Sent ${attachments.length} files`;
   }
 
   private formatMessageResponse(message: any): MessageResponse {

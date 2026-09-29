@@ -5,7 +5,12 @@ export interface IMessage extends Document {
   sender: mongoose.Types.ObjectId;
   content: string;
   type: 'text' | 'image' | 'file' | 'audio' | 'video';
-  attachments?: string[];
+  attachments?: Array<{
+    url: string;
+    name?: string;
+    mimetype?: string;
+    size?: number;
+  }>;
   replyTo?: mongoose.Types.ObjectId;
   isEdited: boolean;
   editedAt?: Date;
@@ -40,7 +45,10 @@ const MessageSchema = new Schema<IMessage>({
     default: 'text'
   },
   attachments: [{
-    type: String
+    url: { type: String, required: true },
+    name: { type: String, default: "" },
+    mimetype: { type: String, default: "" },
+    size: { type: Number, default: 0 },
   }],
   replyTo: {
     type: Schema.Types.ObjectId,

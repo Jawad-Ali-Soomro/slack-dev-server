@@ -5,7 +5,7 @@ const buildTaskOverdueEmail = (data: EmailTemplateData) => {
     type = "TASK_OVERDUE",
 
     username = "USER",
-    siteName = "CORE STACK",
+    siteName = "Skack Developers",
     buttonUrl = "#",
     supportEmail = "support@slackdev.com",
     logoUrl,
@@ -30,14 +30,9 @@ const buildTaskOverdueEmail = (data: EmailTemplateData) => {
 
 Hello ${username},
 
-Your Task Is Overdue.
+The ${taskTitle} is overdue by ${overdueBy}. Please take some certain actions.
 
-Title ${taskTitle}
-Description ${taskDescription}
-Due Date ${dueDate}
-Overdue By ${overdueBy}
-
-Take Action
+Take action
 ${buttonUrl}
 
 — ${siteName} TEAM`
@@ -108,19 +103,9 @@ ${siteName} TEAM`;
               TASK OVERDUE
             </h1>
 
-            <p style="font-size:11px; color:#6b7280; font-weight:600;">
-              THE FOLLOWING TASK HAS PASSED ITS DUE DATE
+            <p style="font-size:14px; color:#374151; font-weight:600; line-height:1.65; max-width:480px; margin:16px auto;">
+              The ${taskTitle || "task"}${data.assignerName ? ` assigned by ${data.assignerName}` : ""}${data.projectName ? ` on ${data.projectName}` : ""} is overdue by ${overdueBy}. Please take some certain actions.
             </p>
-
-            <table style="margin:20px auto; width:100%; font-size:11px; text-align:left;">
-              <tr><td><strong>TITLE</strong></td><td>${taskTitle}</td></tr>
-              <tr><td><strong>DESCRIPTION</strong></td><td>${taskDescription}</td></tr>
-              <tr><td><strong>DUE DATE</strong></td><td>${dueDate}</td></tr>
-              <tr>
-                <td><strong>OVERDUE BY</strong></td>
-                <td style="color:#dc2626; font-weight:700;">${overdueBy}</td>
-              </tr>
-            </table>
           `
             : `
             <h1 style="font-size:16px; color:#000; font-weight:900;">

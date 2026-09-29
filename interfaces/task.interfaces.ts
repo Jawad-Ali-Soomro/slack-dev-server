@@ -6,6 +6,11 @@ export interface CreateTaskRequest {
   priority?: "low" | "medium" | "high" | "urgent";
   dueDate?: Date;
   tags?: string[];
+  repository?: {
+    repoId: string;
+    repoName: string;
+  };
+  captureMetadata?: Record<string, unknown>;
 }
 
 export interface UpdateTaskRequest {
@@ -37,10 +42,15 @@ export interface TaskResponse {
     name: string;
     logo?: string;
   } | null;
+  repository?: {
+    repoId: string;
+    repoName: string;
+  } | null;
   status: "pending" | "in_progress" | "completed" | "cancelled";
   priority: "low" | "medium" | "high" | "urgent";
   dueDate?: Date;
   tags?: string[];
+  captureMetadata?: Record<string, unknown> | null;
   createdAt: Date;
   updatedAt: Date;
 }

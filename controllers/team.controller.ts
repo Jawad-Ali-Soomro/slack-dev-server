@@ -2,9 +2,10 @@ import { Request, Response } from 'express'
 import mongoose from 'mongoose'
 import { Team } from '../models/team.model'
 import User from '../models/user.model'
-import { catchAsync, invalidateUserCache } from '../middlewares'
+import { catchAsync, invalidateUserCache } from '../middlewares/index'
 import redisService from '../services/redis.service'
-import { Role } from '../interfaces'
+import { JobRole, Role } from '../interfaces/index'
+import { welcomeNewTeamMember } from '../services/automationRunner'
 import { 
   CreateTeamRequest, 
   UpdateTeamRequest, 
@@ -13,20 +14,54 @@ import {
   AddTeamMemberRequest,
   UpdateTeamMemberRoleRequest,
   RemoveTeamMemberRequest
-} from '../interfaces'
+} from '../interfaces/index'
+
+const MEMBER_USER_FIELDS = 'username email avatar role availability'
+
+const formatMemberUser = (user: any) => {
+  if (!user) return user
+  if (typeof user !== 'object' || !user.username) {
+    const id = user._id?.toString?.() || user.id || user.toString?.()
+    return { id, _id: id }
+  }
+  const id = user._id?.toString?.() || user.id
+  return {
+    id,
+    _id: id,
+    username: user.username,
+    email: user.email,
+    avatar: user.avatar,
+    availability: user.availability || 'available',
+  }
+}
 
 const formatTeamResponse = (team: any): TeamResponse => ({
-  id: team._id,
+  id: team._id?.toString?.() || team._id,
   name: team.name,
   description: team.description,
   createdBy: team.createdBy,
-  members: team.members,
+  members: (team.members || []).map((member: any) => ({
+    user: formatMemberUser(member.user),
+    role: member.role,
+    jobRole: member.jobRole || JobRole.Unassigned,
+    joinedAt: member.joinedAt,
+  })),
   projects: team.projects || [],
   isActive: team.isActive,
   settings: team.settings,
   memberCount: team.members.length,
   createdAt: team.createdAt,
   updatedAt: team.updatedAt
+})
+
+const parseJobRole = (value?: string) => {
+  if (value === undefined || value === null || value === '') return undefined
+  if (!Object.values(JobRole).includes(value as JobRole)) return null
+  return value as JobRole
+}
+
+const visibleTeamFilter = (userId: any) => ({
+  $or: [{ createdBy: userId }, { "members.user": userId }],
 })
 
 export const createTeam = catchAsync(async (req: any, res: Response) => {
@@ -40,6 +75,7 @@ export const createTeam = catchAsync(async (req: any, res: Response) => {
       {
         user: userId,
         role: 'owner',
+        jobRole: JobRole.Unassigned,
         joinedAt: new Date()
       }
     ]
@@ -51,13 +87,15 @@ export const createTeam = catchAsync(async (req: any, res: Response) => {
       team.members.push({
         user: member._id,
         role: 'member',
+        jobRole: JobRole.Unassigned,
         joinedAt: new Date()
       })
     })
   }
 
   await team.save()
-  await team.populate('createdBy members.user', 'username email avatar role')
+  await team.populate('createdBy', MEMBER_USER_FIELDS)
+  await team.populate('members.user', MEMBER_USER_FIELDS)
 
   await redisService.cacheTeam((team._id as any).toString(), formatTeamResponse(team));
 
@@ -93,28 +131,12 @@ export const getTeams = catchAsync(async (req: any, res: Response) => {
 
 
 
-  const query: any = {}
-  
-  if (userRole === Role.Superadmin) {
-
-    query.$or = [
-      { createdBy: userId },
-      { 'members.user': userId }
-    ]
-  } else if (userRole === Role.Admin) {
-
-    query.createdBy = userId
-  } else {
-
-    query.$or = [
-      { createdBy: userId },
-      { 'members.user': userId }
-    ]
-  }
+  const query: any = { ...visibleTeamFilter(userId) }
 
   if (isActive !== undefined) query.isActive = isActive === 'true'
   if (search) {
     query.$and = [
+      visibleTeamFilter(userId),
       {
         $or: [
           { name: { $regex: search, $options: 'i' } },
@@ -122,11 +144,12 @@ export const getTeams = catchAsync(async (req: any, res: Response) => {
         ]
       }
     ]
+    delete query.$or
   }
 
   const teams = await Team.find(query)
-    .populate('createdBy', 'username email avatar role')
-    .populate('members.user', 'username email avatar role')
+    .populate('createdBy', MEMBER_USER_FIELDS)
+    .populate('members.user', MEMBER_USER_FIELDS)
     .populate({
       path: 'projects',
       select: 'name description logo status priority progress startDate endDate',
@@ -164,30 +187,29 @@ export const getTeamById = catchAsync(async (req: any, res: Response) => {
 
   const cached = await redisService.getTeam(teamId)
   if (cached) {
-    return res.status(200).json({
-      success: true,
-      team: cached
+    const creatorId =
+      cached.createdBy?._id || cached.createdBy?.id || cached.createdBy
+    const isCreator = String(creatorId) === String(userId)
+    const isMember = (cached.members || []).some((member: any) => {
+      const id = member.user?.id || member.user?._id || member.user
+      return String(id) === String(userId)
     })
+    if (userRole === Role.Superadmin || isCreator || isMember) {
+      return res.status(200).json({
+        success: true,
+        team: cached
+      })
+    }
   }
 
-  const query: any = { _id: teamId }
-  
-  if (userRole === Role.Superadmin) {
-
-  } else if (userRole === Role.Admin) {
-
-    query.createdBy = userId
-  } else {
-
-    query.$or = [
-      { createdBy: userId },
-      { 'members.user': userId }
-    ]
-  }
+  const query: any =
+    userRole === Role.Superadmin
+      ? { _id: teamId }
+      : { _id: teamId, ...visibleTeamFilter(userId) }
 
   const team = await Team.findOne(query)
-    .populate('createdBy', 'username email avatar role')
-    .populate('members.user', 'username email avatar role')
+    .populate('createdBy', MEMBER_USER_FIELDS)
+    .populate('members.user', MEMBER_USER_FIELDS)
     .populate({
       path: 'projects',
       select: 'name description logo status priority progress startDate endDate',
@@ -246,7 +268,8 @@ export const updateTeam = catchAsync(async (req: any, res: Response) => {
 
   Object.assign(team, updateData)
   await team.save()
-  await team.populate('createdBy members.user', 'username email avatar role')
+  await team.populate('createdBy', MEMBER_USER_FIELDS)
+  await team.populate('members.user', MEMBER_USER_FIELDS)
 
   const teamResponse = formatTeamResponse(team)
 
@@ -320,7 +343,14 @@ export const addMember = catchAsync(async (req: any, res: Response) => {
   const { teamId } = req.params
   const userId = req.user._id
   const userRole = req.user.role as Role
-  const { userId: newMemberId, role }: AddTeamMemberRequest = req.body
+  const { userId: newMemberId, role, jobRole }: AddTeamMemberRequest = req.body
+  const parsedJobRole = parseJobRole(jobRole)
+  if (jobRole && !parsedJobRole) {
+    return res.status(400).json({
+      success: false,
+      message: `Invalid job role. Must be one of: ${Object.values(JobRole).join(', ')}`
+    })
+  }
 
   const query: any = { _id: teamId }
   
@@ -368,11 +398,13 @@ export const addMember = catchAsync(async (req: any, res: Response) => {
   team.members.push({
     user: newMemberId as any,
     role: role || 'member',
+    jobRole: parsedJobRole || JobRole.Unassigned,
     joinedAt: new Date()
   })
 
   await team.save()
-  await team.populate('createdBy members.user', 'username email avatar role')
+  await team.populate('createdBy', MEMBER_USER_FIELDS)
+  await team.populate('members.user', MEMBER_USER_FIELDS)
 
   const teamResponse = formatTeamResponse(team)
 
@@ -391,6 +423,15 @@ export const addMember = catchAsync(async (req: any, res: Response) => {
   }
 
   await redisService.invalidatePattern(`cache:*teams*`)
+
+  welcomeNewTeamMember({
+    team,
+    member: user,
+    inviter: req.user,
+    jobRole: parsedJobRole || JobRole.Unassigned,
+  }).catch((err: any) =>
+    console.error(`Welcome member automation failed: ${err?.message || err}`),
+  )
 
   res.status(200).json({
     success: true,
@@ -441,7 +482,8 @@ export const removeMember = catchAsync(async (req: any, res: Response) => {
   )
 
   await team.save()
-  await team.populate('createdBy members.user', 'username email avatar role')
+  await team.populate('createdBy', MEMBER_USER_FIELDS)
+  await team.populate('members.user', MEMBER_USER_FIELDS)
 
   const teamResponse = formatTeamResponse(team)
 
@@ -472,15 +514,34 @@ export const updateMemberRole = catchAsync(async (req: any, res: Response) => {
   const { teamId } = req.params
   const userId = req.user._id
   const userRole = req.user.role as Role
-  const { userId: memberId, role }: UpdateTeamMemberRoleRequest = req.body
+  const { userId: memberId, role, jobRole }: UpdateTeamMemberRoleRequest = req.body
+  const parsedJobRole = parseJobRole(jobRole)
+  if (jobRole && !parsedJobRole) {
+    return res.status(400).json({
+      success: false,
+      message: `Invalid job role. Must be one of: ${Object.values(JobRole).join(', ')}`
+    })
+  }
+  if (!role && !jobRole) {
+    return res.status(400).json({
+      success: false,
+      message: 'Provide a permission role or a job role to update'
+    })
+  }
 
   const query: any = { _id: teamId }
   
   if (userRole === Role.Superadmin) {
 
-  } else {
+  } else if (userRole === Role.Admin) {
 
     query.createdBy = userId
+  } else {
+
+    query.$or = [
+      { createdBy: userId },
+      { 'members.user': { $in: [userId], $elemMatch: { role: { $in: ['owner', 'admin'] } } } }
+    ]
   }
 
   const team = await Team.findOne(query)
@@ -500,9 +561,15 @@ export const updateMemberRole = catchAsync(async (req: any, res: Response) => {
     })
   }
 
-  member.role = role
+  if (role && role !== 'owner') {
+    member.role = role
+  }
+  if (parsedJobRole) {
+    member.jobRole = parsedJobRole
+  }
   await team.save()
-  await team.populate('createdBy members.user', 'username email avatar role')
+  await team.populate('createdBy', MEMBER_USER_FIELDS)
+  await team.populate('members.user', MEMBER_USER_FIELDS)
 
   const teamResponse = formatTeamResponse(team)
 
@@ -533,24 +600,7 @@ export const getTeamStats = catchAsync(async (req: any, res: Response) => {
   const userId = req.user._id
   const userRole = req.user.role as Role
 
-  const query: any = {}
-  
-  if (userRole === Role.Superadmin) {
-
-    query.$or = [
-      { createdBy: userId },
-      { 'members.user': userId }
-    ]
-  } else if (userRole === Role.Admin) {
-
-    query.createdBy = userId
-  } else {
-
-    query.$or = [
-      { createdBy: userId },
-      { 'members.user': userId }
-    ]
-  }
+  const query: any = visibleTeamFilter(userId)
 
   const teams = await Team.find(query)
 
@@ -581,23 +631,13 @@ export const getTeamMembers = catchAsync(async (req: any, res: Response) => {
   const userRole = req.user.role as Role
   const { teamId } = req.params
 
-  const query: any = { _id: teamId }
-  
-  if (userRole === Role.Superadmin) {
-
-  } else if (userRole === Role.Admin) {
-
-    query.createdBy = userId
-  } else {
-
-    query.$or = [
-      { createdBy: userId },
-      { 'members.user': userId }
-    ]
-  }
+  const query: any =
+    userRole === Role.Superadmin
+      ? { _id: teamId }
+      : { _id: teamId, ...visibleTeamFilter(userId) }
 
   const team = await Team.findOne(query)
-    .populate('members.user', 'username email avatar role')
+    .populate('members.user', MEMBER_USER_FIELDS)
 
   if (!team) {
     return res.status(404).json({
@@ -611,7 +651,9 @@ export const getTeamMembers = catchAsync(async (req: any, res: Response) => {
     username: (member.user as any).username,
     email: (member.user as any).email,
     avatar: (member.user as any).avatar,
-    role: member.role
+    availability: (member.user as any).availability || 'available',
+    role: member.role,
+    jobRole: member.jobRole || JobRole.Unassigned
   }))
 
   res.status(200).json({

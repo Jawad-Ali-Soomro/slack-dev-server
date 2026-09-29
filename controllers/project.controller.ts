@@ -4,7 +4,7 @@ import { Project } from '../models/project.model'
 import User from '../models/user.model'
 import Task from '../models/task.model'
 import Meeting from '../models/meeting.model'
-import { catchAsync } from '../middlewares'
+import { catchAsync } from '../middlewares/index'
 import redisService from '../services/redis.service'
 import { 
   CreateProjectRequest, 
@@ -17,7 +17,7 @@ import {
   UpdateLinkRequest,
   RemoveLinkRequest,
   RemoveMemberRequest
-} from '../interfaces'
+} from '../interfaces/index'
 import path from 'path'
 import fs from 'fs'
 
@@ -790,3 +790,21 @@ export const getProjectStats = catchAsync(async (req: any, res: Response) => {
     stats
   })
 })
+
+/** Ensures multer writes into uploads/projects */
+export const setProjectsUploadFolder = (req: any, _res: Response, next: Function) => {
+  req.params.folder = "projects";
+  next();
+};
+
+export const uploadProjectLogo = catchAsync(async (req: any, res: Response) => {
+  if (!req.file) {
+    return res.status(400).json({ message: "No file uploaded" });
+  }
+
+  const fileUrl = `/projects/${req.file.filename}`;
+  res.status(200).json({
+    message: "Logo uploaded successfully",
+    url: fileUrl,
+  });
+});

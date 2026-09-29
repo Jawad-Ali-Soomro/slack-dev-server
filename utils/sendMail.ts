@@ -1,34 +1,30 @@
 import nodemailer from "nodemailer";
-import { Mail } from "../interfaces";
-import dotenv from "dotenv";
-import path from "path";
-dotenv.config({
-  path: "../config/.env",
-});
-
+import { Mail } from "../interfaces/index";
 const sendMail = async (options: Mail) => {
+  const user = (process.env.GMAIL_USER || "").trim();
+  const pass = (process.env.GMAIL_PASS || "").trim();
+
+  if (!user || !pass) {
+    throw new Error("Email is not configured (GMAIL_USER / GMAIL_PASS)");
+  }
+
   const transporter = nodemailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: process.env.GMAIL_USER,
-      pass: process.env.GMAIL_PASS,
-    },
+    host: process.env.SMTP_HOST,
+    port: Number(process.env.SMTP_PORT),
+    secure: process.env.SMTP_SECURE === "true",
+    auth: { user, pass },
   });
-  
+
   const mailOptions = {
-    from: `"${"Core Stack"}" <${process.env.GMAIL_USER}>`,
+    from: `"${options.fromName || process.env.MAIL_FROM_NAME}" <${user}>`,
     to: options.to,
     subject: options.subject,
     text: options.text,
     html: options.html,
-    attachments: options.attachments || []
+    attachments: options.attachments || [],
   };
-  
-  try {
-    await transporter.sendMail(mailOptions);
-  } catch (error) {
-    console.log(error);
-  }
+
+  await transporter.sendMail(mailOptions);
 };
 
 export default sendMail;

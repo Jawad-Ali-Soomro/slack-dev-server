@@ -1,4 +1,21 @@
-# Challenge Seed Script
+# Seed scripts
+
+## Workspace (users, teams, projects, friends, tasks, meetings)
+
+Creates **24 people** with downloaded avatars, **5 teams**, **20 projects** with logos, friendships (including existing accounts), tasks, and meetings.
+
+```bash
+npm run seed:workspace
+npm run seed:workspace -- --fresh
+```
+
+- Password for every seed account: `SeedPass123!`
+- Emails: `<username>@slackdev.seed` (e.g. `maya_chen@slackdev.seed`)
+- Avatars from [randomuser.me](https://randomuser.me) (DiceBear fallback)
+- Project logos from [DiceBear Identicon](https://dicebear.com)
+- Existing users in the database are friended with several seed teammates
+
+## Challenge Seed Script
 
 This script populates the database with sample coding challenges across different difficulty levels.
 

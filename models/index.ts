@@ -7,9 +7,10 @@ import Chat from "./chat.model";
 import Message from "./message.model";
 import CodeSession from "./codeSession.model";
 import { Permissions } from "./permissions.model";
-import { PublicProject } from "./publicProject.model";
+import { PublicProject } from "./public-project.model";
 import { Purchase } from "./purchase.model";
 import { Note } from "./note.model";
-import { Challenge } from "./challenge.model";
+import Invitation from "./invitation.model";
+import Automation from "./automation.model";
 
-export { User, Task, Meeting, Notification, Project, Chat, Message, CodeSession, Permissions, PublicProject, Purchase, Note, Challenge };
+export { User, Task, Meeting, Notification, Project, Chat, Message, CodeSession, Permissions, PublicProject, Purchase, Note, Invitation, Automation };

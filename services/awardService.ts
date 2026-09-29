@@ -1,4 +1,4 @@
-import { User } from '../models';
+import { User } from '../models/index';
 
 export interface Award {
   id: string;
