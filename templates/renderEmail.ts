@@ -74,10 +74,7 @@ export const getLogoAttachments = () => {
   ];
 };
 
-const appUrl = () =>
-  process.env.FRONTEND_URL ||
-  process.env.CLIENT_URL ||
-  "http://localhost:5173";
+const appUrl = () => process.env.FRONTEND_URL || process.env.CLIENT_URL || "";
 
 export const appLink = (pathname: string) => {
   const base = appUrl().replace(/\/$/, "");

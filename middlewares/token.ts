@@ -71,7 +71,7 @@ export const generateToken = (
   expiresIn: string | number = '1d'
 ): string => {
   try {
-    const secret: Secret = process.env.JWT_SECRET || 'default_secret';
+    const secret: Secret = process.env.JWT_SECRET as string;
     
     const signOptions: SignOptions = { 
       expiresIn: expiresIn as any
@@ -160,7 +160,7 @@ export const authenticate = async (req: any, res: any, next: any) => {
       });
     }
 
-    const decoded: any = jwt.verify(jwtToken, process.env.JWT_SECRET || 'default_secret');
+    const decoded: any = jwt.verify(jwtToken, process.env.JWT_SECRET as string);
     
     const user = await User.findById(decoded.id);
     

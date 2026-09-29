@@ -1,14 +1,9 @@
 import { Request, Response, NextFunction } from 'express';
 
-/**
- * Security headers middleware
- * Protects backend responses with security headers
- */
 export const securityHeaders = (req: Request, res: Response, next: NextFunction) => {
 
   res.removeHeader('X-Powered-By');
 
-  // Chat files are embedded in the app (image tags and PDF viewers).
   if (!req.path.startsWith("/uploads/chat")) {
     res.setHeader('X-Frame-Options', 'DENY');
   }
@@ -39,47 +34,35 @@ export const securityHeaders = (req: Request, res: Response, next: NextFunction)
   }
 
   res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
-
   res.setHeader(
     'Permissions-Policy',
     'geolocation=(), microphone=(), camera=(), payment=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=()'
   );
-
   res.setHeader('Server', '');
-
   if (req.path.includes('/api/auth') || req.path.includes('/api/user')) {
     res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
     res.setHeader('Pragma', 'no-cache');
     res.setHeader('Expires', '0');
   }
-
   next();
 };
 
-/**
- * Response sanitization middleware
- * Removes sensitive information from error responses
- */
 export const sanitizeResponse = (req: Request, res: Response, next: NextFunction) => {
   const originalJson = res.json.bind(res);
   const originalSend = res.send.bind(res);
 
   res.json = function(data: any) {
     if (data && typeof data === 'object') {
-
       const sanitized = { ...data };
-
       if (process.env.NODE_ENV === 'production' && sanitized.stack) {
         delete sanitized.stack;
       }
-
       if (sanitized.error && typeof sanitized.error === 'object') {
         if (process.env.NODE_ENV === 'production') {
           delete sanitized.error.stack;
           delete sanitized.error.details;
         }
       }
-
       return originalJson(sanitized);
     }
     return originalJson(data);

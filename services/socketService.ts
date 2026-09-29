@@ -269,7 +269,7 @@ class SocketService {
 
       const decoded = jwt.verify(
         jwtToken,
-        process.env.JWT_SECRET || "default_secret",
+        process.env.JWT_SECRET as string,
       ) as any;
       logger.info("Token decoded successfully:", { userId: decoded.id });
 

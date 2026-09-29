@@ -1,7 +1,9 @@
-import { Chat, Message, User, Notification } from '../models/index';
+import { Chat, Message, User } from '../models/index';
 import { CreateChatRequest, SendMessageRequest, UpdateMessageRequest, ChatResponse, MessageResponse } from '../interfaces/index';
 import { logger } from '../helpers/index';
 import redisService from './redis.service';
+import { notifyUser } from '../utils/notify';
+import { publishChatNotification } from './chatNotificationQueue';
 import mongoose from 'mongoose';
 import path from 'path';
 
@@ -367,23 +369,24 @@ class ChatService {
         })
         .map((participant: any) => participant._id ? participant._id.toString() : participant.toString());
       
-      logger.info('Creating notifications for recipients:', recipients);
-      
+      const senderName = message.sender?.username || "Someone";
+      const text = `${senderName} just messaged you`;
+
       for (const recipientId of recipients) {
         if (!recipientId) {
           logger.warn('Skipping undefined recipient ID');
           continue;
         }
 
-        const notification = new Notification({
+        const notification = await notifyUser({
           recipient: recipientId,
           sender: senderId,
-          type: 'message',
-          message: `New message in ${chat.type === 'direct' ? 'chat' : chat.name}`,
-          isRead: false
+          type: "message",
+          message: text,
+          skipEmit: true,
         });
 
-        await notification.save();
+        await publishChatNotification(recipientId, notification);
       }
     } catch (error) {
       logger.error('Error creating message notifications:', error);

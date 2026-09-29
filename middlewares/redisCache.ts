@@ -8,13 +8,13 @@ interface AuthenticatedRequest extends Request {
 }
 
 interface CacheOptions {
-  ttl?: number; // Time to live in seconds
+  ttl?: number;
   keyGenerator?: (req: AuthenticatedRequest) => string;
   skipCache?: (req: AuthenticatedRequest) => boolean;
 }
 
 export const redisCache = (options: CacheOptions = {}) => {
-  const { ttl = 300, keyGenerator, skipCache } = options; // Default 5 minutes
+  const { ttl = 300, keyGenerator, skipCache } = options; 
 
   return async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
     try {
@@ -50,25 +50,25 @@ export const redisCache = (options: CacheOptions = {}) => {
       next();
     } catch (error) {
       logger.error('Redis cache middleware error:', error);
-      next(); // Continue without caching on error
+      next();
     }
   };
 };
 
 export const userCache = redisCache({
-  ttl: 600, // 10 minutes
+  ttl: 600,
   keyGenerator: (req) => `user:${req.user?._id}:${req.originalUrl}`,
   skipCache: (req) => req.method !== 'GET'
 });
 
 export const dashboardCache = redisCache({
-  ttl: 300, // 5 minutes
+  ttl: 300,
   keyGenerator: (req) => `dashboard:${req.user?._id}:${JSON.stringify(req.query)}`,
   skipCache: (req) => req.method !== 'GET'
 });
 
 export const searchCache = redisCache({
-  ttl: 180, // 3 minutes
+  ttl: 180,
   keyGenerator: (req) => `search:${req.originalUrl}:${JSON.stringify(req.query)}`,
   skipCache: (req) => req.method !== 'GET'
 });

@@ -1,13 +1,10 @@
 import { logger } from "../helpers/index";
 import mongoose from "mongoose";
-import dotenv from "dotenv";
-dotenv.config({ path: './config/.env' });
-
 const MAX_RETRIES = Number(process.env.DB_MAX_RETRIES);
 const RETRY_DELAY_MS = Number(process.env.DB_TIMEOUT);
 
 export const dbConnection = async (attempt = 1): Promise<void> => {
-  const mongoUri = process.env.MONGODB_URI || ''
+  const mongoUri = process.env.MONGODB_URI as string
 
   try {
     await mongoose.connect(mongoUri);

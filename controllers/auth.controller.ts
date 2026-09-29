@@ -1,44 +1,21 @@
 import { catchAsync, generateToken, invalidateCachePattern } from "../middlewares/index";
 import jwt from "jsonwebtoken";
-import { IUser, UserResponse, Availability, JobRole } from "../interfaces/index";
 import { User } from "../models/index";
 import { generateOtp } from "../utils/index";
 import { sendOtpEmail } from "../templates/index";
-import dotenv from "dotenv";
 import redisService from "../services/redis.service";
 import axios from "axios";
 import { decrypt, setAuthCookie, clearAuthCookie, readAuthToken } from "../middlewares/token";
-
-dotenv.config({
-  path: "../config/.env"
-});
-
-const formatUserResponse = (user: IUser): UserResponse => ({
-  id: user._id,
-  email: user.email,
-  username: user.username,
-  role: user.role,
-  avatar: user.avatar,
-  emailVerified: user.emailVerified,
-  isPrivate: user.isPrivate,
-  createdAt: user.createdAt,
-  socialLinks: user?.socialLinks,
-  availability: (user as any).availability || Availability.Available,
-  jobRole: (user as any).jobRole || JobRole.Unassigned,
-  statusMessage: (user as any).statusMessage
-});
+import { formatUserResponse } from "../interfaces/user.request.interfaces";
 
 
 export const register = catchAsync(async (req: any, res: any) => {
   const { email, username } = req.body;
-
   const normalizedEmail = email?.toLowerCase().trim();
   const trimmedUsername = username?.trim();
-  
   if (!normalizedEmail || !trimmedUsername) {
     return res.status(400).json({ message: "email and username are required" });
   }
-  
   const findUserByEmail = await User.findOne({ email: normalizedEmail });
   if (findUserByEmail) {
     return res.status(400).json({ message: "email already in use" });
@@ -58,13 +35,12 @@ export const register = catchAsync(async (req: any, res: any) => {
     }
     userData.email = normalizedEmail;
     userData.username = trimmedUsername;
-    
+
     const user = await User.create({
       ...userData,
       emailVerificationToken,
       emailVerificationTokenExpires
     });
-
     await Promise.all([
       invalidateCachePattern('admin:users:*'),
       invalidateCachePattern('cache:*users*'),
@@ -90,36 +66,29 @@ export const register = catchAsync(async (req: any, res: any) => {
 
 export const login = catchAsync(async (req: any, res: any) => {
   const { email, password } = req.body;
-
   const normalizedEmail = email?.toLowerCase().trim();
   const trimmedPassword = password?.trim();
-
   if (!normalizedEmail || !trimmedPassword) {
     return res.status(400).json({ message: "email and password are required" });
   }
-
   const user = await User.findOne({ email: normalizedEmail });
   if (!user || !(await user.comparePassword(trimmedPassword))) {
     return res.status(401).json({ message: "invalid credentials" });
   }
   if (!user.emailVerified) {
-
     const emailVerificationToken = generateOtp();
     const emailVerificationTokenExpires = new Date(Date.now() + 24 * 60 * 60 * 1000);
-
     user.emailVerificationToken = emailVerificationToken;
     user.emailVerificationTokenExpires = emailVerificationTokenExpires;
     await user.save();
-
     sendOtpEmail({
       to: normalizedEmail,
       username: user.username,
       otp: emailVerificationToken,
       kind: "login",
     }).catch((err) => console.error("Login OTP email failed:", err));
-
-    res.status(200).json({ 
-      message: "verification email sent", 
+    res.status(200).json({
+      message: "verification email sent",
       emailSent: true,
       user: formatUserResponse(user)
     });
@@ -137,11 +106,10 @@ export const login = catchAsync(async (req: any, res: any) => {
 export const verifyEmail = catchAsync(async (req: any, res: any) => {
   const { email, otp } = req.body;
   const normalizedEmail = email?.toLowerCase().trim();
-
   if (!normalizedEmail || !otp) {
     return res.status(400).json({ message: "email and otp are required" });
   }
-  const user = await User.findOne({ 
+  const user = await User.findOne({
     email: normalizedEmail,
     emailVerificationToken: otp,
     emailVerificationTokenExpires: { $gt: new Date() }
@@ -167,25 +135,25 @@ export const resendOtp = catchAsync(async (req: any, res: any) => {
   if (!user) {
     return res.status(404).json({ message: "user not found" });
   }
-  
+
   if (user.emailVerified) {
     return res.status(400).json({ message: "email already verified" });
   }
-  
+
   const emailVerificationToken = generateOtp();
   const emailVerificationTokenExpires = new Date(Date.now() + 24 * 60 * 60 * 1000);
-  
+
   user.emailVerificationToken = emailVerificationToken;
   user.emailVerificationTokenExpires = emailVerificationTokenExpires;
   await user.save();
-  
+
   sendOtpEmail({
     to: normalizedEmail,
     username: user.username,
     otp: emailVerificationToken,
     kind: "resend",
   }).catch((err) => console.error("Resend OTP email failed:", err));
-  
+
   res.status(200).json({ message: "verification code resent to email" });
 });
 
@@ -219,7 +187,7 @@ export const resetPassword = catchAsync(async (req: any, res: any) => {
   if (!normalizedEmail || !otp || !newPassword) {
     return res.status(400).json({ message: "email, otp, and newPassword are required" });
   }
-  const user = await User.findOne({ 
+  const user = await User.findOne({
     email: normalizedEmail,
     passwordResetToken: otp,
     passwordResetTokenExpires: { $gt: new Date() }
@@ -246,7 +214,7 @@ export const proxyAssistant = catchAsync(async (req: any, res: any) => {
     return res.status(401).json({ message: "Sign in as admin" });
   }
 
-  const agentUrl = process.env.AGENT_URL || "http://localhost:5055";
+  const agentUrl = process.env.AGENT_URL;
   try {
     const response = await axios.post(
       `${agentUrl}/ask`,
@@ -278,7 +246,7 @@ export const connectGithub = catchAsync(async (req: any, res: any) => {
   let decoded: any;
   try {
     const jwtToken = decrypt(state);
-    decoded = jwt.verify(jwtToken, process.env.JWT_SECRET || 'default_secret');
+    decoded = jwt.verify(jwtToken, process.env.JWT_SECRET as string);
   } catch (err) {
     return res.status(401).send("Invalid or expired token in state");
   }
@@ -313,7 +281,7 @@ export const connectGithub = catchAsync(async (req: any, res: any) => {
 });
 
 export const generateUrl = catchAsync(async (req: any, res: any) => {
-   const state = generateToken({ id: req.user.id }); 
+  const state = generateToken({ id: req.user.id });
 
   const githubUrl = `https://github.com/login/oauth/authorize?client_id=${process.env.GITHUB_CLIENT_ID}&scope=repo user&prompt=select_account&state=${state}`;
 

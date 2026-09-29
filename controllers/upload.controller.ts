@@ -47,7 +47,7 @@ export const uploadImage = catchAsync(async (req: any, res: Response) => {
     })
   }
 
-  const imageUrl = `${process.env.SERVER_URL || 'http://localhost:4000'}/uploads/posts/${req.file.filename}`
+  const imageUrl = `${process.env.SERVER_URL}/uploads/posts/${req.file.filename}`
   
   res.status(200).json({
     success: true,
@@ -66,7 +66,7 @@ export const uploadImages = catchAsync(async (req: any, res: Response) => {
   }
 
   const imageUrls = req.files.map((file: any) => ({
-    url: `${process.env.SERVER_URL || 'http://localhost:4000'}/uploads/posts/${file.filename}`,
+    url: `${process.env.SERVER_URL}/uploads/posts/${file.filename}`,
     filename: file.filename
   }))
   

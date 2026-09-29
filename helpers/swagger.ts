@@ -8,7 +8,7 @@ export const swaggerOptions = {
     },
     servers: [
       {
-        url: "http://localhost:4000",
+        url: process.env.SERVER_URL,
         description: "Development server"
       },
     ],

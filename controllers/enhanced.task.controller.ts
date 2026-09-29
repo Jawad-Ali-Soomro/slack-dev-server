@@ -7,7 +7,8 @@ import {
   Availability,
 } from "../interfaces/index";
 import redisService from "../services/redis.service";
-import { notifyUser, emitTaskUpdated } from "../utils/notify";
+import { notifyUser } from "../utils/notify";
+import { publishTaskChange } from "../services/taskQueue";
 import { sendOverdueReminders } from "../services/automationRunner";
 
 export const sendOverdueTaskEmails = sendOverdueReminders;
@@ -138,10 +139,10 @@ export const createTask = catchAsync(async (req: any, res: any) => {
     message: `${req.user.username} assigned you a new task: "${title}"`,
     taskId: task._id,
   });
-  emitTaskUpdated(
-    [assignedBy.toString(), String(assignTo)],
-    taskResponse,
-  );
+  await publishTaskChange({
+    action: "assigned",
+    task: taskResponse,
+  });
 
   res.status(201).json({
     message: "Task created and assigned successfully",
@@ -282,14 +283,24 @@ export const updateTask = catchAsync(async (req: any, res: any) => {
     message: `${req.user.username} updated task "${task.title}"`,
     taskId: task._id,
   });
-  emitTaskUpdated(
-    [
+  const body = updates as UpdateTaskRequest & { assignTo?: string };
+  const statusChanged = Boolean(body.status) && body.status !== originalTask.status;
+  const assigneeChanged =
+    Boolean(body.assignTo) &&
+    String(body.assignTo) !== originalTask.assignTo.toString();
+  await publishTaskChange({
+    action: assigneeChanged
+      ? "reassigned"
+      : statusChanged
+        ? "status_updated"
+        : "updated",
+    task: taskResponse,
+    extraUserIds: [
       originalTask.assignedBy.toString(),
       originalTask.assignTo.toString(),
-      task.assignTo?._id?.toString?.(),
     ],
-    taskResponse,
-  );
+    projectIds: [originalTask.projectId?.toString?.()],
+  });
 
   res.status(200).json({
     message: "Task updated successfully",
@@ -354,7 +365,10 @@ export const updateTaskStatus = catchAsync(async (req: any, res: any) => {
       taskId: task._id,
     });
   }
-  emitTaskUpdated([assignerId, assigneeId], taskResponse);
+  await publishTaskChange({
+    action: "status_updated",
+    task: taskResponse,
+  });
 
   res.status(200).json({
     message: "Task status updated successfully",
@@ -455,7 +469,11 @@ export const reassignTask = catchAsync(async (req: any, res: any) => {
     });
   }
 
-  emitTaskUpdated(affectedUserIds, taskResponse);
+  await publishTaskChange({
+    action: "reassigned",
+    task: taskResponse,
+    extraUserIds: affectedUserIds,
+  });
 
   res.status(200).json({
     message: "Task reassigned successfully",
@@ -478,6 +496,17 @@ export const deleteTask = catchAsync(async (req: any, res: any) => {
       .json({ message: "Only the user who assigned this task can delete it" });
   }
 
+  const deletedTask = {
+    id: task._id.toString(),
+    title: task.title,
+    status: task.status,
+    priority: task.priority,
+    deleted: true,
+    assignTo: { id: task.assignTo.toString() },
+    assignedBy: { id: task.assignedBy.toString() },
+    project: task.projectId ? { id: task.projectId.toString() } : null,
+  };
+
   await Task.findByIdAndDelete(taskId);
 
   await redisService.invalidateTask(taskId);
@@ -488,6 +517,11 @@ export const deleteTask = catchAsync(async (req: any, res: any) => {
   await redisService.invalidatePattern("tasks:*");
   await redisService.del(`task_stats:${task.assignedBy}`);
   await redisService.del(`task_stats:${task.assignTo}`);
+
+  await publishTaskChange({
+    action: "deleted",
+    task: deletedTask,
+  });
 
   res.status(200).json({ message: "Task deleted successfully" });
 });

@@ -1,12 +1,8 @@
+import "../config/env";
 import mongoose from 'mongoose';
-import dotenv from 'dotenv';
-import path from 'path';
-import { Challenge } from '../models/index';
 import User from '../models/user.model';
 
-dotenv.config({ path: path.join(__dirname, '../config/.env') });
-
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/core-stack';
+const MONGODB_URI = process.env.MONGODB_URI as string;
 
 const sampleChallenges = [
 

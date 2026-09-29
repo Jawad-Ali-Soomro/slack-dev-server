@@ -7,7 +7,7 @@ import Chat from "./chat.model";
 import Message from "./message.model";
 import CodeSession from "./codeSession.model";
 import { Permissions } from "./permissions.model";
-import { PublicProject } from "./publicProject.model";
+import { PublicProject } from "./public-project.model";
 import { Purchase } from "./purchase.model";
 import { Note } from "./note.model";
 import Invitation from "./invitation.model";

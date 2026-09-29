@@ -1,22 +1,13 @@
-/**
- * Email Service
- * Handles sending notifications for various user activities
- */
-
 import nodemailer from 'nodemailer';
-import dotenv from 'dotenv';
 import path from 'path';
 import { renderEmail, getLogoAttachments } from '../templates/renderEmail';
-
-const envPath = path.resolve(process.cwd(), 'config/.env');
-dotenv.config({ path: envPath });
 
 class EmailService {
   constructor() {
     this.transporter = nodemailer.createTransport({
-      host: process.env.SMTP_HOST || 'smtp.gmail.com',
-      port: Number(process.env.SMTP_PORT) || 587,
-      secure: false,
+      host: process.env.SMTP_HOST,
+      port: Number(process.env.SMTP_PORT),
+      secure: process.env.SMTP_SECURE === "true",
       auth: {
         user: (process.env.GMAIL_USER || '').trim(),
         pass: (process.env.GMAIL_PASS || '').trim(),
@@ -31,7 +22,7 @@ class EmailService {
     try {
       if (!to) return null;
       const mailOptions = {
-        from: `"Slack Dev" <${(process.env.GMAIL_USER || '').trim()}>`,
+        from: `"${process.env.MAIL_FROM_NAME}" <${(process.env.GMAIL_USER || '').trim()}>`,
         to,
         subject,
         html: htmlContent,
@@ -150,7 +141,7 @@ class EmailService {
    */
   async sendTeamInviteEmail(team, invitee, inviter, role = 'member') {
     const subject = `You're invited to join ${team.name}`;
-    const actionUrl = `${process.env.CLIENT_URL || 'http://localhost:5173'}/dashboard/teams`;
+    const actionUrl = `${process.env.CLIENT_URL}/dashboard/teams`;
     const title = 'TEAM INVITATION';
     const message = `${inviter?.username || 'A teammate'} invited you to join "${team.name}" as ${role}.`;
     const details = [

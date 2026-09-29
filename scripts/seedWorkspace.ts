@@ -1,19 +1,5 @@
-/**
- * Workspace seeder — 24 users, teams, projects, friendships, tasks, meetings.
- *
- * Pulls portrait photos (randomuser.me) and project logos (DiceBear) from the
- * internet and saves them under uploads/profiles and uploads/projects.
- *
- * Also friends existing (non-seed) accounts with the new people.
- *
- *   npm run seed:workspace
- *   npm run seed:workspace -- --fresh   # wipe previous seed data first
- *
- * All seed accounts share password: SeedPass123!
- * Emails: <username>@slackdev.seed
- */
+import "../config/env";
 import mongoose from "mongoose";
-import dotenv from "dotenv";
 import path from "path";
 import fs from "fs";
 import { User, Task, Meeting, Project } from "../models/index";
@@ -21,10 +7,7 @@ import { Team } from "../models/team.model";
 import { Friendship, FriendRequest } from "../models/friend.model";
 import { Availability, JobRole, Role } from "../interfaces/index";
 
-dotenv.config({ path: path.join(__dirname, "../config/.env") });
-
-const MONGODB_URI =
-  process.env.MONGODB_URI || "mongodb://localhost:27017/core-stack";
+const MONGODB_URI = process.env.MONGODB_URI as string;
 
 const SEED_DOMAIN = "slackdev.seed";
 const SEED_PASSWORD = "SeedPass123!";
@@ -652,7 +635,7 @@ async function seed() {
         projectId: project._id,
         startDate: start,
         endDate: end,
-        meetingLink: `https://meet.jit.si/slack-dev-${project.name
+        meetingLink: `https://${process.env.JITSI_DOMAIN}/slack-dev-${project.name
           .toLowerCase()
           .replace(/\s+/g, "-")}-${i}`,
         tags: sampleMany(["planning", "review", "sync", "demo"], 2),

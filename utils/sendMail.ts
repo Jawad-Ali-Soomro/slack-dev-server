@@ -1,12 +1,5 @@
 import nodemailer from "nodemailer";
 import { Mail } from "../interfaces/index";
-import dotenv from "dotenv";
-import path from "path";
-
-dotenv.config({
-  path: path.resolve(process.cwd(), "config/.env"),
-});
-
 const sendMail = async (options: Mail) => {
   const user = (process.env.GMAIL_USER || "").trim();
   const pass = (process.env.GMAIL_PASS || "").trim();
@@ -16,12 +9,14 @@ const sendMail = async (options: Mail) => {
   }
 
   const transporter = nodemailer.createTransport({
-    service: "gmail",
+    host: process.env.SMTP_HOST,
+    port: Number(process.env.SMTP_PORT),
+    secure: process.env.SMTP_SECURE === "true",
     auth: { user, pass },
   });
 
   const mailOptions = {
-    from: `"${options.fromName || "Slack Dev"}" <${user}>`,
+    from: `"${options.fromName || process.env.MAIL_FROM_NAME}" <${user}>`,
     to: options.to,
     subject: options.subject,
     text: options.text,

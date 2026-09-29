@@ -15,7 +15,7 @@ import {
   updateUserVerification,
   updateStatus,
 } from "../controllers/user.controller";
-import { authenticate, upload } from "../middlewares/index";
+import { authenticate, requireSuperadmin, upload } from "../middlewares/index";
 const userRouter = express.Router();
 // global authentication middleware
 userRouter.use(authenticate)
@@ -37,15 +37,15 @@ userRouter.delete("/avatar", deleteAvatar);
 
 userRouter.put("/change-password", changePassword);
 
-userRouter.get("/", getUsers);
+userRouter.get("/", requireSuperadmin, getUsers);
 userRouter.get("/search", searchUsers);
 
-userRouter.get("/admin/users", getAllUsers);
-userRouter.put("/admin/:userId/role", assignUserRole);
-userRouter.put("/admin/:userId/verification", updateUserVerification);
-userRouter.delete("/admin/:userId", deleteUser);
+userRouter.get("/admin/users", requireSuperadmin, getAllUsers);
+userRouter.put("/admin/:userId/role", requireSuperadmin, assignUserRole);
+userRouter.put("/admin/:userId/verification", requireSuperadmin, updateUserVerification);
+userRouter.delete("/admin/:userId", requireSuperadmin, deleteUser);
 
-userRouter.get("/:userId/details", getUserDetails);
-userRouter.get("/:userId", getUserById);
+userRouter.get("/:userId/details", requireSuperadmin, getUserDetails);
+userRouter.get("/:userId", requireSuperadmin, getUserById);
 
 export default userRouter;

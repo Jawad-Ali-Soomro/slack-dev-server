@@ -6,6 +6,7 @@ import path from "path";
 import fs from "fs";
 import { Team } from "../models/team.model";
 import { Friendship } from "../models/friend.model";
+import { publishWorkspaceStatus } from "../services/workspaceStatusQueue";
 
 const formatUserResponse = (user: IUser): UserResponse => ({
   id: user._id,
@@ -294,6 +295,21 @@ export const updateProfile = catchAsync(async (req: any, res: any) => {
   await invalidateUserListingCaches();
   await invalidateFriendsOfUser(userId.toString());
 
+  if (
+    updateData.availability !== undefined ||
+    updateData.jobRole !== undefined ||
+    updateData.statusMessage !== undefined
+  ) {
+    await publishWorkspaceStatus({
+      id: user._id.toString(),
+      username: user.username,
+      avatar: user.avatar,
+      availability: user.availability,
+      jobRole: user.jobRole,
+      statusMessage: user.statusMessage,
+    });
+  }
+
   res.status(200).json({
     message: "profile updated successfully",
     user: formatUserResponse(user)
@@ -346,6 +362,15 @@ export const updateStatus = catchAsync(async (req: any, res: any) => {
   await invalidateUserCache(userId);
   await invalidateUserListingCaches();
   await invalidateFriendsOfUser(userId.toString());
+
+  await publishWorkspaceStatus({
+    id: user._id.toString(),
+    username: user.username,
+    avatar: user.avatar,
+    availability: user.availability,
+    jobRole: user.jobRole,
+    statusMessage: user.statusMessage,
+  });
 
   res.status(200).json({
     message: "status updated successfully",

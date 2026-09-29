@@ -7,7 +7,7 @@ import fs from "fs";
 import Stripe from "stripe";
 
 const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
-const STRIPE_PAYMENT_CURRENCY = process.env.STRIPE_PAYMENT_CURRENCY || "usd";
+const STRIPE_PAYMENT_CURRENCY = process.env.STRIPE_PAYMENT_CURRENCY;
 
 const stripeClient = STRIPE_SECRET_KEY
   ? new Stripe(STRIPE_SECRET_KEY, { apiVersion: "2025-09-30.clover" })

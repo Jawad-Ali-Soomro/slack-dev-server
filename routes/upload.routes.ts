@@ -11,7 +11,6 @@ import { authenticate } from '../middlewares/index'
 
 const uploadRouter = express.Router()
 
-// global authentication middleware
 uploadRouter.use(authenticate)
 
 uploadRouter.post('/single', uploadSingleImage, uploadImage)

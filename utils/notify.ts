@@ -73,6 +73,7 @@ type NotifyInput = {
   taskId?: any;
   invitationId?: any;
   meetingId?: any;
+  skipEmit?: boolean;
 };
 
 export const notifyUser = async ({
@@ -83,6 +84,7 @@ export const notifyUser = async ({
   taskId,
   invitationId,
   meetingId,
+  skipEmit,
 }: NotifyInput) => {
   if (!recipient || !sender) return null;
 
@@ -107,6 +109,6 @@ export const notifyUser = async ({
     .lean();
 
   const payload = toNotificationPayload(populated);
-  if (payload) emitNotification(recipientId, payload);
+  if (payload && !skipEmit) emitNotification(recipientId, payload);
   return payload;
 };

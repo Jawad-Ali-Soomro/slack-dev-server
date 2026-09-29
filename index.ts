@@ -1,6 +1,6 @@
+import "./config/env";
 import express from 'express'
 import { createServer } from 'http'
-import dotenv from 'dotenv'
 import dns from "dns";
 import swaggerUi from 'swagger-ui-express'
 import swaggerJSDoc from 'swagger-jsdoc'
@@ -11,6 +11,9 @@ import { logger, swaggerOptions } from './helpers/index'
 import { dbConnection } from './config/index'
 import router from './routes/index'
 import SocketService from './services/socketService'
+import { startTaskStatusConsumer } from './services/taskQueue'
+import { startWorkspaceStatusConsumer } from './services/workspaceStatusQueue'
+import { startChatNotificationConsumer } from './services/chatNotificationQueue'
 import redisService from './services/redis.service'
 import './services/cron'
 import { securityHeaders, sanitizeResponse } from './middlewares/index'
@@ -18,11 +21,6 @@ import { requestLogger } from './helpers/logger'
 
 dns.setDefaultResultOrder("verbatim");
 
-dotenv.config({
-  path: './config/.env'
-})
-
-// Single process for now. Multi-worker / message bus (Kafka/RabbitMQ) later.
 const app = express()
 const server = createServer(app)
 
@@ -59,7 +57,7 @@ app.use(securityHeaders)
 app.use(sanitizeResponse)
 
 app.use(cors({
-  origin: process.env.CLIENT_URL || "http://localhost:5173",
+  origin: process.env.CLIENT_URL,
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
   allowedHeaders: ['Content-Type', 'Authorization', 'authorization', 'X-Requested-With'],
@@ -91,8 +89,11 @@ app.get("/", (req, res) => {
 
 const socketService = new SocketService(server)
 ;(global as any).socketService = socketService
+startTaskStatusConsumer()
+startWorkspaceStatusConsumer()
+startChatNotificationConsumer()
 
-const PORT = Number(process.env.PORT) || 5000
+const PORT = Number(process.env.PORT)
 
 server.listen(PORT, "0.0.0.0", () => {
   logger.info(`Server is running on port ${PORT}`)

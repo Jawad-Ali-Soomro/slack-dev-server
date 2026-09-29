@@ -27,7 +27,7 @@ class VideoMeetingService {
     this.zoomClientId = process.env.ZOOM_CLIENT_ID || '';
     this.zoomClientSecret = process.env.ZOOM_CLIENT_SECRET || '';
 
-    this.jitsiDomain = process.env.JITSI_DOMAIN || 'meet.jit.si';
+    this.jitsiDomain = process.env.JITSI_DOMAIN ?? "";
 
     if (this.zoomAccountId && this.zoomClientId && this.zoomClientSecret) {
       this.useZoom = true;

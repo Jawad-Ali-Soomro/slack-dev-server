@@ -1,5 +1,5 @@
+import "../config/env";
 import mongoose from 'mongoose';
-import dotenv from 'dotenv';
 import path from 'path';
 import fs from 'fs';
 import {
@@ -9,17 +9,9 @@ import {
   Project,
   PublicProject,
   Note,
-  Challenge,
 } from '../models/index';
 
-dotenv.config({ path: path.join(__dirname, '../config/.env') });
-
-const MONGODB_URI =
-  process.env.MONGODB_URI || 'mongodb://localhost:27017/core-stack';
-
-// ----------------------------------------------------------------------------
-// Users to seed data for (provided)
-// ----------------------------------------------------------------------------
+const MONGODB_URI = process.env.MONGODB_URI as string;
 const USER_IDS = [
   '6a339902a9210ba0dae807f4',
   '6a33c84fb3228ad4f62b3d6d',
