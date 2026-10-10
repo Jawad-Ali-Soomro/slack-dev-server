@@ -115,9 +115,10 @@ export const createProject = catchAsync(async (req: any, res: Response) => {
 
 export const getProjects = catchAsync(async (req: any, res: Response) => {
   const userId = req.user._id
-  const { status, priority, search, page = 1, limit = 10 } = req.query
+  const { status, priority, search, page = 1, limit = 10, summary } = req.query
+  const isSummary = summary === 'true' || summary === '1'
 
-  const cacheKey = `user:${userId}:projects:${JSON.stringify({ status, priority, search, page, limit })}`
+  const cacheKey = `user:${userId}:projects:${JSON.stringify({ status, priority, search, page, limit, summary: isSummary })}`
   const cached = await redisService.get(cacheKey)
   
   if (cached) {
@@ -145,25 +146,31 @@ export const getProjects = catchAsync(async (req: any, res: Response) => {
     ]
   }
 
-  const projects = await Project.find(query)
+  let projectQuery = Project.find(query)
     .populate('createdBy', 'username email avatar role')
     .populate('members.user', 'username email avatar role')
-    .populate({
-      path: 'tasks',
-      select: 'title status priority assignTo',
-      populate: {
-        path: 'assignTo',
-        select: 'username avatar'
-      }
-    })
-    .populate({
-      path: 'meetings',
-      select: 'title status type startDate assignedTo',
-      populate: {
-        path: 'assignedTo',
-        select: 'username avatar'
-      }
-    })
+
+  if (!isSummary) {
+    projectQuery = projectQuery
+      .populate({
+        path: 'tasks',
+        select: 'title status priority assignTo',
+        populate: {
+          path: 'assignTo',
+          select: 'username avatar'
+        }
+      })
+      .populate({
+        path: 'meetings',
+        select: 'title status type startDate assignedTo',
+        populate: {
+          path: 'assignedTo',
+          select: 'username avatar'
+        }
+      })
+  }
+
+  const projects = await projectQuery
     .populate('teamId', 'name description')
     .sort({ createdAt: -1 })
     .limit(limit * 1)
@@ -173,7 +180,14 @@ export const getProjects = catchAsync(async (req: any, res: Response) => {
 
   const response = {
     success: true,
-    projects: projects.map(formatProjectResponse),
+    projects: projects.map((project) => {
+      const formatted = formatProjectResponse(project)
+      if (isSummary) {
+        formatted.tasks = []
+        formatted.meetings = []
+      }
+      return formatted
+    }),
     pagination: {
       page: parseInt(page),
       limit: parseInt(limit),
@@ -749,6 +763,16 @@ export const getProjectStats = catchAsync(async (req: any, res: Response) => {
     const projectId = (project as any)._id.toString()
     const taskStats = taskCountMap.get(projectId) || { totalTasks: 0, completedTasks: 0 }
     const meetingStats = meetingCountMap.get(projectId) || { totalMeetings: 0, completedMeetings: 0 }
+
+    if (!project.stats) {
+      project.stats = {
+        totalTasks: 0,
+        completedTasks: 0,
+        totalMeetings: 0,
+        completedMeetings: 0,
+        totalMembers: project.members?.length || 0,
+      } as any
+    }
     
     project.stats.totalTasks = taskStats.totalTasks
     project.stats.completedTasks = taskStats.completedTasks
@@ -762,13 +786,13 @@ export const getProjectStats = catchAsync(async (req: any, res: Response) => {
     completedProjects: projects.filter(p => p.status === 'completed').length,
     onHoldProjects: projects.filter(p => p.status === 'on_hold').length,
     cancelledProjects: projects.filter(p => p.status === 'cancelled').length,
-    totalMembers: projects.reduce((sum, p) => sum + p.members.length, 0),
-    totalTasks: projects.reduce((sum, p) => sum + p.stats.totalTasks, 0),
-    completedTasks: projects.reduce((sum, p) => sum + p.stats.completedTasks, 0),
-    totalMeetings: projects.reduce((sum, p) => sum + p.stats.totalMeetings, 0),
-    completedMeetings: projects.reduce((sum, p) => sum + p.stats.completedMeetings, 0),
+    totalMembers: projects.reduce((sum, p) => sum + (p.members?.length || 0), 0),
+    totalTasks: projects.reduce((sum, p) => sum + (p.stats?.totalTasks || 0), 0),
+    completedTasks: projects.reduce((sum, p) => sum + (p.stats?.completedTasks || 0), 0),
+    totalMeetings: projects.reduce((sum, p) => sum + (p.stats?.totalMeetings || 0), 0),
+    completedMeetings: projects.reduce((sum, p) => sum + (p.stats?.completedMeetings || 0), 0),
     averageProgress: projects.length > 0 
-      ? Math.round(projects.reduce((sum, p) => sum + p.progress, 0) / projects.length)
+      ? Math.round(projects.reduce((sum, p) => sum + (p.progress || 0), 0) / projects.length)
       : 0,
     projectsByPriority: {
       low: projects.filter(p => p.priority === 'low').length,

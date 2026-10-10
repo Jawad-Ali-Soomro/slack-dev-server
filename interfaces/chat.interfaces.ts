@@ -12,6 +12,15 @@ export interface CreateChatRequest {
   type: 'direct' | 'group';
   name?: string;
   description?: string;
+  logo?: string;
+  logoPublicId?: string;
+}
+
+export interface UpdateGroupChatRequest {
+  name?: string;
+  description?: string;
+  logo?: string | null;
+  logoPublicId?: string | null;
 }
 
 export interface ChatAttachment {
@@ -45,6 +54,8 @@ export interface ChatResponse {
   type: 'direct' | 'group';
   name?: string;
   description?: string;
+  logo?: string;
+  createdBy?: string;
   lastMessage?: {
     _id: string;
     content: string;

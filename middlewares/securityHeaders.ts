@@ -39,7 +39,7 @@ export const securityHeaders = (req: Request, res: Response, next: NextFunction)
     'geolocation=(), microphone=(), camera=(), payment=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=()'
   );
   res.setHeader('Server', '');
-  if (req.path.includes('/api/auth') || req.path.includes('/api/user')) {
+  if (req.path.includes('/api/')) {
     res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, private');
     res.setHeader('Pragma', 'no-cache');
     res.setHeader('Expires', '0');

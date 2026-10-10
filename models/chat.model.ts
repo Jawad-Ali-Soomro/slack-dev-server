@@ -5,6 +5,8 @@ export interface IChat extends Document {
   type: 'direct' | 'group';
   name?: string;
   description?: string;
+  logo?: string;
+  logoPublicId?: string;
   createdBy: mongoose.Types.ObjectId;
   lastMessage?: mongoose.Types.ObjectId;
   lastMessageAt?: Date;
@@ -31,6 +33,12 @@ const ChatSchema = new Schema<IChat>({
     }
   },
   description: {
+    type: String
+  },
+  logo: {
+    type: String
+  },
+  logoPublicId: {
     type: String
   },
   createdBy: {

@@ -13,37 +13,32 @@ import { sendOverdueReminders } from "../services/automationRunner";
 
 export const sendOverdueTaskEmails = sendOverdueReminders;
 
+const formatUserRef = (party: any) => {
+  const id =
+    party?._id?.toString?.() ||
+    party?.id?.toString?.() ||
+    (party && typeof party !== "object" ? String(party) : "");
+  if (!id) {
+    return { id: "deleted-user", username: "Deleted User", avatar: undefined };
+  }
+  return {
+    id: String(id),
+    username: party?.username || "User",
+    avatar: party?.avatar,
+  };
+};
+
 const formatTaskResponse = (task: any): TaskResponse => ({
-  id: task._id.toString(),
+  id: task._id?.toString?.() || String(task._id),
   title: task.title,
   description: task.description,
   status: task.status,
   priority: task.priority,
-  assignTo: task.assignTo
+  assignTo: formatUserRef(task.assignTo),
+  assignedBy: formatUserRef(task.assignedBy),
+  project: task.projectId?._id
     ? {
-        id: task.assignTo._id.toString(),
-        username: task.assignTo.username,
-        avatar: task.assignTo.avatar,
-      }
-    : {
-        id: "deleted-user",
-        username: "Deleted User",
-        avatar: undefined,
-      },
-  assignedBy: task.assignedBy
-    ? {
-        id: task.assignedBy._id.toString(),
-        username: task.assignedBy.username,
-        avatar: task.assignedBy.avatar,
-      }
-    : {
-        id: "deleted-user",
-        username: "Deleted User",
-        avatar: undefined,
-      },
-  project: task.projectId
-    ? {
-        id: task.projectId._id.toString(),
+        id: String(task.projectId._id),
         name: task.projectId.name,
         logo: task.projectId.logo,
       }
@@ -156,10 +151,10 @@ export const getTasks = catchAsync(async (req: any, res: any) => {
     priority,
     assignTo,
     assignedBy,
-    page = 1,
   } = req.query;
+  const currentUserId = req.user._id;
 
-  const cacheKey = `tasks:${JSON.stringify({ status, priority, assignTo, assignedBy, page })}`;
+  const cacheKey = `tasks:${currentUserId}:${JSON.stringify({ status, priority, assignTo, assignedBy })}`;
   const cachedTasks = await redisService.get(cacheKey);
 
   if (cachedTasks) {
@@ -170,7 +165,13 @@ export const getTasks = catchAsync(async (req: any, res: any) => {
   if (status) filter.status = status;
   if (priority) filter.priority = priority;
   if (assignTo) filter.assignTo = assignTo;
-  if (assignedBy) filter.assignedBy = assignedBy;
+  else if (assignedBy) filter.assignedBy = assignedBy;
+  else {
+    filter.$or = [
+      { assignTo: currentUserId },
+      { assignedBy: currentUserId },
+    ];
+  }
 
   const tasks = await Task.find(filter)
     .populate([

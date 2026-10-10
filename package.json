@@ -21,6 +21,7 @@
     "amqplib": "^2.0.1",
     "axios": "^1.12.2",
     "bcryptjs": "^3.0.2",
+    "cloudinary": "^2.11.0",
     "colors": "^1.4.0",
     "compression": "^1.8.1",
     "cors": "^2.8.5",

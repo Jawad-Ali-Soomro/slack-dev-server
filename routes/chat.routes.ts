@@ -8,6 +8,9 @@ import {
   deleteMessage,
   markAsRead,
   getUnreadCount,
+  updateGroupChat,
+  uploadGroupLogoFile,
+  uploadGroupLogoHandler,
 } from "../controllers/chat.controller";
 import {
   uploadChatMultiple,
@@ -23,6 +26,7 @@ chatRouter.use(authenticate);
 
 chatRouter.post("/upload/single", uploadChatSingle, uploadSingleChatFile);
 chatRouter.post("/upload/multiple", uploadChatMultiple, uploadMultipleChatFiles);
+chatRouter.post("/groups/logo", uploadGroupLogoFile, uploadGroupLogoHandler);
 
 chatRouter.post("/", createChat);
 chatRouter.get("/", getUserChats);
@@ -32,5 +36,6 @@ chatRouter.post("/messages", sendMessage);
 chatRouter.put("/messages/:messageId", updateMessage);
 chatRouter.delete("/messages/:messageId", deleteMessage);
 chatRouter.put("/:chatId/read", markAsRead);
+chatRouter.put("/:chatId", updateGroupChat);
 
 export default chatRouter;

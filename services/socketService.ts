@@ -8,7 +8,6 @@ import { logger } from "../helpers/index";
 import { SocketUser } from "../interfaces/index";
 import { decrypt, readAuthToken } from "../middlewares/token";
 import { redisConfig, createRedisOptions } from "../config/redis";
-import redisService from "./redis.service";
 
 class SocketService {
   private io: SocketIOServer;
@@ -345,9 +344,6 @@ class SocketService {
     participantIds.forEach((userId) => {
       this.io.to(`user:${userId}`).emit("new_message", message);
     });
-
-    redisService.invalidatePattern(`chat:${chatId}:messages:*`);
-    redisService.invalidatePattern(`user:*:chats:*`);
   }
 
   public emitMessageUpdate(chatId: string, message: any): void {

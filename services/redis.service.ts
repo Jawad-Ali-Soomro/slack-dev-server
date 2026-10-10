@@ -41,7 +41,6 @@ class RedisService {
       }
     } catch (error) {
       logger.error('Redis set error:', error);
-      throw error;
     }
   }
 
