@@ -45,7 +45,7 @@ userRouter.put("/admin/:userId/role", requireSuperadmin, assignUserRole);
 userRouter.put("/admin/:userId/verification", requireSuperadmin, updateUserVerification);
 userRouter.delete("/admin/:userId", requireSuperadmin, deleteUser);
 
-userRouter.get("/:userId/details", requireSuperadmin, getUserDetails);
+userRouter.get("/:userId/details", getUserDetails);
 userRouter.get("/:userId", requireSuperadmin, getUserById);
 
 export default userRouter;

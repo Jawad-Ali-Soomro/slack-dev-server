@@ -303,13 +303,7 @@ export const updateProject = catchAsync(async (req: any, res: Response) => {
   const userId = req.user._id
   const updateData: UpdateProjectRequest = req.body
 
-  const project = await Project.findOne({
-    _id: projectId,
-    $or: [
-      { createdBy: userId },
-      { 'members.user': { $in: [userId], $elemMatch: { role: { $in: ['owner', 'admin'] } } } }
-    ]
-  })
+  const project = await Project.findById(projectId)
 
   if (!project) {
     return res.status(404).json({
@@ -318,7 +312,40 @@ export const updateProject = catchAsync(async (req: any, res: Response) => {
     })
   }
 
-  Object.assign(project, updateData)
+  const actorId = userId.toString()
+  const isOwner = project.createdBy?.toString() === actorId
+  const isManager = project.members?.some((member: any) => {
+    const memberId = (member.user?._id || member.user)?.toString()
+    return memberId === actorId && ['owner', 'admin'].includes(member.role)
+  })
+
+  if (!isOwner && !isManager) {
+    return res.status(404).json({
+      success: false,
+      message: 'Project not found or insufficient permissions'
+    })
+  }
+
+  const payload: any = { ...updateData }
+  delete payload.members
+  delete payload.createdBy
+  delete payload.id
+  delete payload._id
+
+  if (payload.teamId === null || payload.teamId === "") {
+    project.set('teamId', undefined)
+    delete payload.teamId
+  }
+  if (payload.logo === null || payload.logo === "") {
+    project.set('logo', undefined)
+    delete payload.logo
+  }
+  if (payload.endDate === null || payload.endDate === "") {
+    project.set('endDate', undefined)
+    delete payload.endDate
+  }
+
+  Object.assign(project, payload)
   await project.save()
   await project.populate('createdBy members.user', 'username email avatar role')
 

@@ -170,6 +170,9 @@ export const getUserDetails = catchAsync(async (req: any, res: any) => {
     .populate('user1 user2', 'username avatar jobRole')
     .sort({ createdAt: -1 });
 
+  const profileId = String(userId);
+  const sameUser = (value: any) => memberUserId(value) === profileId;
+
   const formattedProjects = projects.map((project: any) => ({
     id: project._id,
     name: project.name,
@@ -178,7 +181,7 @@ export const getUserDetails = catchAsync(async (req: any, res: any) => {
     status: project.status,
     priority: project.priority,
     progress: project.progress,
-    role: project.createdBy.toString() === userId ? 'creator' : 'member',
+    role: sameUser(project.createdBy) ? 'creator' : 'member',
     createdAt: project.createdAt
   }));
 
@@ -187,8 +190,8 @@ export const getUserDetails = catchAsync(async (req: any, res: any) => {
     name: team.name,
     description: team.description,
     members: team.members.length,
-    role: team.members.find((member: any) => 
-      member.user.toString() === userId
+    role: team.members.find((member: any) =>
+      sameUser(member.user)
     )?.role || 'member',
     createdAt: team.createdAt
   }));
@@ -198,7 +201,7 @@ export const getUserDetails = catchAsync(async (req: any, res: any) => {
     title: task.title,
     status: task.status,
     priority: task.priority,
-    role: task.assignTo.toString() === userId ? 'assignee' : 'assigner',
+    role: sameUser(task.assignTo) ? 'assignee' : 'assigner',
     projectName: task.projectId?.name,
     createdAt: task.createdAt
   }));
@@ -209,7 +212,7 @@ export const getUserDetails = catchAsync(async (req: any, res: any) => {
     status: meeting.status,
     type: meeting.type,
     startDate: meeting.startDate,
-    role: meeting.assignedTo.toString() === userId ? 'attendee' : 'organizer',
+    role: sameUser(meeting.assignedTo) ? 'attendee' : 'organizer',
     projectName: meeting.projectId?.name,
     createdAt: meeting.createdAt
   }));
@@ -223,10 +226,10 @@ export const getUserDetails = catchAsync(async (req: any, res: any) => {
   allChallenges.forEach((ch: any) => {
     const userSolution = ch.userSolutions?.find(
       (sol: any) => {
-        const solUserId = typeof sol.userId === 'object' && sol.userId._id 
-          ? sol.userId._id.toString() 
-          : sol.userId.toString();
-        return solUserId === userId.toString();
+        const solUserId = typeof sol.userId === 'object' && sol.userId?._id
+          ? sol.userId._id.toString()
+          : sol.userId?.toString?.();
+        return solUserId === profileId;
       }
     );
     if (userSolution && userSolution.isCorrect) {
