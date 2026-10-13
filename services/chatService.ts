@@ -123,7 +123,69 @@ class ChatService {
       await redisService.invalidateUserData(participantId);
     }
 
-    return this.formatChatResponse(chat, userId);
+    const formatted = this.formatChatResponse(chat, userId);
+    const socketService = (global as any).socketService;
+    if (socketService) {
+      socketService.emitChatUpdate(String(chat._id), formatted);
+    }
+
+    return formatted;
+  }
+
+  async removeGroupMember(userId: string, chatId: string, memberId: string): Promise<ChatResponse> {
+    const chat = await Chat.findOne({
+      _id: chatId,
+      type: 'group',
+      isActive: true,
+      participants: userId,
+    });
+
+    if (!chat) {
+      throw new Error('Chat not found or access denied');
+    }
+
+    if (chat.createdBy.toString() !== userId) {
+      throw new Error('Only the group creator can edit this chat');
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(memberId)) {
+      throw new Error('Invalid member');
+    }
+
+    if (memberId === chat.createdBy.toString()) {
+      throw new Error('The group admin cannot be removed');
+    }
+
+    const isMember = chat.participants.some((participant) => participant.toString() === memberId);
+    if (!isMember) {
+      throw new Error('That member is not in this group');
+    }
+
+    if (chat.participants.length <= 2) {
+      throw new Error('A group needs at least two people');
+    }
+
+    chat.participants = chat.participants.filter(
+      (participant) => participant.toString() !== memberId,
+    ) as typeof chat.participants;
+
+    await chat.save();
+    await chat.populate('participants', 'username email avatar');
+
+    await redisService.invalidateUserData(memberId);
+    for (const participant of chat.participants) {
+      const participantId = participant._id?.toString?.() || String(participant);
+      await redisService.invalidateUserData(participantId);
+    }
+
+    const formatted = this.formatChatResponse(chat, userId);
+    const socketService = (global as any).socketService;
+    if (socketService) {
+      socketService.emitChatUpdate(chatId, formatted);
+      socketService.emitToUser(memberId, 'removed_from_chat', { chatId });
+    }
+
+    return formatted;
   }
 
   private resolveGroupLogo(type: string, logo?: string, logoPublicId?: string) {

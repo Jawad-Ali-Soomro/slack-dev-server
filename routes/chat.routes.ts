@@ -9,6 +9,7 @@ import {
   markAsRead,
   getUnreadCount,
   updateGroupChat,
+  removeGroupMember,
   uploadGroupLogoFile,
   uploadGroupLogoHandler,
 } from "../controllers/chat.controller";
@@ -36,6 +37,7 @@ chatRouter.post("/messages", sendMessage);
 chatRouter.put("/messages/:messageId", updateMessage);
 chatRouter.delete("/messages/:messageId", deleteMessage);
 chatRouter.put("/:chatId/read", markAsRead);
+chatRouter.delete("/:chatId/members/:memberId", removeGroupMember);
 chatRouter.put("/:chatId", updateGroupChat);
 
 export default chatRouter;

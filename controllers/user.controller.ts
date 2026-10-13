@@ -163,6 +163,13 @@ export const getUserDetails = catchAsync(async (req: any, res: any) => {
   .select('name description members createdAt')
   .sort({ createdAt: -1 });
 
+  const { Friendship } = await import('../models/friend.model');
+  const friendships = await Friendship.find({
+    $or: [{ user1: userId }, { user2: userId }],
+  })
+    .populate('user1 user2', 'username avatar jobRole')
+    .sort({ createdAt: -1 });
+
   const formattedProjects = projects.map((project: any) => ({
     id: project._id,
     name: project.name,
@@ -234,12 +241,28 @@ export const getUserDetails = catchAsync(async (req: any, res: any) => {
   }
   
   
+  const profileUserId = userId.toString();
+  const friends = friendships
+    .map((friendship: any) => {
+      const firstId = friendship.user1?._id?.toString();
+      const friend = firstId === profileUserId ? friendship.user2 : friendship.user1;
+      if (!friend?._id || friend._id.toString() === profileUserId) return null;
+      return {
+        id: friend._id,
+        username: friend.username,
+        avatar: friend.avatar || null,
+        jobRole: friend.jobRole && friend.jobRole !== 'unassigned' ? friend.jobRole : null,
+      };
+    })
+    .filter(Boolean);
+
   const userResponse = {
     ...formatUserResponse(user as any),
     projects: formattedProjects,
     teams: formattedTeams,
     tasks: formattedTasks,
     meetings: formattedMeetings,
+    friends,
     awards: userAwards,
     totalChallengePoints: userPoints
   };

@@ -42,7 +42,7 @@ const sendChatError = (res: Response, error: any, fallback: string) => {
   const message = error?.message || fallback;
   const status = /not found|access denied/i.test(message)
     ? 404
-    : /only the group|required|invalid|not configured/i.test(message)
+    : /only the group|required|invalid|not configured|cannot|at least|not in/i.test(message)
       ? 400
       : 500;
   return res.status(status).json({ success: false, message });
@@ -210,6 +210,25 @@ export const updateGroupChat = catchAsync(async (req: IChatRequest, res: Respons
     });
   } catch (error: any) {
     return sendChatError(res, error, "Failed to update group");
+  }
+});
+
+export const removeGroupMember = catchAsync(async (req: IChatRequest, res: Response) => {
+  const userId = (req.user as any)?._id?.toString();
+  if (!userId) {
+    return res.status(401).json({ success: false, message: "Unauthorized" });
+  }
+
+  const { chatId, memberId } = req.params;
+  try {
+    const chat = await chatService.removeGroupMember(userId, chatId, memberId);
+    res.status(200).json({
+      success: true,
+      message: "Member removed",
+      data: chat,
+    });
+  } catch (error: any) {
+    return sendChatError(res, error, "Failed to remove member");
   }
 });
 
