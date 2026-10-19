@@ -629,56 +629,85 @@ const workspaceChatForTeam = async (team: any) => {
   });
 };
 
-const groupChatForTask = async (task: any) => {
-  const assigneeId = idOf(task.assignTo);
-  const assignerId = idOf(task.assignedBy);
-  let team = null;
+const personOnTeam = (team: any, userId: string) => {
+  if (!userId || !team) return false;
+  if (idOf(team.createdBy) === userId) return true;
+  return (team.members || []).some((member: any) => idOf(member.user) === userId);
+};
 
+const groupChatForTask = async (task: any) => {
+  const assignerId = idOf(task.assignedBy);
+  const assigneeId = idOf(task.assignTo);
+  if (!assignerId) return null;
+
+  let team = null;
   const projectId = idOf(task.projectId);
   if (projectId) {
     const project = await Project.findById(projectId).select("teamId");
     if (project?.teamId) {
-      team = await Team.findById(project.teamId).select("name createdBy members");
+      const candidate = await Team.findById(project.teamId).select(
+        "name createdBy members",
+      );
+      if (personOnTeam(candidate, assignerId)) team = candidate;
     }
   }
 
-  if (!team && assigneeId) {
-    const people = [assigneeId, assignerId].filter(Boolean);
-    team =
-      people.length > 1
-        ? await Team.findOne({
-            isActive: { $ne: false },
-            "members.user": { $all: people },
-          }).select("name createdBy members")
-        : null;
-    if (!team) {
-      team = await Team.findOne({
-        isActive: { $ne: false },
-        $or: [{ createdBy: assigneeId }, { "members.user": assigneeId }],
-      }).select("name createdBy members");
-    }
+  if (!team) {
+    const shared = await Team.find({
+      isActive: { $ne: false },
+      $and: [
+        { $or: [{ createdBy: assignerId }, { "members.user": assignerId }] },
+        assigneeId
+          ? { $or: [{ createdBy: assigneeId }, { "members.user": assigneeId }] }
+          : { _id: { $exists: true } },
+      ],
+    })
+      .select("name createdBy members")
+      .limit(5);
+    team = shared.find((item) => personOnTeam(item, assignerId)) || null;
   }
 
-  if (!team) return null;
-  return workspaceChatForTeam(team);
+  if (!personOnTeam(team, assignerId)) return null;
+
+  const chats = await Chat.find({
+    type: "group",
+    isActive: true,
+    participants: assignerId,
+  }).select("name participants createdBy");
+
+  const teamName = String(team.name || "").trim().toLowerCase();
+  const named = chats.find(
+    (chat) => String(chat.name || "").trim().toLowerCase() === teamName,
+  );
+  if (named) return named;
+
+  return (
+    chats.find((chat) =>
+      (chat.participants || []).some((person) => idOf(person) === assigneeId),
+    ) || null
+  );
 };
 
 const announceTaskPullUpdate = async (
   task: any,
   pull: { number: number; url?: string; merged: boolean },
 ) => {
+  const assignerId = idOf(task.assignedBy);
+  if (!assignerId) return;
+
   const chat = await groupChatForTask(task);
   if (!chat) return;
 
-  const senderId =
-    idOf(chat.createdBy) || idOf(task.assignedBy) || idOf(task.assignTo);
-  if (!senderId) return;
+  const assignerInChat = (chat.participants || []).some(
+    (person) => idOf(person) === assignerId,
+  );
+  if (!assignerInChat) return;
 
   const statusLine = pull.merged
     ? `"${task.title}" has been updated to Done. Pull request #${pull.number} was merged.`
     : `"${task.title}" has been updated to In Progress. Pull request #${pull.number} is open.`;
 
-  await chatService.sendMessage(senderId, {
+  await chatService.sendMessage(assignerId, {
     chatId: String(chat._id),
     content: pull.url ? `${statusLine}\n${pull.url}` : statusLine,
     type: "text",

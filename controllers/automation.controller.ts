@@ -40,7 +40,7 @@ export const AUTOMATION_CATALOG = [
     key: "pr-task-sync",
     title: "PR to task sync",
     description:
-      "Move a task to In Progress when a matching pull request is open, and to Done when that pull request is merged. Post that update in the team group chat. Matches the task title, branch name, or a pull request link on the task. Uses the GitHub account connected by the person who assigned it.",
+      "Move a task to In Progress when a matching pull request is open, and to Done when that pull request is merged. Post that update only in a group chat the assigner already belongs to. Matches the task title, branch name, or a pull request link on the task. Uses the GitHub account connected by the person who assigned it.",
     trigger: "PR opened or merged",
     action: "Update status",
   },
