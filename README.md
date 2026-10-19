@@ -1,218 +1,134 @@
-# 🚀 Slack Dev Server
-
 <div align="center">
-  <img src="public/logo.png" alt="Slack Dev Logo" width="200" height="200">
-  
-  ### *A Developer's Best Friend* 
-  **Manage Projects at Ease**
-  
-  ![Node.js](https://img.shields.io/badge/Node.js-18+-green.svg)
-  ![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-blue.svg)
-  ![Express](https://img.shields.io/badge/Express-4.18+-lightgrey.svg)
-  ![MongoDB](https://img.shields.io/badge/MongoDB-6.0+-green.svg)
-  ![JWT](https://img.shields.io/badge/JWT-Auth-orange.svg)
+  <img src="public/logo.svg" alt="Slack Dev" width="96" height="96">
+
+  <h1>Slack Dev Server</h1>
+  <p>The API for Slack Dev: accounts, tasks, meetings, workspaces, chat, and GitHub-aware automations.</p>
 </div>
 
----
+Slack Dev Server is the backend for the Slack Dev workspace. It stores users, tasks, projects, and messages, and it pushes live updates over Socket.IO. The web app that talks to this API is the Slack Dev client, which runs on port 5173.
 
-## ✨ **What is Slack Dev?**
+## What it covers
 
-Slack Dev is a **powerful development tool** designed to streamline project management and development workflows. Built with modern technologies, it provides a robust backend foundation that developers can rely on to build scalable applications quickly and efficiently.
+- Register, log in, email verification, and password reset
+- Tasks with status, priority, assignees, and repositories
+- Meetings, including online rooms on Jitsi
+- Projects, purchases, and explore
+- Workspaces, invitations, friends, and permissions
+- Group and direct chat, with files stored for chat uploads
+- Notifications and notes
+- GitHub OAuth and pull-request sync that moves a task to In Progress or Done
+- Overdue reminders, meeting follow-ups, a daily standup digest, and welcome mail
+- Stripe payments and Cloudinary uploads
+- Interactive API docs
 
-## 🎯 **Why Slack Dev?**
+## Stack
 
-- 🔐 **Complete Authentication System** - JWT-based auth with email verification
-- 👤 **User Management** - Profile updates, avatar uploads, password management  
-- 📧 **Email Integration** - Beautiful email templates with OTP verification
-- 📚 **API Documentation** - Interactive Swagger UI with authentication
-- 🛡️ **Security First** - Best practices implemented out of the box
-- 🎨 **Modern Architecture** - Clean code structure following industry standards
+Node.js 22, TypeScript, Express 5, MongoDB and Mongoose, Redis, RabbitMQ, Socket.IO, JWT, Nodemailer, Stripe, and Swagger.
 
----
+## Requirements
 
-## 🚀 **Quick Start**
+- Node.js 22
+- npm
+- MongoDB 6 or newer
+- Redis
+- RabbitMQ
 
-### Prerequisites
-- Node.js 18+
-- MongoDB 6.0+
-- Gmail account (for email services)
+Email, GitHub, Stripe, Zoom, and Cloudinary are optional until you use those features.
 
-### Installation
+## Install locally
 
 ```bash
-# Clone the repository
-git clone <your-repo-url>
-cd core-stack/server
-
-# Install dependencies
+git clone https://github.com/Jawad-Ali-Soomro/slack-dev-server.git
+cd slack-dev-server
+copy config\.sample.env config\.env
 npm install
-
-# Setup environment
-cp .env.example .env
-# Edit .env with your configurations
-
-# Start development server
 npm run dev
 ```
 
-### Environment Variables
+On macOS or Linux, use `cp config/.sample.env config/.env` instead of `copy`.
+
+The API listens on http://localhost:4000. API docs are at http://localhost:4000/api-docs. Health is at http://localhost:4000/api/health.
+
+Open `config/.env` and set at least `MONGODB_URI` and `JWT_SECRET`. Replace every `change-me`. Do not commit `config/.env`. The sample and the longer notes are in [config/.sample.env](config/.sample.env) and [ENV-SETUP.md](ENV-SETUP.md).
 
 ```env
-# Server Configuration
-PORT=8080
-BASE_URL=http://localhost:8080
-
-# Database
-MONGODB_URI=mongodb://localhost:27017/slack-dev
-
-# JWT Secret
-JWT_SECRET=your-super-secret-jwt-key
-
-# Email Configuration
-GMAIL_USER=your-email@gmail.com
-GMAIL_PASS=your-app-password
+PORT=4000
+MONGODB_URI=mongodb://localhost:27017/slack-devs
+JWT_SECRET=change-me
+CLIENT_URL=http://localhost:5173
+REDIS_URL=redis://localhost:6379
+RABBITMQ_URL=amqp://slack:slack@localhost:5672
 ```
 
----
-## 🎨 **Features**
+`CLIENT_URL` is the browser origin allowed by CORS. `ENCRYPTION_KEY` must match `VITE_ENCRYPTION_KEY` in the client. `GITHUB_CLIENT_ID` must match `VITE_CLIENT_ID`.
 
-### 🔒 **Robust Authentication**
-- JWT-based authentication
-- Email verification with beautiful OTP emails
-- Password reset functionality
-- Secure password hashing
+### Seed data
 
-### 📧 **Email System**
-- Modern, responsive email templates
-- OTP verification with styled blocks
-- Logo embedding in emails
-- Multiple email templates (verification, password reset)
+With MongoDB running and `config/.env` filled in:
 
-### 👥 **User Management**
-- Profile updates with validation
-- Avatar upload and management
-- Password change with current password verification
-- User data consistency
-
-### 📖 **API Documentation**
-- Interactive Swagger UI at `/api-docs`
-- Bearer token authentication in Swagger
-- Complete endpoint documentation
-- Request/response examples
-
-### 🛡️ **Security Features**
-- Input validation and sanitization
-- Rate limiting ready
-- CORS configuration
-- Secure file uploads
-- Error handling middleware
-
----
-
-## 🏗️ **Architecture**
-
-```
-server/
-├── 📁 config/          # Database and app configuration
-├── 📁 controllers/     # Request handlers and business logic
-├── 📁 helpers/         # Utility functions and helpers
-├── 📁 interfaces/      # TypeScript interfaces
-├── 📁 middlewares/     # Express middlewares
-├── 📁 models/          # Database models
-├── 📁 routes/          # API route definitions
-├── 📁 templates/       # Email templates
-├── 📁 uploads/         # File upload storage
-├── 📁 utils/           # Utility functions
-└── 📄 index.ts         # Application entry point
+```bash
+npm run seed
+npm run seed:workspace
 ```
 
----
+`npm run seed:challenges` loads the learning challenges.
 
-## 🔧 **Tech Stack**
+## Scripts
 
-| Technology | Purpose | Version |
-|------------|---------|---------|
-| **Node.js** | Runtime Environment | 18+ |
-| **TypeScript** | Type Safety | 5.0+ |
-| **Express.js** | Web Framework | 4.18+ |
-| **MongoDB** | Database | 6.0+ |
-| **Mongoose** | ODM | Latest |
-| **JWT** | Authentication | Latest |
-| **Nodemailer** | Email Service | Latest |
-| **Multer** | File Upload | Latest |
-| **Swagger** | API Documentation | Latest |
+| Command | What it does |
+| --- | --- |
+| `npm run dev` | Start the API with reload |
+| `npm run build` | Compile TypeScript to `dist/` |
+| `npm start` | Run the compiled server |
+| `npm run seed` | Seed base data |
+| `npm run seed:workspace` | Seed a workspace |
 
----
+## API groups
 
-## 📱 **Usage Examples**
+All routes are under `/api`.
 
-### Register a new user
-```javascript
-const response = await fetch('/api/auth/register', {
-  method: 'POST',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({
-    username: 'johndoe',
-    email: 'john@example.com',
-    password: 'securepassword123'
-  })
-});
+| Path | Area |
+| --- | --- |
+| `/api/auth` | Register, login, email OTP, GitHub connect |
+| `/api/tasks` | Tasks |
+| `/api/meetings` | Meetings |
+| `/api/projects` | Projects |
+| `/api/teams` | Workspaces |
+| `/api/chat` | Messages |
+| `/api/friends` | Friends |
+| `/api/automations` | Automation switches |
+| `/api/notifications` | Notifications |
+| `/api/explore` | Public projects |
+| `/api/permissions` | Roles and permissions |
+
+## Layout
+
+```
+config/         Env loading and .sample.env
+controllers/    Request handlers
+models/         Mongoose models
+routes/         Express routers
+services/       Chat, Redis, RabbitMQ, automations, cron
+templates/      Email templates
+public/         logo.svg
+index.ts        Process entry
 ```
 
-### Upload avatar
-```javascript
-const formData = new FormData();
-formData.append('avatar', file);
+Automations run on a schedule after an admin enables them. Pull-request sync checks GitHub every 5 minutes. A matching open pull request sets the task to In Progress. A merged pull request sets it to Done. A group-chat note is posted only when the person who assigned the task is already in that workspace chat.
 
-const response = await fetch('/api/user/avatar', {
-  method: 'POST',
-  headers: { 'Authorization': `Bearer ${token}` },
-  body: formData
-});
+## Docker
+
+From the parent `slack-dev` folder, after `config/.env` exists:
+
+```bash
+docker compose up --build
 ```
 
----
+Compose points this service at the Redis and RabbitMQ containers and publishes port 4000. The image build does not copy `config/.env`.
 
-## 🎯 **Perfect For**
+## If it will not start
 
-- 🚀 **Startups** building MVPs quickly
-- 👨‍💻 **Developers** needing reliable backend foundation  
-- 🏢 **Teams** wanting consistent project structure
-- 📱 **Mobile Apps** requiring robust API backend
-- 🌐 **Web Applications** with user management needs
-
----
-
-## 🤝 **Contributing**
-
-We welcome contributions! Please see our [Contributing Guidelines](CONTRIBUTING.md) for details.
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
-
----
-
-## 📄 **License**
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
----
-
-## 🌟 **Support**
-
-If you find this project helpful, please give it a ⭐ on GitHub!
-
-For support and questions:
-- 📧 Email: support@slackdev.com
-- 💬 Issues: [GitHub Issues](https://github.com/slack-dev-server/issues)
-- 📖 Docs: [API Documentation](http://localhost:8080/api-docs)
-
----
-
-<div align="center">
-  <p><strong>Made with ❤️ by developers, for developers</strong></p>
-  <p><em>Slack Dev - Where Development Meets Simplicity</em></p>
-</div>
+- `Environment file not found`: copy `config/.sample.env` to `config/.env`.
+- MongoDB connection errors: MongoDB is not running, or `MONGODB_URI` is wrong.
+- Redis or RabbitMQ errors: start those services, or use Docker Compose, which starts both.
+- The browser cannot call the API: `CLIENT_URL` must be `http://localhost:5173`.
