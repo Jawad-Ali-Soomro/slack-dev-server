@@ -37,7 +37,7 @@ userRouter.delete("/avatar", deleteAvatar);
 
 userRouter.put("/change-password", changePassword);
 
-userRouter.get("/", requireSuperadmin, getUsers);
+userRouter.get("/", getUsers);
 userRouter.get("/search", searchUsers);
 
 userRouter.get("/admin/users", requireSuperadmin, getAllUsers);

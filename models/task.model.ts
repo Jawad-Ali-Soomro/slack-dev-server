@@ -18,6 +18,12 @@ export interface ITask extends Document {
     repoId: string,
     repoName: string
   }
+  linkedPullRequest?: {
+    number: number;
+    url: string;
+    title?: string;
+    syncedAt: Date;
+  };
   overdueEmailSent: boolean;
 }
 
@@ -74,6 +80,12 @@ const TaskSchema = new Schema<ITask>({
   overdueEmailSent: {
     type: Boolean,
     default: false,
+  },
+  linkedPullRequest: {
+    number: Number,
+    url: String,
+    title: String,
+    syncedAt: Date,
   },
 
 }, {

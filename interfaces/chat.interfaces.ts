@@ -84,13 +84,21 @@ export interface MessageResponse {
   replyTo?: {
     _id: string;
     content: string;
-    sender: string;
+    sender: string | {
+      _id: string;
+      username?: string;
+      avatar?: string | null;
+    };
   };
   isEdited: boolean;
   editedAt?: Date;
   isDeleted: boolean;
   readBy: Array<{
-    user: string;
+    user: string | {
+      _id: string;
+      username?: string;
+      avatar?: string | null;
+    };
     readAt: Date;
   }>;
   createdAt: Date;

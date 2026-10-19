@@ -5,6 +5,7 @@ import { logger } from '../helpers/index';
 import redisService from './redis.service';
 import { notifyUser } from '../utils/notify';
 import { publishChatNotification } from './chatNotificationQueue';
+import { publishChatRead } from './chatReadQueue';
 import mongoose from 'mongoose';
 import path from 'path';
 
@@ -260,7 +261,12 @@ class ChatService {
         isDeleted: false
       })
       .populate('sender', 'username email avatar')
-      .populate('replyTo', 'content sender')
+      .populate({
+        path: 'replyTo',
+        select: 'content sender',
+        populate: { path: 'sender', select: 'username avatar' }
+      })
+      .populate('readBy.user', 'username avatar')
       .sort({ createdAt: 1 })
 
 
@@ -314,10 +320,7 @@ class ChatService {
       });
 
       await message.save();
-      await message.populate('sender', 'username email avatar');
-      if (replyTo) {
-        await message.populate('replyTo', 'content sender');
-      }
+      await this.populateMessageRefs(message);
 
       chat.lastMessage = message._id as any;
       chat.lastMessageAt = new Date();
@@ -364,10 +367,7 @@ class ChatService {
       message.editedAt = new Date();
 
       await message.save();
-      await message.populate('sender', 'username email avatar');
-      if (message.replyTo) {
-        await message.populate('replyTo', 'content sender');
-      }
+      await this.populateMessageRefs(message);
 
       await redisService.invalidatePattern(`chat:${message.chat}:messages:*`);
 
@@ -428,7 +428,8 @@ class ChatService {
         throw new Error('Chat not found or access denied');
       }
 
-      await Message.updateMany(
+      const readAt = new Date();
+      const updated = await Message.updateMany(
         {
           chat: chatId,
           sender: { $ne: userId },
@@ -438,13 +439,29 @@ class ChatService {
           $push: {
             readBy: {
               user: userId,
-              readAt: new Date()
+              readAt
             }
           }
         }
       );
 
+      if (!updated.modifiedCount) return;
+
       await redisService.invalidatePattern(`chat:${chatId}:messages:*`);
+
+      const reader = await User.findById(userId).select('username avatar');
+      const participantIds = (chat.participants || []).map((participant: any) =>
+        String(participant?._id || participant),
+      );
+
+      await publishChatRead({
+        chatId,
+        userId,
+        username: reader?.username || 'User',
+        avatar: reader?.avatar || null,
+        readAt: readAt.toISOString(),
+        participantIds,
+      });
     } catch (error) {
       logger.error('Error marking messages as read:', error);
       throw error;
@@ -604,6 +621,32 @@ class ChatService {
     return `Sent ${attachments.length} files`;
   }
 
+  private async populateMessageRefs(message: any) {
+    await message.populate([
+      { path: 'sender', select: 'username email avatar' },
+      {
+        path: 'replyTo',
+        select: 'content sender',
+        populate: { path: 'sender', select: 'username avatar' }
+      },
+      { path: 'readBy.user', select: 'username avatar' }
+    ]);
+  }
+
+  private personRef(value: any) {
+    if (!value) return "";
+    if (typeof value === "string") return value;
+    const id = value._id?.toString?.() || value.id?.toString?.() || value.toString?.() || "";
+    if (value.username || value.avatar) {
+      return {
+        _id: String(id),
+        username: value.username || "User",
+        avatar: value.avatar || null
+      };
+    }
+    return String(id);
+  }
+
   private formatMessageResponse(message: any): MessageResponse {
     return {
       _id: message._id.toString(),
@@ -621,13 +664,13 @@ class ChatService {
       replyTo: message.replyTo ? {
         _id: message.replyTo._id.toString(),
         content: message.replyTo.content,
-        sender: message.replyTo.sender.toString()
+        sender: this.personRef(message.replyTo.sender)
       } : undefined,
       isEdited: message.isEdited,
       editedAt: message.editedAt,
       isDeleted: message.isDeleted,
-      readBy: message.readBy.map((read: any) => ({
-        user: read.user.toString(),
+      readBy: (message.readBy || []).map((read: any) => ({
+        user: this.personRef(read.user),
         readAt: read.readAt
       })),
       createdAt: message.createdAt,

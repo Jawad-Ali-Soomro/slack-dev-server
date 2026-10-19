@@ -14,6 +14,7 @@ import SocketService from './services/socketService'
 import { startTaskStatusConsumer } from './services/taskQueue'
 import { startWorkspaceStatusConsumer } from './services/workspaceStatusQueue'
 import { startChatNotificationConsumer } from './services/chatNotificationQueue'
+import { startChatReadConsumer } from './services/chatReadQueue'
 import redisService from './services/redis.service'
 import './services/cron'
 import { securityHeaders, sanitizeResponse } from './middlewares/index'
@@ -92,6 +93,7 @@ const socketService = new SocketService(server)
 startTaskStatusConsumer()
 startWorkspaceStatusConsumer()
 startChatNotificationConsumer()
+startChatReadConsumer()
 
 const PORT = Number(process.env.PORT)
 

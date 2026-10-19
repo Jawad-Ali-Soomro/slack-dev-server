@@ -5,7 +5,11 @@ import Automation from "../models/automation.model";
 import { Task } from "../models/index";
 import { Team } from "../models/team.model";
 import { Availability, JobRole, Role } from "../interfaces/index";
-import { sendOverdueReminders } from "../services/automationRunner";
+import {
+  sendDailyStandupDigests,
+  sendOverdueReminders,
+  syncOpenPullRequests,
+} from "../services/automationRunner";
 
 export const AUTOMATION_CATALOG = [
   {
@@ -20,7 +24,7 @@ export const AUTOMATION_CATALOG = [
     key: "overdue-reminders",
     title: "Overdue reminders",
     description:
-      "Email and notify the assignee and project owner when a task passes its due date.",
+      "Email and notify the assignee and the project owner when a task passes its due date.",
     trigger: "Task overdue",
     action: "Send email + notification",
   },
@@ -28,7 +32,7 @@ export const AUTOMATION_CATALOG = [
     key: "meeting-follow-ups",
     title: "Meeting follow-ups",
     description:
-      "Create a follow-up task automatically after every completed meeting.",
+      "When a meeting is marked completed, create a follow-up task due the next evening and assign it to the person who owned the meeting.",
     trigger: "Meeting completed",
     action: "Create task",
   },
@@ -36,15 +40,15 @@ export const AUTOMATION_CATALOG = [
     key: "pr-task-sync",
     title: "PR to task sync",
     description:
-      "Move a task to In Progress when a linked pull request is opened.",
-    trigger: "PR opened",
+      "Move a task to In Progress when a matching pull request is open, and to Done when that pull request is merged. Post that update in the team group chat. Matches the task title, branch name, or a pull request link on the task. Uses the GitHub account connected by the person who assigned it.",
+    trigger: "PR opened or merged",
     action: "Update status",
   },
   {
     key: "daily-standup-digest",
     title: "Daily standup digest",
     description:
-      "Post a summary of yesterday's progress to the team chat every morning.",
+      "Every morning at 9:00 Karachi time, post yesterday's finished tasks, new tasks, wrapped meetings, and overdue count into the workspace group chat.",
     trigger: "Every day 9:00",
     action: "Send message",
   },
@@ -242,8 +246,14 @@ export const toggleAutomation = catchAsync(async (req: any, res: Response) => {
     automation: formatAutomation(doc),
   });
 
-  if (enabled && key === "overdue-reminders") {
+  if (!enabled) return;
+
+  if (key === "overdue-reminders") {
     sendOverdueReminders().catch(() => {});
+  } else if (key === "pr-task-sync") {
+    syncOpenPullRequests().catch(() => {});
+  } else if (key === "daily-standup-digest") {
+    sendDailyStandupDigests().catch(() => {});
   }
 });
 

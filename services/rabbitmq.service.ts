@@ -8,6 +8,8 @@ const WORKSPACE_QUEUE = "workspace.status";
 const WORKSPACE_PATTERN = "workspace.*";
 const CHAT_QUEUE = "chat.notification";
 const CHAT_PATTERN = "chat.*";
+const CHAT_READ_QUEUE = "chat.read";
+const CHAT_READ_PATTERN = "chat.read";
 
 type RabbitHandler = (payload: unknown) => Promise<void> | void;
 
@@ -65,6 +67,8 @@ async function openChannel(): Promise<Channel> {
     await nextChannel.bindQueue(WORKSPACE_QUEUE, EXCHANGE, WORKSPACE_PATTERN);
     await nextChannel.assertQueue(CHAT_QUEUE, { durable: true });
     await nextChannel.bindQueue(CHAT_QUEUE, EXCHANGE, CHAT_PATTERN);
+    await nextChannel.assertQueue(CHAT_READ_QUEUE, { durable: true });
+    await nextChannel.bindQueue(CHAT_READ_QUEUE, EXCHANGE, CHAT_READ_PATTERN);
     await nextChannel.prefetch(20);
 
     channel = nextChannel;
@@ -107,6 +111,10 @@ export function getWorkspaceStatusQueue() {
 
 export function getChatNotificationQueue() {
   return CHAT_QUEUE;
+}
+
+export function getChatReadQueue() {
+  return CHAT_READ_QUEUE;
 }
 
 function consumeQueue(active: Channel, queue: string, onMessage: RabbitHandler) {

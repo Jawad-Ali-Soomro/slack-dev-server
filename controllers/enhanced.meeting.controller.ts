@@ -4,6 +4,8 @@ import { CreateMeetingRequest, UpdateMeetingRequest, MeetingResponse, MeetingSta
 import redisService from "../services/redis.service";
 import videoMeetingService from "../services/zoomService";
 import { notifyUser } from "../utils/notify";
+import { createMeetingFollowUp } from "../services/automationRunner";
+import { logger } from "../helpers/index";
 
 const formatParty = (party: any) => {
   if (!party) {
@@ -288,6 +290,14 @@ export const updateMeetingStatus = catchAsync(async (req: any, res: any) => {
 
   meeting.status = status;
   await meeting.save();
+
+  if (status === MeetingStatus.COMPLETED) {
+    try {
+      await createMeetingFollowUp(meeting);
+    } catch (err: any) {
+      logger.error(`Meeting follow-up failed: ${err?.message || err}`);
+    }
+  }
 
   await meeting.populate([
     { path: "assignedTo", select: "username avatar" },

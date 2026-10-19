@@ -10,7 +10,7 @@ import { Availability, JobRole, Role } from "../interfaces/index";
 const MONGODB_URI = process.env.MONGODB_URI as string;
 
 const SEED_DOMAIN = "slackdev.seed";
-const SEED_PASSWORD = "SeedPass123!";
+const SEED_PASSWORD = "Abcd1234!";
 const FRESH = process.argv.includes("--fresh");
 
 const PROFILES_DIR = path.join(__dirname, "../uploads/profiles");
@@ -31,30 +31,30 @@ type SeedPerson = {
 };
 
 const PEOPLE: SeedPerson[] = [
-  { username: "maya_chen", firstName: "Maya", lastName: "Chen", jobRole: JobRole.Frontend, availability: Availability.Available, role: Role.Admin, bio: "Frontend lead who cares about empty states.", location: "San Francisco, US", statusMessage: "Shipping the new dashboard" },
-  { username: "liam_okonkwo", firstName: "Liam", lastName: "Okonkwo", jobRole: JobRole.Frontend, availability: Availability.Available, role: Role.User, bio: "React + TypeScript. Animations on the side.", location: "Lagos, NG" },
-  { username: "sofia_rossi", firstName: "Sofia", lastName: "Rossi", jobRole: JobRole.Frontend, availability: Availability.Busy, role: Role.User, bio: "CSS systems and design tokens.", location: "Milan, IT", statusMessage: "Heads down on the design system" },
-  { username: "noah_patel", firstName: "Noah", lastName: "Patel", jobRole: JobRole.Frontend, availability: Availability.Away, role: Role.User, bio: "Accessibility and performance nerd.", location: "Toronto, CA" },
-  { username: "hana_suzuki", firstName: "Hana", lastName: "Suzuki", jobRole: JobRole.Frontend, availability: Availability.Available, role: Role.User, bio: "Next.js, charts, and pixel-perfect UI.", location: "Tokyo, JP" },
-  { username: "elias_berg", firstName: "Elias", lastName: "Berg", jobRole: JobRole.Backend, availability: Availability.Available, role: Role.Admin, bio: "APIs, queues, and boring reliability.", location: "Stockholm, SE" },
-  { username: "amara_diallo", firstName: "Amara", lastName: "Diallo", jobRole: JobRole.Backend, availability: Availability.Available, role: Role.User, bio: "Node, Mongo, and auth that doesn't leak.", location: "Dakar, SN" },
-  { username: "jonas_keller", firstName: "Jonas", lastName: "Keller", jobRole: JobRole.Backend, availability: Availability.Busy, role: Role.User, bio: "Payments and webhooks.", location: "Berlin, DE", statusMessage: "In the Stripe rabbit hole" },
-  { username: "priya_nair", firstName: "Priya", lastName: "Nair", jobRole: JobRole.Backend, availability: Availability.Available, role: Role.User, bio: "GraphQL and data modeling.", location: "Bengaluru, IN" },
-  { username: "marco_silva", firstName: "Marco", lastName: "Silva", jobRole: JobRole.Backend, availability: Availability.InMeeting, role: Role.User, bio: "Search, indexes, slow-query hunter.", location: "São Paulo, BR" },
-  { username: "aisha_rahman", firstName: "Aisha", lastName: "Rahman", jobRole: JobRole.FullStack, availability: Availability.Available, role: Role.User, bio: "Full stack. Ships the whole ticket.", location: "Dubai, AE" },
-  { username: "owen_brooks", firstName: "Owen", lastName: "Brooks", jobRole: JobRole.FullStack, availability: Availability.Available, role: Role.User, bio: "TypeScript end to end.", location: "Austin, US" },
-  { username: "yara_haddad", firstName: "Yara", lastName: "Haddad", jobRole: JobRole.FullStack, availability: Availability.Busy, role: Role.User, bio: "Product-minded engineer.", location: "Amman, JO" },
-  { username: "kenji_mori", firstName: "Kenji", lastName: "Mori", jobRole: JobRole.FullStack, availability: Availability.Available, role: Role.User, bio: "Realtime features and sockets.", location: "Osaka, JP" },
-  { username: "elena_volkov", firstName: "Elena", lastName: "Volkov", jobRole: JobRole.Designer, availability: Availability.Available, role: Role.User, bio: "Product design and illustration.", location: "Kyiv, UA" },
-  { username: "diego_martinez", firstName: "Diego", lastName: "Martinez", jobRole: JobRole.Designer, availability: Availability.Away, role: Role.User, bio: "UX research and prototypes.", location: "Mexico City, MX" },
-  { username: "nina_kowalski", firstName: "Nina", lastName: "Kowalski", jobRole: JobRole.Designer, availability: Availability.Available, role: Role.User, bio: "Brand, motion, and Figma libraries.", location: "Warsaw, PL" },
-  { username: "samir_hassan", firstName: "Samir", lastName: "Hassan", jobRole: JobRole.QA, availability: Availability.Available, role: Role.User, bio: "Playwright, edge cases, flaky-test slayer.", location: "Cairo, EG" },
-  { username: "claire_dubois", firstName: "Claire", lastName: "Dubois", jobRole: JobRole.QA, availability: Availability.Busy, role: Role.User, bio: "QA strategy and regression suites.", location: "Lyon, FR" },
-  { username: "theo_nguyen", firstName: "Theo", lastName: "Nguyen", jobRole: JobRole.QA, availability: Availability.Available, role: Role.User, bio: "API tests and load tests.", location: "Ho Chi Minh City, VN" },
-  { username: "ravi_sharma", firstName: "Ravi", lastName: "Sharma", jobRole: JobRole.DevOps, availability: Availability.Available, role: Role.User, bio: "CI/CD, k8s, and sleepy pagers.", location: "Pune, IN" },
-  { username: "freya_andersen", firstName: "Freya", lastName: "Andersen", jobRole: JobRole.DevOps, availability: Availability.InMeeting, role: Role.User, bio: "Observability and infra as code.", location: "Copenhagen, DK" },
-  { username: "lucas_moreau", firstName: "Lucas", lastName: "Moreau", jobRole: JobRole.DevOps, availability: Availability.Available, role: Role.User, bio: "Docker, GitHub Actions, cost control.", location: "Montreal, CA" },
-  { username: "zara_ahmed", firstName: "Zara", lastName: "Ahmed", jobRole: JobRole.Frontend, availability: Availability.Available, role: Role.User, bio: "Design-to-code and component libraries.", location: "Karachi, PK" },
+  { username: "Maya Chen", firstName: "Maya", lastName: "Chen", jobRole: JobRole.Frontend, availability: Availability.Available, role: Role.Admin, bio: "Frontend lead who cares about empty states.", location: "San Francisco, US", statusMessage: "Shipping the new dashboard" },
+  { username: "Liam Okonkwo", firstName: "Liam", lastName: "Okonkwo", jobRole: JobRole.Frontend, availability: Availability.Available, role: Role.User, bio: "React + TypeScript. Animations on the side.", location: "Lagos, NG" },
+  { username: "Sofia Rossi", firstName: "Sofia", lastName: "Rossi", jobRole: JobRole.Frontend, availability: Availability.Busy, role: Role.User, bio: "CSS systems and design tokens.", location: "Milan, IT", statusMessage: "Heads down on the design system" },
+  { username: "Noah Patel", firstName: "Noah", lastName: "Patel", jobRole: JobRole.Frontend, availability: Availability.Away, role: Role.User, bio: "Accessibility and performance nerd.", location: "Toronto, CA" },
+  { username: "Hana Suzuki", firstName: "Hana", lastName: "Suzuki", jobRole: JobRole.Frontend, availability: Availability.Available, role: Role.User, bio: "Next.js, charts, and pixel-perfect UI.", location: "Tokyo, JP" },
+  { username: "Elias Berg", firstName: "Elias", lastName: "Berg", jobRole: JobRole.Backend, availability: Availability.Available, role: Role.Admin, bio: "APIs, queues, and boring reliability.", location: "Stockholm, SE" },
+  { username: "Amara Diallo", firstName: "Amara", lastName: "Diallo", jobRole: JobRole.Backend, availability: Availability.Available, role: Role.User, bio: "Node, Mongo, and auth that doesn't leak.", location: "Dakar, SN" },
+  { username: "Jonas Keller", firstName: "Jonas", lastName: "Keller", jobRole: JobRole.Backend, availability: Availability.Busy, role: Role.User, bio: "Payments and webhooks.", location: "Berlin, DE", statusMessage: "In the Stripe rabbit hole" },
+  { username: "Priya Nair", firstName: "Priya", lastName: "Nair", jobRole: JobRole.Backend, availability: Availability.Available, role: Role.User, bio: "GraphQL and data modeling.", location: "Bengaluru, IN" },
+  { username: "Marco Silva", firstName: "Marco", lastName: "Silva", jobRole: JobRole.Backend, availability: Availability.InMeeting, role: Role.User, bio: "Search, indexes, slow-query hunter.", location: "São Paulo, BR" },
+  { username: "Aisha Rahman", firstName: "Aisha", lastName: "Rahman", jobRole: JobRole.FullStack, availability: Availability.Available, role: Role.User, bio: "Full stack. Ships the whole ticket.", location: "Dubai, AE" },
+  { username: "Owen Brooks", firstName: "Owen", lastName: "Brooks", jobRole: JobRole.FullStack, availability: Availability.Available, role: Role.User, bio: "TypeScript end to end.", location: "Austin, US" },
+  { username: "Yara Haddad", firstName: "Yara", lastName: "Haddad", jobRole: JobRole.FullStack, availability: Availability.Busy, role: Role.User, bio: "Product-minded engineer.", location: "Amman, JO" },
+  { username: "Kenji Mori", firstName: "Kenji", lastName: "Mori", jobRole: JobRole.FullStack, availability: Availability.Available, role: Role.User, bio: "Realtime features and sockets.", location: "Osaka, JP" },
+  { username: "Elena Volkov", firstName: "Elena", lastName: "Volkov", jobRole: JobRole.Designer, availability: Availability.Available, role: Role.User, bio: "Product design and illustration.", location: "Kyiv, UA" },
+  { username: "Diego Martinez", firstName: "Diego", lastName: "Martinez", jobRole: JobRole.Designer, availability: Availability.Away, role: Role.User, bio: "UX research and prototypes.", location: "Mexico City, MX" },
+  { username: "Nina Kowalski", firstName: "Nina", lastName: "Kowalski", jobRole: JobRole.Designer, availability: Availability.Available, role: Role.User, bio: "Brand, motion, and Figma libraries.", location: "Warsaw, PL" },
+  { username: "Samir Hassan", firstName: "Samir", lastName: "Hassan", jobRole: JobRole.QA, availability: Availability.Available, role: Role.User, bio: "Playwright, edge cases, flaky-test slayer.", location: "Cairo, EG" },
+  { username: "Claire Dubois", firstName: "Claire", lastName: "Dubois", jobRole: JobRole.QA, availability: Availability.Busy, role: Role.User, bio: "QA strategy and regression suites.", location: "Lyon, FR" },
+  { username: "Theo Nguyen", firstName: "Theo", lastName: "Nguyen", jobRole: JobRole.QA, availability: Availability.Available, role: Role.User, bio: "API tests and load tests.", location: "Ho Chi Minh City, VN" },
+  { username: "Ravi Sharma", firstName: "Ravi", lastName: "Sharma", jobRole: JobRole.DevOps, availability: Availability.Available, role: Role.User, bio: "CI/CD, k8s, and sleepy pagers.", location: "Pune, IN" },
+  { username: "Freya Andersen", firstName: "Freya", lastName: "Andersen", jobRole: JobRole.DevOps, availability: Availability.InMeeting, role: Role.User, bio: "Observability and infra as code.", location: "Copenhagen, DK" },
+  { username: "Lucas Moreau", firstName: "Lucas", lastName: "Moreau", jobRole: JobRole.DevOps, availability: Availability.Available, role: Role.User, bio: "Docker, GitHub Actions, cost control.", location: "Montreal, CA" },
+  { username: "Zara Ahmed", firstName: "Zara", lastName: "Ahmed", jobRole: JobRole.Frontend, availability: Availability.Available, role: Role.User, bio: "Design-to-code and component libraries.", location: "Karachi, PK" },
 ];
 
 type TeamDef = {
@@ -169,7 +169,15 @@ const randomInt = (min: number, max: number) =>
 const daysFromNow = (days: number) =>
   new Date(Date.now() + days * 24 * 60 * 60 * 1000);
 
-const seedEmail = (username: string) => `${username}@${SEED_DOMAIN}`;
+const slug = (value: string) =>
+  value
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+
+const seedEmail = (username: string) => `${slug(username)}@${SEED_DOMAIN}`;
 
 const friendPair = (a: mongoose.Types.ObjectId, b: mongoose.Types.ObjectId) =>
   a.toString() < b.toString()
@@ -234,7 +242,7 @@ async function downloadAvatars(portraits: string[]): Promise<Map<string, string>
     let savedUrl = dicebearAvatar(person.username);
     for (const src of sources) {
       const ext = src.includes("dicebear") ? ".png" : ".jpg";
-      const file = `seed-${person.username}${ext}`;
+      const file = `seed-${slug(person.username)}${ext}`;
       const fileDest = path.join(PROFILES_DIR, file);
       if (await downloadFile(src, fileDest)) {
         savedUrl = `/profiles/${file}`;
@@ -349,7 +357,7 @@ async function seed() {
         avatar,
         bio: person.bio,
         userLocation: person.location,
-        website: `https://github.com/${person.username}`,
+        website: `https://github.com/${slug(person.username)}`,
         availability: person.availability,
         jobRole: person.jobRole,
         statusMessage: person.statusMessage,

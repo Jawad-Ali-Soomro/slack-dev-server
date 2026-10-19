@@ -12,11 +12,25 @@ import {
 } from '../models/index';
 
 const MONGODB_URI = process.env.MONGODB_URI as string;
-const USER_IDS = [
-  '6a339902a9210ba0dae807f4',
-  '6a33c84fb3228ad4f62b3d6d',
-  '6a3619e1b36bfe1d52a68fdb',
-].map((id) => new mongoose.Types.ObjectId(id));
+const SEED_DOMAIN = 'slackdev.seed';
+const SEED_PASSWORD = 'Abcd1234!';
+
+const SEED_PEOPLE = [
+  { username: 'Maya Chen', jobRole: 'frontend', role: 'admin' },
+  { username: 'Liam Okonkwo', jobRole: 'frontend', role: 'user' },
+  { username: 'Elias Berg', jobRole: 'backend', role: 'admin' },
+  { username: 'Amara Diallo', jobRole: 'backend', role: 'user' },
+  { username: 'Aisha Rahman', jobRole: 'fullstack', role: 'user' },
+  { username: 'Elena Volkov', jobRole: 'designer', role: 'user' },
+  { username: 'Samir Hassan', jobRole: 'qa', role: 'user' },
+  { username: 'Ravi Sharma', jobRole: 'devops', role: 'user' },
+];
+
+const slug = (value: string) =>
+  value
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
 
 // ----------------------------------------------------------------------------
 // Helpers
@@ -96,98 +110,6 @@ const GOOGLE_NOTE_LINKS = [
   'https://drive.google.com/file/d/1cD4eF6gH8iJ0kL2mN4oP6qR8sT0uV2wX/view?usp=sharing',
   'https://docs.google.com/presentation/d/1mN3oP5qR7sT9uV1wX3yZ5aB7cD9eF1gH/edit?usp=sharing',
   'https://drive.google.com/file/d/1dE5fG7hI9jK1lM3nO5pQ7rS9tU1vW3xY/view?usp=sharing',
-];
-
-// ----------------------------------------------------------------------------
-// Seed data definitions
-// ----------------------------------------------------------------------------
-const challenges = [
-  {
-    title: 'FizzBuzz',
-    description: 'Classic FizzBuzz problem to practice conditionals and loops.',
-    difficulty: 'beginner',
-    category: 'JavaScript',
-    instructions:
-      'Print numbers 1 to n. For multiples of 3 print "Fizz", for multiples of 5 print "Buzz", for both print "FizzBuzz".',
-    starterCode: 'function fizzBuzz(n) {\n\n}',
-    solution:
-      'function fizzBuzz(n) {\n  const out = [];\n  for (let i = 1; i <= n; i++) {\n    if (i % 15 === 0) out.push("FizzBuzz");\n    else if (i % 3 === 0) out.push("Fizz");\n    else if (i % 5 === 0) out.push("Buzz");\n    else out.push(String(i));\n  }\n  return out;\n}',
-    answer: '1,2,Fizz,4,Buzz',
-    testCases: [
-      { input: '5', expectedOutput: '1,2,Fizz,4,Buzz', description: 'First five' },
-    ],
-    points: 15,
-    tags: ['javascript', 'loops', 'conditions'],
-  },
-  {
-    title: 'Capitalize Words',
-    description: 'Capitalize the first letter of each word in a sentence.',
-    difficulty: 'beginner',
-    category: 'JavaScript',
-    instructions:
-      'Create a function `capitalize` that capitalizes the first letter of every word.',
-    starterCode: 'function capitalize(str) {\n\n}',
-    solution:
-      "function capitalize(str) {\n  return str.replace(/\\b\\w/g, (c) => c.toUpperCase());\n}",
-    answer: 'Hello World',
-    testCases: [
-      { input: '"hello world"', expectedOutput: '"Hello World"', description: 'Two words' },
-    ],
-    points: 10,
-    tags: ['javascript', 'strings'],
-  },
-  {
-    title: 'Fibonacci Sequence',
-    description: 'Return the nth Fibonacci number.',
-    difficulty: 'intermediate',
-    category: 'Algorithms',
-    instructions: 'Create a function `fib(n)` returning the nth Fibonacci number (0-indexed).',
-    starterCode: 'function fib(n) {\n\n}',
-    solution:
-      'function fib(n) {\n  let a = 0, b = 1;\n  for (let i = 0; i < n; i++) {\n    [a, b] = [b, a + b];\n  }\n  return a;\n}',
-    answer: '55',
-    testCases: [{ input: '10', expectedOutput: '55', description: 'fib(10)' }],
-    points: 25,
-    tags: ['algorithms', 'recursion', 'math'],
-  },
-  {
-    title: 'Group Anagrams',
-    description: 'Group an array of strings into anagrams.',
-    difficulty: 'advanced',
-    category: 'Data Structures',
-    instructions:
-      'Given an array of strings, group the anagrams together. Return an array of groups.',
-    starterCode: 'function groupAnagrams(words) {\n\n}',
-    solution:
-      "function groupAnagrams(words) {\n  const map = new Map();\n  for (const w of words) {\n    const key = w.split('').sort().join('');\n    map.set(key, [...(map.get(key) || []), w]);\n  }\n  return [...map.values()];\n}",
-    answer: 'eat,tea,ate|tan,nat|bat',
-    testCases: [
-      {
-        input: '["eat","tea","tan","ate","nat","bat"]',
-        expectedOutput: '[["eat","tea","ate"],["tan","nat"],["bat"]]',
-        description: 'Standard anagrams',
-      },
-    ],
-    points: 40,
-    tags: ['data-structures', 'hash-map', 'strings'],
-  },
-  {
-    title: 'Debounce a Function',
-    description: 'Implement a debounce higher-order function.',
-    difficulty: 'advanced',
-    category: 'JavaScript',
-    instructions:
-      'Implement `debounce(fn, delay)` that returns a debounced version of `fn`.',
-    starterCode: 'function debounce(fn, delay) {\n\n}',
-    solution:
-      'function debounce(fn, delay) {\n  let timer;\n  return function (...args) {\n    clearTimeout(timer);\n    timer = setTimeout(() => fn.apply(this, args), delay);\n  };\n}',
-    answer: 'function',
-    testCases: [
-      { input: 'typeof debounce(()=>{}, 100)', expectedOutput: 'function', description: 'Returns a function' },
-    ],
-    points: 45,
-    tags: ['javascript', 'closures', 'timing'],
-  },
 ];
 
 const publicProjectsData = [
@@ -349,29 +271,29 @@ async function seed() {
     await mongoose.connect(MONGODB_URI);
     console.log('Connected to MongoDB:', mongoose.connection.name);
 
-    // Verify provided users exist (non-fatal)
-    const foundUsers = await User.find({ _id: { $in: USER_IDS } }).select('_id username');
-    console.log(`Found ${foundUsers.length}/${USER_IDS.length} of the provided users.`);
-    if (foundUsers.length === 0) {
-      console.warn(
-        '⚠ None of the provided user IDs exist in this database. Seeding will still proceed using those IDs as references.'
-      );
+    let users = await User.find().select('_id username email');
+    if (users.length === 0) {
+      console.log('No users in the database. Creating seed users…');
+      for (const person of SEED_PEOPLE) {
+        const user = await User.create({
+          email: `${slug(person.username)}@${SEED_DOMAIN}`,
+          username: person.username,
+          password: SEED_PASSWORD,
+          role: person.role,
+          jobRole: person.jobRole,
+          emailVerified: true,
+          bio: `${person.username} on the workspace.`,
+        });
+        console.log(`✓ User: ${person.username}`);
+        users.push(user);
+      }
+    } else {
+      console.log(`Using ${users.length} existing users.`);
     }
+
+    const USER_IDS = users.map((user) => user._id);
 
     console.log(`Image pool: ${IMAGE_POOL.length} images | Zip pool: ${ZIP_POOL.length} files`);
-
-    // --- Challenges ---------------------------------------------------------
-    let challengeCount = 0;
-    for (const data of challenges) {
-      const exists = await Challenge.findOne({ title: data.title });
-      if (exists) {
-        console.log(`⊘ Challenge exists: ${data.title}`);
-        continue;
-      }
-      await Challenge.create({ ...data, createdBy: sample(USER_IDS) });
-      challengeCount++;
-      console.log(`✓ Challenge: ${data.title}`);
-    }
 
     // --- Public Projects ----------------------------------------------------
     let publicProjectCount = 0;
@@ -527,7 +449,7 @@ async function seed() {
 
     console.log('\n========================================');
     console.log('✅ Seeding complete');
-    console.log(`   Challenges:      ${challengeCount}`);
+    console.log(`   Users:           ${users.length}`);
     console.log(`   Public Projects: ${publicProjectCount}`);
     console.log(`   Notes:           ${noteCount}`);
     console.log(`   Projects:        ${createdProjects.length}`);

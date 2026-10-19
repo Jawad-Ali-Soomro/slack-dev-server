@@ -1,30 +1,39 @@
 import cron from "node-cron";
-import { sendOverdueReminders } from "./automationRunner";
+import {
+  sendDailyStandupDigests,
+  sendOverdueReminders,
+  syncOpenPullRequests,
+} from "./automationRunner";
 import { logger } from "../helpers/index";
 
-const OVERDUE_CRON_NAME = "overdue-reminders";
+const scheduleOnce = (
+  name: string,
+  expression: string,
+  job: () => Promise<unknown>,
+) => {
+  const already =
+    typeof cron.getTasks === "function" &&
+    [...cron.getTasks().values()].some((task) => task.name === name);
+  if (already) return;
 
-const alreadyScheduled =
-  typeof cron.getTasks === "function" &&
-  [...cron.getTasks().values()].some(
-    (task) => task.name === OVERDUE_CRON_NAME,
-  );
-
-if (!alreadyScheduled) {
   cron.schedule(
-    "*/30 * * * *",
+    expression,
     async () => {
       try {
-        logger.info("Running overdue reminder automation");
-        await sendOverdueReminders();
+        logger.info(`Running ${name}`);
+        await job();
       } catch (err: any) {
-        logger.error(`Overdue reminder cron failed: ${err?.message || err}`);
+        logger.error(`${name} failed: ${err?.message || err}`);
       }
     },
     {
       timezone: "Asia/Karachi",
-      name: OVERDUE_CRON_NAME,
+      name,
       noOverlap: true,
     },
   );
-}
+};
+
+scheduleOnce("overdue-reminders", "*/30 * * * *", sendOverdueReminders);
+scheduleOnce("pr-task-sync", "*/5 * * * *", syncOpenPullRequests);
+scheduleOnce("daily-standup-digest", "0 9 * * *", sendDailyStandupDigests);
