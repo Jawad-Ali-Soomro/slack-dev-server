@@ -1,7 +1,8 @@
-import { catchAsync, invalidateUserCache } from "../middlewares";
-import { User, Notification } from "../models";
-import { FollowRequest, UserFollowStats, FollowersResponse, FollowingResponse } from "../interfaces";
+import { catchAsync, invalidateUserCache } from "../middlewares/index";
+import { User, Notification } from "../models/index";
+import { FollowRequest, UserFollowStats, FollowersResponse, FollowingResponse } from "../interfaces/index";
 import redisService from "../services/redis.service";
+import { notifyUser } from "../utils/notify";
 
 export const followUser = catchAsync(async (req: any, res: any) => {
   const { userId }: FollowRequest = req.body;
@@ -33,7 +34,7 @@ export const followUser = catchAsync(async (req: any, res: any) => {
     $addToSet: { followers: currentUserId }
   });
 
-  await Notification.create({
+  await notifyUser({
     recipient: userId,
     sender: currentUserId,
     type: "user_followed",
@@ -94,7 +95,7 @@ export const unfollowUser = catchAsync(async (req: any, res: any) => {
     $pull: { followers: currentUserId }
   });
 
-  await Notification.create({
+  await notifyUser({
     recipient: userId,
     sender: currentUserId,
     type: "user_unfollowed",

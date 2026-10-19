@@ -1,10 +1,12 @@
-import { catchAsync, invalidateUserCache } from "../middlewares";
-import { User } from "../models";
-import { UpdateProfileRequest, ChangePasswordRequest, UserResponse, IUser, Role } from "../interfaces";
+import { catchAsync, invalidateUserCache } from "../middlewares/index";
+import { User } from "../models/index";
+import { UpdateProfileRequest, ChangePasswordRequest, UserResponse, IUser, Role, Availability, JobRole } from "../interfaces/index";
 import redisService from "../services/redis.service";
 import path from "path";
 import fs from "fs";
 import { Team } from "../models/team.model";
+import { Friendship } from "../models/friend.model";
+import { publishWorkspaceStatus } from "../services/workspaceStatusQueue";
 
 const formatUserResponse = (user: IUser): UserResponse => ({
   id: user._id,
@@ -23,24 +25,67 @@ const formatUserResponse = (user: IUser): UserResponse => ({
   followersCount: user.followers?.length || 0,
   followingCount: user.following?.length || 0,
   awards: (user as any).awards || [],
-  totalChallengePoints: (user as any).totalChallengePoints || 0
+  totalChallengePoints: (user as any).totalChallengePoints || 0,
+  availability: user.availability || Availability.Available,
+  jobRole: user.jobRole || JobRole.Unassigned,
+  statusMessage: user.statusMessage
 });
 
 const invalidateUserListingCaches = async () => {
   await Promise.all([
     redisService.invalidatePattern('admin:users:*'),
     redisService.invalidatePattern('cache:*users*'),
+    redisService.invalidatePattern('users:*'),
     redisService.invalidatePattern('search:users:*')
   ]);
 };
 
-const getAdminScopedUserIds = async (adminId: string) => {
-  const teams = await Team.find({ createdBy: adminId }).select('members createdBy');
-  const idSet = new Set<string>([adminId]);
+/**
+ * When a user's presence-related fields (availability / jobRole) change,
+ * their friends' cached friend lists become stale. Invalidate the friend
+ * cache for the user and every one of their friends so others see the update.
+ */
+const invalidateFriendsOfUser = async (userId: string) => {
+  try {
+    const friendships = await Friendship.find({
+      $or: [{ user1: userId }, { user2: userId }]
+    }).select('user1 user2');
 
-  teams.forEach(team => {
-    idSet.add(team.createdBy.toString());
-    team.members.forEach((member: any) => idSet.add(member.user.toString()));
+    const ids = new Set<string>([userId]);
+    friendships.forEach((f: any) => {
+      ids.add(f.user1.toString());
+      ids.add(f.user2.toString());
+    });
+
+    await Promise.all(
+      Array.from(ids).map((id) => redisService.invalidateUserFriends(id))
+    );
+  } catch (err) {
+    console.error('Failed to invalidate friend caches:', err);
+  }
+};
+
+const memberUserId = (value: any): string | null => {
+  if (!value) return null;
+  if (typeof value === "string") return value;
+  const id = value._id?.toString?.() || value.id || value.toString?.();
+  if (!id || id === "[object Object]") return null;
+  return String(id);
+};
+
+const getAdminScopedUserIds = async (adminId: string) => {
+  const teams = await Team.find({
+    $or: [{ createdBy: adminId }, { "members.user": adminId }],
+  }).select("members createdBy");
+
+  const idSet = new Set<string>([String(adminId)]);
+  teams.forEach((team) => {
+    const creatorId = memberUserId(team.createdBy);
+    if (creatorId) idSet.add(creatorId);
+    (team.members || []).forEach((member: any) => {
+      const id = memberUserId(member.user);
+      if (id) idSet.add(id);
+    });
   });
 
   return Array.from(idSet);
@@ -118,6 +163,16 @@ export const getUserDetails = catchAsync(async (req: any, res: any) => {
   .select('name description members createdAt')
   .sort({ createdAt: -1 });
 
+  const { Friendship } = await import('../models/friend.model');
+  const friendships = await Friendship.find({
+    $or: [{ user1: userId }, { user2: userId }],
+  })
+    .populate('user1 user2', 'username avatar jobRole')
+    .sort({ createdAt: -1 });
+
+  const profileId = String(userId);
+  const sameUser = (value: any) => memberUserId(value) === profileId;
+
   const formattedProjects = projects.map((project: any) => ({
     id: project._id,
     name: project.name,
@@ -126,7 +181,7 @@ export const getUserDetails = catchAsync(async (req: any, res: any) => {
     status: project.status,
     priority: project.priority,
     progress: project.progress,
-    role: project.createdBy.toString() === userId ? 'creator' : 'member',
+    role: sameUser(project.createdBy) ? 'creator' : 'member',
     createdAt: project.createdAt
   }));
 
@@ -135,8 +190,8 @@ export const getUserDetails = catchAsync(async (req: any, res: any) => {
     name: team.name,
     description: team.description,
     members: team.members.length,
-    role: team.members.find((member: any) => 
-      member.user.toString() === userId
+    role: team.members.find((member: any) =>
+      sameUser(member.user)
     )?.role || 'member',
     createdAt: team.createdAt
   }));
@@ -146,7 +201,7 @@ export const getUserDetails = catchAsync(async (req: any, res: any) => {
     title: task.title,
     status: task.status,
     priority: task.priority,
-    role: task.assignTo.toString() === userId ? 'assignee' : 'assigner',
+    role: sameUser(task.assignTo) ? 'assignee' : 'assigner',
     projectName: task.projectId?.name,
     createdAt: task.createdAt
   }));
@@ -157,7 +212,7 @@ export const getUserDetails = catchAsync(async (req: any, res: any) => {
     status: meeting.status,
     type: meeting.type,
     startDate: meeting.startDate,
-    role: meeting.assignedTo.toString() === userId ? 'attendee' : 'organizer',
+    role: sameUser(meeting.assignedTo) ? 'attendee' : 'organizer',
     projectName: meeting.projectId?.name,
     createdAt: meeting.createdAt
   }));
@@ -171,10 +226,10 @@ export const getUserDetails = catchAsync(async (req: any, res: any) => {
   allChallenges.forEach((ch: any) => {
     const userSolution = ch.userSolutions?.find(
       (sol: any) => {
-        const solUserId = typeof sol.userId === 'object' && sol.userId._id 
-          ? sol.userId._id.toString() 
-          : sol.userId.toString();
-        return solUserId === userId.toString();
+        const solUserId = typeof sol.userId === 'object' && sol.userId?._id
+          ? sol.userId._id.toString()
+          : sol.userId?.toString?.();
+        return solUserId === profileId;
       }
     );
     if (userSolution && userSolution.isCorrect) {
@@ -189,12 +244,28 @@ export const getUserDetails = catchAsync(async (req: any, res: any) => {
   }
   
   
+  const profileUserId = userId.toString();
+  const friends = friendships
+    .map((friendship: any) => {
+      const firstId = friendship.user1?._id?.toString();
+      const friend = firstId === profileUserId ? friendship.user2 : friendship.user1;
+      if (!friend?._id || friend._id.toString() === profileUserId) return null;
+      return {
+        id: friend._id,
+        username: friend.username,
+        avatar: friend.avatar || null,
+        jobRole: friend.jobRole && friend.jobRole !== 'unassigned' ? friend.jobRole : null,
+      };
+    })
+    .filter(Boolean);
+
   const userResponse = {
     ...formatUserResponse(user as any),
     projects: formattedProjects,
     teams: formattedTeams,
     tasks: formattedTasks,
     meetings: formattedMeetings,
+    friends,
     awards: userAwards,
     totalChallengePoints: userPoints
   };
@@ -213,7 +284,7 @@ export const getUserDetails = catchAsync(async (req: any, res: any) => {
 });
 
 export const updateProfile = catchAsync(async (req: any, res: any) => {
-  const { username, bio, userLocation, website, socialLinks, dateOfBirth, phone, isPrivate }: UpdateProfileRequest = req.body;
+  const { username, bio, userLocation, website, socialLinks, dateOfBirth, phone, isPrivate, availability, jobRole, statusMessage }: UpdateProfileRequest = req.body;
   const userId = req.user._id;
 
   const updateData: any = {};
@@ -225,13 +296,20 @@ export const updateProfile = catchAsync(async (req: any, res: any) => {
   if (dateOfBirth !== undefined) updateData.dateOfBirth = dateOfBirth;
   if (phone !== undefined) updateData.phone = phone;
   if (isPrivate !== undefined) updateData.isPrivate = isPrivate;
-
-  if (username) {
-    const existingUser = await User.findOne({ username, _id: { $ne: userId } });
-    if (existingUser) {
-      return res.status(400).json({ message: "username already taken" });
+  if (statusMessage !== undefined) updateData.statusMessage = statusMessage;
+  if (availability !== undefined) {
+    if (!Object.values(Availability).includes(availability as Availability)) {
+      return res.status(400).json({ message: "Invalid availability status" });
     }
+    updateData.availability = availability;
   }
+  if (jobRole !== undefined) {
+    if (!Object.values(JobRole).includes(jobRole as JobRole)) {
+      return res.status(400).json({ message: "Invalid job role" });
+    }
+    updateData.jobRole = jobRole;
+  }
+
 
   const user = await User.findByIdAndUpdate(userId, updateData, { new: true });
   
@@ -240,9 +318,88 @@ export const updateProfile = catchAsync(async (req: any, res: any) => {
   }
 
   await invalidateUserCache(userId);
+  await invalidateUserListingCaches();
+  await invalidateFriendsOfUser(userId.toString());
+
+  if (
+    updateData.availability !== undefined ||
+    updateData.jobRole !== undefined ||
+    updateData.statusMessage !== undefined
+  ) {
+    await publishWorkspaceStatus({
+      id: user._id.toString(),
+      username: user.username,
+      avatar: user.avatar,
+      availability: user.availability,
+      jobRole: user.jobRole,
+      statusMessage: user.statusMessage,
+    });
+  }
 
   res.status(200).json({
     message: "profile updated successfully",
+    user: formatUserResponse(user)
+  });
+});
+
+/**
+ * Update the current user's availability status and/or job role.
+ * Used for the quick status switcher (available / busy / away / meeting).
+ * When a user is "busy" they cannot be assigned new tasks.
+ */
+export const updateStatus = catchAsync(async (req: any, res: any) => {
+  const userId = req.user._id;
+  const { availability, jobRole, statusMessage } = req.body;
+
+  const updateData: any = {};
+
+  if (availability !== undefined) {
+    if (!Object.values(Availability).includes(availability)) {
+      return res.status(400).json({
+        message: `Invalid availability. Must be one of: ${Object.values(Availability).join(", ")}`
+      });
+    }
+    updateData.availability = availability;
+  }
+
+  if (jobRole !== undefined) {
+    if (!Object.values(JobRole).includes(jobRole)) {
+      return res.status(400).json({
+        message: `Invalid job role. Must be one of: ${Object.values(JobRole).join(", ")}`
+      });
+    }
+    updateData.jobRole = jobRole;
+  }
+
+  if (statusMessage !== undefined) {
+    updateData.statusMessage = statusMessage;
+  }
+
+  if (Object.keys(updateData).length === 0) {
+    return res.status(400).json({ message: "No status fields provided to update" });
+  }
+
+  const user = await User.findByIdAndUpdate(userId, updateData, { new: true });
+
+  if (!user) {
+    return res.status(404).json({ message: "user not found" });
+  }
+
+  await invalidateUserCache(userId);
+  await invalidateUserListingCaches();
+  await invalidateFriendsOfUser(userId.toString());
+
+  await publishWorkspaceStatus({
+    id: user._id.toString(),
+    username: user.username,
+    avatar: user.avatar,
+    availability: user.availability,
+    jobRole: user.jobRole,
+    statusMessage: user.statusMessage,
+  });
+
+  res.status(200).json({
+    message: "status updated successfully",
     user: formatUserResponse(user)
   });
 });
@@ -358,7 +515,7 @@ export const getUsers = catchAsync(async (req: any, res: any) => {
   }
 
   const users = await User.find(filter)
-    .select('username email avatar role bio userLocation')
+    .select('username email avatar role bio userLocation availability jobRole statusMessage')
     .sort({ createdAt: -1 })
     .skip(skip)
     .limit(parseInt(limit as string));
@@ -372,7 +529,10 @@ export const getUsers = catchAsync(async (req: any, res: any) => {
     avatar: user.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.username)}&background=random&color=fff&size=128`,
     role: user.role,
     bio: user.bio,
-    userLocation: user.userLocation
+    userLocation: user.userLocation,
+    availability: user.availability || Availability.Available,
+    jobRole: user.jobRole || JobRole.Unassigned,
+    statusMessage: user.statusMessage
   }));
 
   const response = {
@@ -399,7 +559,7 @@ export const getUserById = catchAsync(async (req: any, res: any) => {
   }
 
   const user = await User.findById(userId)
-    .select('username email avatar role bio userLocation website socialLinks dateOfBirth phone isPrivate emailVerified awards totalChallengePoints');
+    .select('username email avatar role bio userLocation website socialLinks dateOfBirth phone isPrivate emailVerified awards totalChallengePoints availability jobRole statusMessage');
   
   if (!user) {
     return res.status(404).json({ message: "user not found" });
@@ -434,7 +594,7 @@ export const searchUsers = catchAsync(async (req: any, res: any) => {
       { email: { $regex: q, $options: 'i' } }
     ]
   })
-    .select('username email avatar role bio userLocation')
+    .select('username email avatar role bio userLocation availability jobRole statusMessage')
     .limit(10);
 
   const userResponses = users.map(user => ({
@@ -444,7 +604,10 @@ export const searchUsers = catchAsync(async (req: any, res: any) => {
     avatar: user.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(user.username)}&background=random&color=fff&size=128`,
     role: user.role,
     bio: user.bio,
-    userLocation: user.userLocation
+    userLocation: user.userLocation,
+    availability: user.availability || Availability.Available,
+    jobRole: user.jobRole || JobRole.Unassigned,
+    statusMessage: user.statusMessage
   }));
 
   const response = {
@@ -582,6 +745,38 @@ export const updateUserVerification = catchAsync(async (req: any, res: any) => {
   });
 });
 
+const escapeRegex = (value: string) =>
+  String(value).replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+const applyUserListFilters = (filter: any, query: any) => {
+  const search = typeof query.search === "string" ? query.search.trim() : "";
+  const role = typeof query.role === "string" ? query.role.trim() : "";
+  const namePrefix = String(
+    query.usernameStartsWith || query.nameStartsWith || "",
+  ).trim();
+  const emailSuffix = String(query.emailEndsWith || "").trim();
+  const availability = String(query.availability || "").trim().toLowerCase();
+
+  if (search) {
+    filter.$or = [
+      { username: { $regex: escapeRegex(search), $options: "i" } },
+      { email: { $regex: escapeRegex(search), $options: "i" } },
+    ];
+  }
+  if (role) {
+    filter.role = role;
+  }
+  if (namePrefix) {
+    filter.username = { $regex: `^${escapeRegex(namePrefix)}`, $options: "i" };
+  }
+  if (emailSuffix) {
+    filter.email = { $regex: `${escapeRegex(emailSuffix)}$`, $options: "i" };
+  }
+  if (availability && Object.values(Availability).includes(availability as Availability)) {
+    filter.availability = availability;
+  }
+};
+
 /**
  * Superadmin: Get all users with role filtering
  * Superadmin can see all users
@@ -589,43 +784,26 @@ export const updateUserVerification = catchAsync(async (req: any, res: any) => {
  */
 export const getAllUsers = catchAsync(async (req: any, res: any) => {
   const currentUser = req.user;
-  const { page = 1, limit = 20, search, role } = req.query;
+  const {
+    page = 1,
+    limit = 20,
+    search,
+    role,
+    usernameStartsWith,
+    nameStartsWith,
+    emailEndsWith,
+    availability,
+  } = req.query;
   const skip = (parseInt(page as string) - 1) * parseInt(limit as string);
 
   let filter: any = {};
 
   if (currentUser.role === Role.Superadmin) {
-
-    if (search) {
-      filter.$or = [
-        { username: { $regex: search, $options: 'i' } },
-        { email: { $regex: search, $options: 'i' } }
-      ];
-    }
-    if (role) {
-      filter.role = role;
-    }
+    applyUserListFilters(filter, req.query);
   } else if (currentUser.role === Role.Admin) {
-
-    const teams = await Team.find({ createdBy: currentUser._id });
-    const teamMemberIds = teams.flatMap(team => 
-      team.members.map((member: any) => member.user.toString())
-    );
-
-    teamMemberIds.push(currentUser._id.toString());
-    
+    const teamMemberIds = await getAdminScopedUserIds(currentUser._id.toString());
     filter._id = { $in: teamMemberIds };
-    
-    if (search) {
-      filter.$and = [
-        {
-          $or: [
-            { username: { $regex: search, $options: 'i' } },
-            { email: { $regex: search, $options: 'i' } }
-          ]
-        }
-      ];
-    }
+    applyUserListFilters(filter, req.query);
   } else {
     return res.status(403).json({
       success: false,
@@ -633,7 +811,18 @@ export const getAllUsers = catchAsync(async (req: any, res: any) => {
     });
   }
 
-  const cacheKey = `admin:users:${JSON.stringify({ page, limit, search, role, userRole: currentUser.role })}`;
+  const cacheKey = `admin:users:${JSON.stringify({
+    page,
+    limit,
+    search,
+    role,
+    usernameStartsWith,
+    nameStartsWith,
+    emailEndsWith,
+    availability,
+    userRole: currentUser.role,
+    adminId: currentUser._id.toString(),
+  })}`;
   const cached = await redisService.get(cacheKey);
   
   if (cached) {
@@ -641,7 +830,7 @@ export const getAllUsers = catchAsync(async (req: any, res: any) => {
   }
 
   const users = await User.find(filter)
-    .select('username email avatar role bio userLocation emailVerified createdAt')
+    .select('username email avatar role bio userLocation emailVerified createdAt availability jobRole statusMessage')
     .sort({ createdAt: -1 })
     .skip(skip)
     .limit(parseInt(limit as string));
@@ -657,7 +846,10 @@ export const getAllUsers = catchAsync(async (req: any, res: any) => {
     bio: user.bio,
     userLocation: user.userLocation,
     emailVerified: user.emailVerified,
-    createdAt: user.createdAt
+    createdAt: user.createdAt,
+    availability: user.availability || Availability.Available,
+    jobRole: user.jobRole || JobRole.Unassigned,
+    statusMessage: user.statusMessage
   }));
 
   const response = {

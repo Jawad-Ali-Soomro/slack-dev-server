@@ -1,7 +1,7 @@
 import jwt, { SignOptions, Secret } from 'jsonwebtoken';
 import crypto from 'crypto';
-import { User } from '../models';
-import { logger } from '../helpers';
+import { User } from '../models/index';
+import { logger } from '../helpers/index';
 
 function getEncryptionKey(): Buffer {
   let key = process.env.ENCRYPTION_KEY;
@@ -71,7 +71,7 @@ export const generateToken = (
   expiresIn: string | number = '1d'
 ): string => {
   try {
-    const secret: Secret = process.env.JWT_SECRET || 'default_secret';
+    const secret: Secret = process.env.JWT_SECRET as string;
     
     const signOptions: SignOptions = { 
       expiresIn: expiresIn as any
@@ -87,9 +87,60 @@ export const generateToken = (
   }
 };
 
+const AUTH_COOKIE = "authToken";
+
+export function readAuthToken(req: any): string | undefined {
+  const header =
+    req.header?.("Authorization") ||
+    req.header?.("authorization") ||
+    req.headers?.authorization;
+  if (typeof header === "string" && header.startsWith("Bearer ")) {
+    const bearer = header.slice(7).trim();
+    if (bearer) return bearer;
+  }
+
+  const cookieHeader = req.headers?.cookie;
+  if (typeof cookieHeader !== "string") return undefined;
+
+  for (const part of cookieHeader.split(";")) {
+    const [rawKey, ...rest] = part.trim().split("=");
+    if (rawKey === AUTH_COOKIE) {
+      const value = decodeURIComponent(rest.join("="));
+      return value || undefined;
+    }
+  }
+  return undefined;
+}
+
+export function setAuthCookie(res: any, token: string) {
+  const secure = process.env.NODE_ENV === "production";
+  const parts = [
+    `${AUTH_COOKIE}=${encodeURIComponent(token)}`,
+    "HttpOnly",
+    "Path=/",
+    `Max-Age=${24 * 60 * 60}`,
+    "SameSite=Lax",
+  ];
+  if (secure) parts.push("Secure");
+  res.append("Set-Cookie", parts.join("; "));
+}
+
+export function clearAuthCookie(res: any) {
+  const secure = process.env.NODE_ENV === "production";
+  const parts = [
+    `${AUTH_COOKIE}=`,
+    "HttpOnly",
+    "Path=/",
+    "Max-Age=0",
+    "SameSite=Lax",
+  ];
+  if (secure) parts.push("Secure");
+  res.append("Set-Cookie", parts.join("; "));
+}
+
 export const authenticate = async (req: any, res: any, next: any) => {
   try {
-    const encryptedToken = req.header('Authorization')?.replace('Bearer ', '') || req.header('authorization')?.replace('Bearer ', '');
+    const encryptedToken = readAuthToken(req);
     
     if (!encryptedToken) {
       return res.status(401).json({ 
@@ -109,7 +160,7 @@ export const authenticate = async (req: any, res: any, next: any) => {
       });
     }
 
-    const decoded: any = jwt.verify(jwtToken, process.env.JWT_SECRET || 'default_secret');
+    const decoded: any = jwt.verify(jwtToken, process.env.JWT_SECRET as string);
     
     const user = await User.findById(decoded.id);
     

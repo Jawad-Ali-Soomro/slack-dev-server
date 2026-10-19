@@ -1,0 +1,490 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="x-apple-disable-message-reformatting" />
+  <meta name="color-scheme" content="light" />
+  <meta name="supported-color-schemes" content="light" />
+
+  <title>{{siteName}} · {{eyebrow}}</title>
+
+  <style>
+    body {
+      margin: 0 !important;
+      padding: 0 !important;
+      width: 100% !important;
+      background-color: #f4f6f8;
+      color: #1f2937;
+      font-family: Arial, Helvetica, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    table {
+      border-spacing: 0;
+      border-collapse: collapse;
+    }
+
+    img {
+      border: 0;
+      outline: none;
+      text-decoration: none;
+      -ms-interpolation-mode: bicubic;
+    }
+
+    a {
+      text-decoration: none;
+    }
+
+    .email-wrapper {
+      width: 100%;
+      background-color: #f4f6f8;
+    }
+
+    .email-container {
+      width: 600px;
+      max-width: 600px;
+      background-color: #ffffff;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 8px 30px rgba(15, 23, 42, 0.08);
+    }
+
+    .header {
+      padding: 42px 40px 24px;
+      text-align: center;
+    }
+
+    .content {
+      padding: 8px 48px 42px;
+      text-align: center;
+    }
+
+    .brand-name {
+      margin: 14px 0 0;
+      color: #111827;
+      font-size: 17px;
+      line-height: 24px;
+      font-weight: 700;
+    }
+
+    .eyebrow {
+      margin-top: 6px;
+      color: #9ca3af;
+      font-size: 11px;
+      line-height: 16px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .greeting {
+      margin: 0 0 12px;
+      color: #111827;
+      font-size: 14px;
+      line-height: 22px;
+      font-weight: 700;
+    }
+
+    .heading {
+      margin: 0 0 14px;
+      color: {{headingColor}};
+      font-size: 25px;
+      line-height: 34px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }
+
+    .message {
+      margin: 0 auto 18px;
+      max-width: 470px;
+      color: #4b5563;
+      font-size: 14px;
+      line-height: 23px;
+      font-weight: 400;
+    }
+
+    .body-line {
+      margin: 0 auto 12px;
+      max-width: 470px;
+      color: #4b5563;
+      font-size: 14px;
+      line-height: 23px;
+      font-weight: 400;
+    }
+
+    .otp-wrapper {
+      margin: 28px auto;
+      padding: 20px 12px;
+      max-width: 460px;
+      background-color: #fff7ed;
+      border: 1px solid #fed7aa;
+      border-radius: 14px;
+    }
+
+    .otp-table {
+      margin: 0 auto;
+    }
+
+    .otp-cell {
+      width: 46px;
+      height: 54px;
+      border: 1px solid #fb923c;
+      border-radius: 10px;
+      background-color: #ffffff;
+      color: #c2410c;
+      font-size: 21px;
+      line-height: 54px;
+      font-weight: 800;
+      text-align: center;
+      vertical-align: middle;
+    }
+
+    .button-wrapper {
+      margin: 30px auto 10px;
+      text-align: center;
+    }
+
+    .button {
+      display: inline-block;
+      padding: 13px 30px;
+      border-radius: 9px;
+      background-color: {{buttonColor}};
+      color: #ffffff !important;
+      font-size: 13px;
+      line-height: 20px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      text-align: center;
+    }
+
+    .support {
+      margin: 28px 0 0;
+      color: #9ca3af;
+      font-size: 11px;
+      line-height: 18px;
+    }
+
+    .support-label {
+      display: block;
+      margin-bottom: 4px;
+      color: #9ca3af;
+    }
+
+    .support a {
+      color: #ea580c;
+      font-weight: 600;
+    }
+
+    .footer {
+      margin: 24px 0 0;
+      padding-top: 20px;
+      border-top: 1px solid #eef0f3;
+      color: #9ca3af;
+      font-size: 11px;
+      line-height: 18px;
+    }
+
+    @media only screen and (max-width: 620px) {
+      .email-container {
+        width: 100% !important;
+        max-width: 100% !important;
+        border-radius: 12px !important;
+      }
+
+      .header {
+        padding: 32px 24px 20px !important;
+      }
+
+      .content {
+        padding: 8px 22px 32px !important;
+      }
+
+      .heading {
+        font-size: 22px !important;
+        line-height: 30px !important;
+      }
+
+      .otp-wrapper {
+        padding: 16px 4px !important;
+      }
+
+      .otp-table {
+        width: 100% !important;
+      }
+
+      .otp-cell {
+        width: 40px !important;
+        height: 48px !important;
+        font-size: 18px !important;
+        line-height: 48px !important;
+      }
+
+      .button {
+        display: block !important;
+        width: auto !important;
+        padding: 13px 20px !important;
+      }
+    }
+
+    @media only screen and (max-width: 380px) {
+      .otp-cell {
+        width: 34px !important;
+        height: 44px !important;
+        font-size: 17px !important;
+        line-height: 44px !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Preheader -->
+  <span style="
+    display:none !important;
+    visibility:hidden;
+    opacity:0;
+    color:transparent;
+    height:0;
+    width:0;
+    max-height:0;
+    max-width:0;
+    overflow:hidden;
+    font-size:1px;
+    line-height:1px;
+  ">
+    {{preheader}}
+  </span>
+
+  <table
+    role="presentation"
+    width="100%"
+    border="0"
+    cellpadding="0"
+    cellspacing="0"
+    class="email-wrapper"
+    style="width:100%; background-color:#f4f6f8;"
+  >
+    <tr>
+      <td align="center" style="padding:32px 12px;">
+
+        <!-- Main Card -->
+        <table
+          role="presentation"
+          width="600"
+          border="0"
+          cellpadding="0"
+          cellspacing="0"
+          class="email-container"
+          style="
+            width:600px;
+            max-width:600px;
+            background-color:#ffffff;
+            border-radius:16px;
+            overflow:hidden;
+            box-shadow:0 8px 30px rgba(15,23,42,0.08);
+          "
+        >
+
+          <!-- Header -->
+          <tr>
+            <td class="header" style="padding:42px 40px 24px; text-align:center;">
+
+              {{#if showLogo}}
+                <img
+                  src="cid:logo"
+                  alt="{{siteName}}"
+                  width="64"
+                  height="64"
+                  style="
+                    display:block;
+                    width:64px;
+                    height:64px;
+                    margin:0 auto;
+                    border:0;
+                    border-radius:12px;
+                  "
+                />
+              {{else}}
+                <div
+                  style="
+                    color:#ea580c;
+                    font-size:18px;
+                    line-height:24px;
+                    font-weight:800;
+                  "
+                >
+                  {{siteName}}
+                </div>
+              {{/if}}
+
+              <div class="brand-name">
+                {{siteName}}
+              </div>
+
+              <div class="eyebrow">
+                {{eyebrow}}
+              </div>
+
+            </td>
+          </tr>
+
+          <!-- Content -->
+          <tr>
+            <td class="content" style="padding:8px 48px 42px; text-align:center;">
+
+              {{#if username}}
+                <p class="greeting">
+                  Hello {{username}},
+                </p>
+              {{/if}}
+
+              {{#if heading}}
+                <h1 class="heading">
+                  {{heading}}
+                </h1>
+              {{/if}}
+
+              {{#if message}}
+                <p class="message">
+                  {{message}}
+                </p>
+              {{/if}}
+
+              <!-- OTP -->
+              {{#if otpDigits}}
+                <div
+                  class="otp-wrapper"
+                  style="
+                    margin:28px auto;
+                    padding:20px 12px;
+                    max-width:460px;
+                    background-color:#fff7ed;
+                    border:1px solid #fed7aa;
+                    border-radius:14px;
+                  "
+                >
+                  <table
+                    role="presentation"
+                    border="0"
+                    cellpadding="0"
+                    cellspacing="0"
+                    class="otp-table"
+                    style="margin:0 auto;"
+                  >
+                    <tr>
+                      {{#each otpDigits}}
+                        <td
+                          class="otp-cell"
+                          style="
+                            width:46px;
+                            height:54px;
+                            border:1px solid #fb923c;
+                            border-radius:10px;
+                            background-color:#ffffff;
+                            color:#c2410c;
+                            font-size:21px;
+                            line-height:54px;
+                            font-weight:800;
+                            text-align:center;
+                            vertical-align:middle;
+                          "
+                        >
+                          {{this}}
+                        </td>
+                      {{/each}}
+                    </tr>
+                  </table>
+                </div>
+              {{/if}}
+
+              <!-- Body Lines -->
+              {{#if (hasItems bodyLines)}}
+                <div style="margin:18px auto 8px;">
+                  {{#each bodyLines}}
+                    <p class="body-line">
+                      {{this}}
+                    </p>
+                  {{/each}}
+                </div>
+              {{/if}}
+
+              <!-- Custom Details -->
+              {{#if detailsHtml}}
+                {{{detailsHtml}}}
+              {{/if}}
+
+              <!-- CTA -->
+              {{#if buttonUrl}}
+                <table
+                  role="presentation"
+                  border="0"
+                  cellpadding="0"
+                  cellspacing="0"
+                  align="center"
+                  class="button-wrapper"
+                  style="margin:30px auto 10px;"
+                >
+                  <tr>
+                    <td align="center">
+                      <a
+                        href="{{buttonUrl}}"
+                        target="_blank"
+                        class="button"
+                        style="
+                          display:inline-block;
+                          padding:13px 30px;
+                          border-radius:9px;
+                          background-color:{{buttonColor}};
+                          color:#ffffff !important;
+                          font-size:13px;
+                          line-height:20px;
+                          font-weight:700;
+                          text-decoration:none;
+                          letter-spacing:0.02em;
+                        "
+                      >
+                        {{buttonText}}
+                      </a>
+                    </td>
+                  </tr>
+                </table>
+              {{/if}}
+
+              <!-- Support -->
+              <p class="support">
+                <span class="support-label">
+                  If you didn't expect this email, contact us at
+                </span>
+
+                <a
+                  href="mailto:{{supportEmail}}"
+                  style="color:#ea580c; font-weight:600;"
+                >
+                  {{supportEmail}}
+                </a>
+              </p>
+
+              <!-- Footer -->
+              {{#if footer}}
+                <p class="footer">
+                  {{footer}}
+                </p>
+              {{/if}}
+
+            </td>
+          </tr>
+
+        </table>
+
+        <!-- Bottom spacing -->
+        <div style="height:12px; line-height:12px; font-size:12px;">
+          &nbsp;
+        </div>
+
+      </td>
+    </tr>
+  </table>
+
+</body>
+</html>

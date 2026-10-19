@@ -1,7 +1,7 @@
 # Redis Integration Documentation
 
 ## Overview
-Redis has been fully integrated into the Core Stack server to provide high-performance caching, session management, and data persistence.
+Redis has been fully integrated into the Skack Developers server to provide high-performance caching, session management, and data persistence.
 
 ## Features Implemented
 

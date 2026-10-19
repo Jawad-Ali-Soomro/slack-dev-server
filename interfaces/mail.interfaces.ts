@@ -9,5 +9,6 @@ export interface Mail {
     path?: string;
     content?: Buffer;
     cid?: string;
+    contentType?: string;
   }>;
 }

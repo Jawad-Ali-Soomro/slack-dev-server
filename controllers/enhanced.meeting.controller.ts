@@ -1,8 +1,26 @@
-import { catchAsync } from "../middlewares";
-import { Meeting, User, Notification } from "../models";
-import { CreateMeetingRequest, UpdateMeetingRequest, MeetingResponse, MeetingStatus, MeetingType } from "../interfaces";
+import { catchAsync } from "../middlewares/index";
+import { Meeting, User } from "../models/index";
+import { CreateMeetingRequest, UpdateMeetingRequest, MeetingResponse, MeetingStatus, MeetingType } from "../interfaces/index";
 import redisService from "../services/redis.service";
 import videoMeetingService from "../services/zoomService";
+import { notifyUser } from "../utils/notify";
+import { createMeetingFollowUp } from "../services/automationRunner";
+import { logger } from "../helpers/index";
+
+const formatParty = (party: any) => {
+  if (!party) {
+    return { id: "deleted-user", username: "Deleted User", avatar: undefined };
+  }
+  const id =
+    party._id?.toString?.() ||
+    party.id?.toString?.() ||
+    (typeof party === "object" ? undefined : String(party));
+  return {
+    id: id || "deleted-user",
+    username: party.username || "User",
+    avatar: party.avatar,
+  };
+};
 
 const formatMeetingResponse = (meeting: any): MeetingResponse => ({
   id: meeting._id.toString(),
@@ -10,39 +28,21 @@ const formatMeetingResponse = (meeting: any): MeetingResponse => ({
   description: meeting.description,
   type: meeting.type,
   status: meeting.status,
-  assignedTo: meeting.assignedTo ? {
-    id: meeting.assignedTo._id.toString(),
-    username: meeting.assignedTo.username,
-    avatar: meeting.assignedTo.avatar
-  } : {
-    id: 'deleted-user',
-    username: 'Deleted User',
-    avatar: undefined
-  },
-  assignedBy: meeting.assignedBy ? {
-    id: meeting.assignedBy._id.toString(),
-    username: meeting.assignedBy.username,
-    avatar: meeting.assignedBy.avatar
-  } : {
-    id: 'deleted-user',
-    username: 'Deleted User',
-    avatar: undefined
-  },
-  project: meeting.projectId ? {
-    id: meeting.projectId._id.toString(),
-    name: meeting.projectId.name,
-    logo: meeting.projectId.logo
-  } : null,
+  assignedTo: formatParty(meeting.assignedTo),
+  assignedBy: formatParty(meeting.assignedBy),
+  project: meeting.projectId?._id
+    ? {
+        id: meeting.projectId._id.toString(),
+        name: meeting.projectId.name,
+        logo: meeting.projectId.logo,
+      }
+    : null,
   startDate: meeting.startDate,
   endDate: meeting.endDate,
   location: meeting.location,
   meetingLink: meeting.meetingLink,
   tags: meeting.tags,
-  attendees: meeting.attendees?.map((attendee: any) => ({
-    id: attendee._id.toString(),
-    username: attendee.username,
-    avatar: attendee.avatar
-  })),
+  attendees: meeting.attendees?.map((attendee: any) => formatParty(attendee)),
   createdAt: meeting.createdAt,
   updatedAt: meeting.updatedAt
 });
@@ -97,12 +97,12 @@ export const createMeeting = catchAsync(async (req: any, res: any) => {
   await redisService.invalidateDashboardData(assignedTo);
   await redisService.invalidatePattern('meetings:*');
 
-  await Notification.create({
+  await notifyUser({
     recipient: assignedTo,
     sender: assignedBy,
     type: "meeting_assigned",
     message: `${req.user.username} assigned you a new meeting: "${title}"`,
-    meetingId: meeting._id
+    meetingId: meeting._id,
   });
 
 
@@ -147,15 +147,22 @@ export const createZoomMeeting = catchAsync(async (req: any, res: any) => {
 export const getMeetings = catchAsync(async (req: any, res: any) => {
   const { status, type, assignedTo, assignedBy, page = 1, limit = 20 } = req.query;
   const skip = (parseInt(page as string) - 1) * parseInt(limit as string);
+  const currentUserId = req.user._id;
 
-  const cacheKey = `meetings:${JSON.stringify({ status, type, assignedTo, assignedBy, page, limit })}`;
+  const cacheKey = `meetings:${currentUserId}:${JSON.stringify({ status, type, assignedTo, assignedBy, page, limit })}`;
   const cachedMeetings = await redisService.get(cacheKey);
   
   if (cachedMeetings) {
     return res.status(200).json(cachedMeetings);
   }
 
-  const filter: any = {};
+  const filter: any = {
+    $or: [
+      { assignedTo: currentUserId },
+      { assignedBy: currentUserId },
+      { attendees: currentUserId },
+    ],
+  };
   if (status) filter.status = status;
   if (type) filter.type = type;
   if (assignedTo) filter.assignedTo = assignedTo;
@@ -253,12 +260,12 @@ export const updateMeeting = catchAsync(async (req: any, res: any) => {
   await redisService.invalidateDashboardData(originalMeeting.assignedTo.toString());
   await redisService.invalidatePattern('meetings:*');
 
-  await Notification.create({
+  await notifyUser({
     recipient: meeting.assignedTo,
     sender: currentUserId,
     type: "meeting_updated",
     message: `${req.user.username} updated meeting "${meeting.title}"`,
-    meetingId: meeting._id
+    meetingId: meeting._id,
   });
 
   res.status(200).json({
@@ -284,6 +291,14 @@ export const updateMeetingStatus = catchAsync(async (req: any, res: any) => {
   meeting.status = status;
   await meeting.save();
 
+  if (status === MeetingStatus.COMPLETED) {
+    try {
+      await createMeetingFollowUp(meeting);
+    } catch (err: any) {
+      logger.error(`Meeting follow-up failed: ${err?.message || err}`);
+    }
+  }
+
   await meeting.populate([
     { path: "assignedTo", select: "username avatar" },
     { path: "assignedBy", select: "username avatar" },
@@ -300,12 +315,12 @@ export const updateMeetingStatus = catchAsync(async (req: any, res: any) => {
   await redisService.invalidateDashboardData(meeting.assignedTo.toString());
   await redisService.invalidatePattern('meetings:*');
 
-  await Notification.create({
+  await notifyUser({
     recipient: meeting.assignedBy,
     sender: currentUserId,
     type: "meeting_status_updated",
     message: `${req.user.username} updated meeting "${meeting.title}" status to ${status}`,
-    meetingId: meeting._id
+    meetingId: meeting._id,
   });
 
   res.status(200).json({
@@ -351,12 +366,12 @@ export const rescheduleMeeting = catchAsync(async (req: any, res: any) => {
   await redisService.invalidateDashboardData(meeting.assignedTo.toString());
   await redisService.invalidatePattern('meetings:*');
 
-  await Notification.create({
+  await notifyUser({
     recipient: meeting.assignedTo,
     sender: currentUserId,
     type: "meeting_rescheduled",
     message: `${req.user.username} rescheduled meeting "${meeting.title}"`,
-    meetingId: meeting._id
+    meetingId: meeting._id,
   });
 
   res.status(200).json({
@@ -405,20 +420,20 @@ export const reassignMeeting = catchAsync(async (req: any, res: any) => {
   await redisService.invalidateDashboardData(oldAssignee.toString());
   await redisService.invalidateDashboardData(assignedTo);
 
-  await Notification.create({
+  await notifyUser({
     recipient: assignedTo,
     sender: currentUserId,
     type: "meeting_reassigned",
     message: `${req.user.username} reassigned meeting "${meeting.title}" to you`,
-    meetingId: meeting._id
+    meetingId: meeting._id,
   });
 
-  await Notification.create({
+  await notifyUser({
     recipient: oldAssignee,
     sender: currentUserId,
     type: "meeting_unassigned",
     message: `Meeting "${meeting.title}" has been reassigned`,
-    meetingId: meeting._id
+    meetingId: meeting._id,
   });
 
   res.status(200).json({
@@ -504,23 +519,29 @@ export const getMeetingStats = catchAsync(async (req: any, res: any) => {
     return res.status(200).json(cachedStats);
   }
 
-  const totalMeetings = await Meeting.countDocuments({
-    $or: [{ assignedTo: currentUserId }, { assignedBy: currentUserId }]
-  });
+  const mine = {
+    $or: [
+      { assignedTo: currentUserId },
+      { assignedBy: currentUserId },
+      { attendees: currentUserId },
+    ],
+  };
+
+  const totalMeetings = await Meeting.countDocuments(mine);
   const scheduledMeetings = await Meeting.countDocuments({
-    $or: [{ assignedTo: currentUserId }, { assignedBy: currentUserId }],
+    ...mine,
     status: MeetingStatus.SCHEDULED
   });
   const completedMeetings = await Meeting.countDocuments({
-    $or: [{ assignedTo: currentUserId }, { assignedBy: currentUserId }],
+    ...mine,
     status: MeetingStatus.COMPLETED
   });
   const cancelledMeetings = await Meeting.countDocuments({
-    $or: [{ assignedTo: currentUserId }, { assignedBy: currentUserId }],
+    ...mine,
     status: MeetingStatus.CANCELLED
   });
   const pendingMeetings = await Meeting.countDocuments({
-    $or: [{ assignedTo: currentUserId }, { assignedBy: currentUserId }],
+    ...mine,
     status: MeetingStatus.PENDING
   });
 
@@ -529,11 +550,11 @@ export const getMeetingStats = catchAsync(async (req: any, res: any) => {
   const oneMonthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
 
   const meetingsThisWeek = await Meeting.countDocuments({
-    $or: [{ assignedTo: currentUserId }, { assignedBy: currentUserId }],
+    ...mine,
     createdAt: { $gte: oneWeekAgo }
   });
   const meetingsThisMonth = await Meeting.countDocuments({
-    $or: [{ assignedTo: currentUserId }, { assignedBy: currentUserId }],
+    ...mine,
     createdAt: { $gte: oneMonthAgo }
   });
 

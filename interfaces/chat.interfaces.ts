@@ -12,13 +12,29 @@ export interface CreateChatRequest {
   type: 'direct' | 'group';
   name?: string;
   description?: string;
+  logo?: string;
+  logoPublicId?: string;
+}
+
+export interface UpdateGroupChatRequest {
+  name?: string;
+  description?: string;
+  logo?: string | null;
+  logoPublicId?: string | null;
+}
+
+export interface ChatAttachment {
+  url: string;
+  name?: string;
+  mimetype?: string;
+  size?: number;
 }
 
 export interface SendMessageRequest {
   chatId: string;
   content: string;
   type?: 'text' | 'image' | 'file' | 'audio' | 'video';
-  attachments?: string[];
+  attachments?: ChatAttachment[];
   replyTo?: string;
 }
 
@@ -38,6 +54,8 @@ export interface ChatResponse {
   type: 'direct' | 'group';
   name?: string;
   description?: string;
+  logo?: string;
+  createdBy?: string;
   lastMessage?: {
     _id: string;
     content: string;
@@ -62,17 +80,25 @@ export interface MessageResponse {
   };
   content: string;
   type: 'text' | 'image' | 'file' | 'audio' | 'video';
-  attachments?: string[];
+  attachments?: ChatAttachment[];
   replyTo?: {
     _id: string;
     content: string;
-    sender: string;
+    sender: string | {
+      _id: string;
+      username?: string;
+      avatar?: string | null;
+    };
   };
   isEdited: boolean;
   editedAt?: Date;
   isDeleted: boolean;
   readBy: Array<{
-    user: string;
+    user: string | {
+      _id: string;
+      username?: string;
+      avatar?: string | null;
+    };
     readAt: Date;
   }>;
   createdAt: Date;

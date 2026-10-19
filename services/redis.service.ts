@@ -1,12 +1,21 @@
 import Redis from 'ioredis';
-import { logger } from '../helpers';
-import { redisConfig } from '../config';
+import { logger } from '../helpers/index';
+import { redisConfig, createRedisOptions } from '../config/redis';
 
 class RedisService {
-  private client: Redis;
+  private client: Redis | null = null;
+  private enabled: boolean;
 
   constructor() {
-    this.client = new Redis(redisConfig);
+    this.enabled = redisConfig.enabled;
+
+    if (!this.enabled) {
+      logger.info('Redis is disabled (REDIS_ENABLED != true)');
+      return;
+    }
+
+    const { url, options } = createRedisOptions();
+    this.client = url ? new Redis(url, options) : new Redis(options);
 
     this.client.on('connect', () => {
       logger.info('Redis connected successfully');
@@ -17,7 +26,12 @@ class RedisService {
     });
   }
 
+  isEnabled(): boolean {
+    return this.enabled;
+  }
+
   async set(key: string, value: any, ttl?: number): Promise<void> {
+    if (!this.client) return;
     try {
       const serializedValue = JSON.stringify(value);
       if (ttl) {
@@ -27,11 +41,11 @@ class RedisService {
       }
     } catch (error) {
       logger.error('Redis set error:', error);
-      throw error;
     }
   }
 
   async get(key: string): Promise<any> {
+    if (!this.client) return null;
     try {
       const value = await this.client.get(key);
       return value ? JSON.parse(value) : null;
@@ -42,6 +56,7 @@ class RedisService {
   }
 
   async del(key: string): Promise<void> {
+    if (!this.client) return;
     try {
       await this.client.del(key);
     } catch (error) {
@@ -51,6 +66,7 @@ class RedisService {
   }
 
   async exists(key: string): Promise<boolean> {
+    if (!this.client) return false;
     try {
       const result = await this.client.exists(key);
       return result === 1;
@@ -133,6 +149,7 @@ class RedisService {
   }
 
   async invalidateUserData(userId: string): Promise<void> {
+    if (!this.client) return;
     const keys = await this.client.keys(`*${userId}*`);
     if (keys.length > 0) {
       await this.client.del(...keys);
@@ -140,6 +157,7 @@ class RedisService {
   }
 
   async invalidatePattern(pattern: string): Promise<void> {
+    if (!this.client) return;
     try {
       const keys = await this.client.keys(pattern);
       if (keys.length > 0) {
@@ -283,6 +301,10 @@ class RedisService {
     await this.del(`user:${userId}:friendStats`);
   }
 
+  async invalidateFriendSearch(userId: string): Promise<void> {
+    await this.invalidatePattern(`search:friends:${userId}:*`);
+  }
+
   async cacheUserFriends(userId: string, friends: any[], ttl: number = 1800): Promise<void> {
     await this.set(`user:${userId}:friends`, friends, ttl);
   }
@@ -320,6 +342,7 @@ class RedisService {
   }
 
   async increment(key: string): Promise<number> {
+    if (!this.client) return 0;
     try {
       return await this.client.incr(key);
     } catch (error) {
@@ -329,6 +352,7 @@ class RedisService {
   }
 
   async decrement(key: string): Promise<number> {
+    if (!this.client) return 0;
     try {
       return await this.client.decr(key);
     } catch (error) {
@@ -338,6 +362,7 @@ class RedisService {
   }
 
   async getTtl(key: string): Promise<number> {
+    if (!this.client) return -1;
     try {
       return await this.client.ttl(key);
     } catch (error) {
@@ -347,6 +372,7 @@ class RedisService {
   }
 
   async setString(key: string, value: string, ttl?: number): Promise<void> {
+    if (!this.client) return;
     try {
       if (ttl) {
         await this.client.setex(key, ttl, value);
@@ -360,6 +386,7 @@ class RedisService {
   }
 
   async getString(key: string): Promise<string | null> {
+    if (!this.client) return null;
     try {
       return await this.client.get(key);
     } catch (error) {
@@ -369,6 +396,7 @@ class RedisService {
   }
 
   async flushAll(): Promise<void> {
+    if (!this.client) return;
     try {
       await this.client.flushall();
       logger.warn('Redis FLUSHALL executed - entire cache cleared');
@@ -379,10 +407,12 @@ class RedisService {
   }
 
   async ping(): Promise<string> {
+    if (!this.client) return 'DISABLED';
     return await this.client.ping();
   }
 
   async disconnect(): Promise<void> {
+    if (!this.client) return;
     await this.client.quit();
   }
 }

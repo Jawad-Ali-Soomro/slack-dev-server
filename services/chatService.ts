@@ -1,13 +1,18 @@
-import { Chat, Message, User, Notification } from '../models';
-import { CreateChatRequest, SendMessageRequest, UpdateMessageRequest, ChatResponse, MessageResponse } from '../interfaces';
-import { logger } from '../helpers';
+import { Chat, Message, User } from '../models/index';
+import { CreateChatRequest, UpdateGroupChatRequest, SendMessageRequest, UpdateMessageRequest, ChatResponse, MessageResponse } from '../interfaces/index';
+import { deleteGroupLogo, isManagedLogoPublicId, isManagedLogoUrl } from './cloudinary.service';
+import { logger } from '../helpers/index';
 import redisService from './redis.service';
+import { notifyUser } from '../utils/notify';
+import { publishChatNotification } from './chatNotificationQueue';
+import { publishChatRead } from './chatReadQueue';
 import mongoose from 'mongoose';
+import path from 'path';
 
 class ChatService {
   async createChat(userId: string, chatData: CreateChatRequest): Promise<ChatResponse> {
     try {
-      const { participants, type, name, description } = chatData;
+      const { participants, type, name, description, logo, logoPublicId } = chatData;
       
       const allParticipants = [...participants, userId];
       const uniqueParticipants = [...new Set(allParticipants)];
@@ -40,11 +45,15 @@ class ChatService {
         return this.formatChatResponse(existingChat, userId);
       }
 
+      const groupLogo = this.resolveGroupLogo(type, logo, logoPublicId);
+
       const chat = new Chat({
         participants: uniqueParticipants,
         type,
         name: type === 'group' ? name : undefined,
         description: type === 'group' ? description : undefined,
+        logo: groupLogo?.url,
+        logoPublicId: groupLogo?.publicId,
         createdBy: userId
       });
 
@@ -63,9 +72,134 @@ class ChatService {
     }
   }
 
+  async updateGroupChat(userId: string, chatId: string, updates: UpdateGroupChatRequest): Promise<ChatResponse> {
+    const chat = await Chat.findOne({
+      _id: chatId,
+      type: 'group',
+      isActive: true,
+      participants: userId,
+    });
+
+    if (!chat) {
+      throw new Error('Chat not found or access denied');
+    }
+
+    if (chat.createdBy.toString() !== userId) {
+      throw new Error('Only the group creator can edit this chat');
+    }
+
+    if (typeof updates.name === 'string') {
+      const name = updates.name.trim();
+      if (!name) {
+        throw new Error('Group name is required');
+      }
+      chat.name = name.slice(0, 80);
+    }
+
+    if (typeof updates.description === 'string') {
+      chat.description = updates.description.trim().slice(0, 300);
+    }
+
+    if (updates.logo === null) {
+      await deleteGroupLogo(chat.logoPublicId);
+      chat.set("logo", undefined);
+      chat.set("logoPublicId", undefined);
+    } else if (typeof updates.logo === 'string' && updates.logo && updates.logo !== chat.logo) {
+      const nextLogo = this.resolveGroupLogo('group', updates.logo, updates.logoPublicId || undefined);
+      if (!nextLogo) {
+        throw new Error('Invalid group logo');
+      }
+      if (chat.logoPublicId && chat.logoPublicId !== nextLogo.publicId) {
+        await deleteGroupLogo(chat.logoPublicId);
+      }
+      chat.logo = nextLogo.url;
+      chat.logoPublicId = nextLogo.publicId;
+    }
+
+    await chat.save();
+    await chat.populate('participants', 'username email avatar');
+
+    for (const participant of chat.participants) {
+      const participantId = participant._id?.toString?.() || String(participant);
+      await redisService.invalidateUserData(participantId);
+    }
+
+    const formatted = this.formatChatResponse(chat, userId);
+    const socketService = (global as any).socketService;
+    if (socketService) {
+      socketService.emitChatUpdate(String(chat._id), formatted);
+    }
+
+    return formatted;
+  }
+
+  async removeGroupMember(userId: string, chatId: string, memberId: string): Promise<ChatResponse> {
+    const chat = await Chat.findOne({
+      _id: chatId,
+      type: 'group',
+      isActive: true,
+      participants: userId,
+    });
+
+    if (!chat) {
+      throw new Error('Chat not found or access denied');
+    }
+
+    if (chat.createdBy.toString() !== userId) {
+      throw new Error('Only the group creator can edit this chat');
+    }
+
+    if (!mongoose.Types.ObjectId.isValid(memberId)) {
+      throw new Error('Invalid member');
+    }
+
+    if (memberId === chat.createdBy.toString()) {
+      throw new Error('The group admin cannot be removed');
+    }
+
+    const isMember = chat.participants.some((participant) => participant.toString() === memberId);
+    if (!isMember) {
+      throw new Error('That member is not in this group');
+    }
+
+    if (chat.participants.length <= 2) {
+      throw new Error('A group needs at least two people');
+    }
+
+    chat.participants = chat.participants.filter(
+      (participant) => participant.toString() !== memberId,
+    ) as typeof chat.participants;
+
+    await chat.save();
+    await chat.populate('participants', 'username email avatar');
+
+    await redisService.invalidateUserData(memberId);
+    for (const participant of chat.participants) {
+      const participantId = participant._id?.toString?.() || String(participant);
+      await redisService.invalidateUserData(participantId);
+    }
+
+    const formatted = this.formatChatResponse(chat, userId);
+    const socketService = (global as any).socketService;
+    if (socketService) {
+      socketService.emitChatUpdate(chatId, formatted);
+      socketService.emitToUser(memberId, 'removed_from_chat', { chatId });
+    }
+
+    return formatted;
+  }
+
+  private resolveGroupLogo(type: string, logo?: string, logoPublicId?: string) {
+    if (type !== 'group' || !logo) return null;
+    if (!isManagedLogoUrl(logo) || !isManagedLogoPublicId(logoPublicId)) {
+      throw new Error('Invalid group logo');
+    }
+    return { url: logo, publicId: logoPublicId as string };
+  }
+
   async getUserChats(userId: string, page: number = 1, limit: number = 20): Promise<ChatResponse[]> {
     try {
-      const cacheKey = `user:${userId}:chats:${page}:${limit}`;
+      const cacheKey = `user:${userId}:chats:v2:${page}:${limit}`;
       const cached = await redisService.get(cacheKey);
       
       if (cached) {
@@ -127,7 +261,12 @@ class ChatService {
         isDeleted: false
       })
       .populate('sender', 'username email avatar')
-      .populate('replyTo', 'content sender')
+      .populate({
+        path: 'replyTo',
+        select: 'content sender',
+        populate: { path: 'sender', select: 'username avatar' }
+      })
+      .populate('readBy.user', 'username avatar')
       .sort({ createdAt: 1 })
 
 
@@ -144,7 +283,9 @@ class ChatService {
 
   async sendMessage(userId: string, messageData: SendMessageRequest): Promise<MessageResponse> {
     try {
-      const { chatId, content, type = 'text', attachments, replyTo } = messageData;
+      const { chatId, type = 'text', replyTo } = messageData;
+      const attachments = this.sanitizeAttachments(messageData.attachments);
+      const content = (messageData.content || "").trim();
 
 
       if (!chatId) {
@@ -155,7 +296,7 @@ class ChatService {
         throw new Error('Invalid chat ID format');
       }
 
-      if (!content || !content.trim()) {
+      if (!content && attachments.length === 0) {
         throw new Error('Message content is required');
       }
 
@@ -172,45 +313,35 @@ class ChatService {
       const message = new Message({
         chat: chatId,
         sender: userId,
-        content,
+        content: content || this.attachmentCaption(attachments),
         type,
         attachments,
         replyTo
       });
 
       await message.save();
-      await message.populate('sender', 'username email avatar');
-      if (replyTo) {
-        await message.populate('replyTo', 'content sender');
-      }
+      await this.populateMessageRefs(message);
 
       chat.lastMessage = message._id as any;
       chat.lastMessageAt = new Date();
-      await chat.save();
-
-      await chat.populate('participants', 'username email avatar');
-      await chat.populate({
-        path: 'lastMessage',
-        populate: {
-          path: 'sender',
-          select: 'username email avatar'
-        }
-      });
-
-      await redisService.invalidatePattern(`chat:${chatId}:messages:*`);
-      await redisService.invalidatePattern(`user:*:chats:*`);
 
       const messageResponse = this.formatMessageResponse(message);
-
-
-      await this.createMessageNotifications(chat, message, userId);
+      const participantIds = (chat.participants || []).map((participant: any) =>
+        (participant._id || participant).toString(),
+      );
 
       const socketService = (global as any).socketService;
       if (socketService) {
-        socketService.emitNewMessage(chatId, messageResponse);
-        const chatResponse = this.formatChatResponse(chat, userId);
-        socketService.emitChatUpdate(chatId, chatResponse);
+        socketService.emitNewMessage(chatId, messageResponse, participantIds);
       }
+
+      void this.deliverMessageSideEffects(
+        chat,
+        message,
+        userId,
+        chatId,
+        participantIds,
+      );
 
       return messageResponse;
     } catch (error) {
@@ -236,10 +367,7 @@ class ChatService {
       message.editedAt = new Date();
 
       await message.save();
-      await message.populate('sender', 'username email avatar');
-      if (message.replyTo) {
-        await message.populate('replyTo', 'content sender');
-      }
+      await this.populateMessageRefs(message);
 
       await redisService.invalidatePattern(`chat:${message.chat}:messages:*`);
 
@@ -272,6 +400,7 @@ class ChatService {
       message.isDeleted = true;
       message.deletedAt = new Date();
       message.content = 'This message was deleted';
+      message.attachments = [];
 
       await message.save();
 
@@ -299,7 +428,8 @@ class ChatService {
         throw new Error('Chat not found or access denied');
       }
 
-      await Message.updateMany(
+      const readAt = new Date();
+      const updated = await Message.updateMany(
         {
           chat: chatId,
           sender: { $ne: userId },
@@ -309,13 +439,29 @@ class ChatService {
           $push: {
             readBy: {
               user: userId,
-              readAt: new Date()
+              readAt
             }
           }
         }
       );
 
+      if (!updated.modifiedCount) return;
+
       await redisService.invalidatePattern(`chat:${chatId}:messages:*`);
+
+      const reader = await User.findById(userId).select('username avatar');
+      const participantIds = (chat.participants || []).map((participant: any) =>
+        String(participant?._id || participant),
+      );
+
+      await publishChatRead({
+        chatId,
+        userId,
+        username: reader?.username || 'User',
+        avatar: reader?.avatar || null,
+        readAt: readAt.toISOString(),
+        participantIds,
+      });
     } catch (error) {
       logger.error('Error marking messages as read:', error);
       throw error;
@@ -346,6 +492,40 @@ class ChatService {
     return chats.map((chat: any) => chat._id.toString());
   }
 
+  private async deliverMessageSideEffects(
+    chat: any,
+    message: any,
+    userId: string,
+    chatId: string,
+    participantIds: string[],
+  ): Promise<void> {
+    try {
+      await chat.save();
+      await Promise.all([
+        redisService.del(`chat:${chatId}:messages:1:50`),
+        ...participantIds.map((id) => redisService.del(`user:${id}:chats:v2:1:20`)),
+      ]);
+      await this.createMessageNotifications(chat, message, userId);
+
+      const fresh = await Chat.findById(chatId)
+        .populate('participants', 'username email avatar')
+        .populate({
+          path: 'lastMessage',
+          populate: {
+            path: 'sender',
+            select: 'username email avatar',
+          },
+        });
+
+      const socketService = (global as any).socketService;
+      if (fresh && socketService) {
+        socketService.emitChatUpdate(chatId, this.formatChatResponse(fresh, userId));
+      }
+    } catch (error) {
+      logger.error('Error finishing message delivery:', error);
+    }
+  }
+
   private async createMessageNotifications(chat: any, message: any, senderId: string): Promise<void> {
     try {
       if (!chat.participants || !Array.isArray(chat.participants)) {
@@ -360,24 +540,22 @@ class ChatService {
         })
         .map((participant: any) => participant._id ? participant._id.toString() : participant.toString());
       
-      logger.info('Creating notifications for recipients:', recipients);
-      
-      for (const recipientId of recipients) {
-        if (!recipientId) {
-          logger.warn('Skipping undefined recipient ID');
-          continue;
-        }
+      const senderName = message.sender?.username || "Someone";
+      const text = `${senderName} just messaged you`;
 
-        const notification = new Notification({
-          recipient: recipientId,
-          sender: senderId,
-          type: 'message',
-          message: `New message in ${chat.type === 'direct' ? 'chat' : chat.name}`,
-          isRead: false
-        });
+      await Promise.all(
+        recipients.filter(Boolean).map(async (recipientId) => {
+          const notification = await notifyUser({
+            recipient: recipientId,
+            sender: senderId,
+            type: "message",
+            message: text,
+            skipEmit: true,
+          });
 
-        await notification.save();
-      }
+          await publishChatNotification(recipientId, notification);
+        }),
+      );
     } catch (error) {
       logger.error('Error creating message notifications:', error);
     }
@@ -398,6 +576,8 @@ class ChatService {
       type: chat.type,
       name: chat.name,
       description: chat.description,
+      logo: chat.logo || undefined,
+      createdBy: chat.createdBy?._id?.toString?.() || chat.createdBy?.toString?.(),
       lastMessage: chat.lastMessage ? {
         _id: chat.lastMessage._id.toString(),
         content: chat.lastMessage.content,
@@ -417,6 +597,56 @@ class ChatService {
     };
   }
 
+  private sanitizeAttachments(attachments?: SendMessageRequest["attachments"]) {
+    if (!Array.isArray(attachments)) return [];
+
+    return attachments
+      .map((item) => {
+        if (!item || typeof item !== "object") return null;
+        const url = String(item.url || "");
+        if (!url.startsWith("/uploads/chat/") || url.includes("..")) return null;
+        return {
+          url,
+          name: String(item.name || path.basename(url)).slice(0, 180),
+          mimetype: String(item.mimetype || "").slice(0, 120),
+          size: Number(item.size) || 0,
+        };
+      })
+      .filter((item): item is NonNullable<typeof item> => Boolean(item))
+      .slice(0, 5);
+  }
+
+  private attachmentCaption(attachments: Array<{ name?: string }>) {
+    if (attachments.length === 1) return attachments[0].name || "Sent a file";
+    return `Sent ${attachments.length} files`;
+  }
+
+  private async populateMessageRefs(message: any) {
+    await message.populate([
+      { path: 'sender', select: 'username email avatar' },
+      {
+        path: 'replyTo',
+        select: 'content sender',
+        populate: { path: 'sender', select: 'username avatar' }
+      },
+      { path: 'readBy.user', select: 'username avatar' }
+    ]);
+  }
+
+  private personRef(value: any) {
+    if (!value) return "";
+    if (typeof value === "string") return value;
+    const id = value._id?.toString?.() || value.id?.toString?.() || value.toString?.() || "";
+    if (value.username || value.avatar) {
+      return {
+        _id: String(id),
+        username: value.username || "User",
+        avatar: value.avatar || null
+      };
+    }
+    return String(id);
+  }
+
   private formatMessageResponse(message: any): MessageResponse {
     return {
       _id: message._id.toString(),
@@ -434,13 +664,13 @@ class ChatService {
       replyTo: message.replyTo ? {
         _id: message.replyTo._id.toString(),
         content: message.replyTo.content,
-        sender: message.replyTo.sender.toString()
+        sender: this.personRef(message.replyTo.sender)
       } : undefined,
       isEdited: message.isEdited,
       editedAt: message.editedAt,
       isDeleted: message.isDeleted,
-      readBy: message.readBy.map((read: any) => ({
-        user: read.user.toString(),
+      readBy: (message.readBy || []).map((read: any) => ({
+        user: this.personRef(read.user),
         readAt: read.readAt
       })),
       createdAt: message.createdAt,

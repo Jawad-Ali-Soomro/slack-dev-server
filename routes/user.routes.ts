@@ -1,410 +1,51 @@
-import express from 'express'
-const userRouter = express.Router()
-import { updateProfile, uploadAvatar, deleteAvatar, changePassword, getUsers, getUserById, searchUsers, getProfile, getUserDetails, assignUserRole, getAllUsers, deleteUser, updateUserVerification } from '../controllers/user.controller'
-import { authenticate, upload, requireSuperadmin, requireAdmin } from '../middlewares'
+import express from "express";
+import {
+  updateProfile,
+  uploadAvatar,
+  deleteAvatar,
+  changePassword,
+  getUsers,
+  getUserById,
+  searchUsers,
+  getProfile,
+  getUserDetails,
+  assignUserRole,
+  getAllUsers,
+  deleteUser,
+  updateUserVerification,
+  updateStatus,
+} from "../controllers/user.controller";
+import { authenticate, requireSuperadmin, upload } from "../middlewares/index";
+const userRouter = express.Router();
+// global authentication middleware
+userRouter.use(authenticate)
 
-/**
- * @openapi
- * /api/user/profile:
- *   put:
- *     summary: Update user profile
- *     tags:
- *       - User
- *     security:
- *       - bearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               username:
- *                 type: string
- *                 example: newusername
- *               bio:
- *                 type: string
- *                 example: Full-stack developer passionate about creating amazing apps
- *               userLocation:
- *                 type: string
- *                 example: San Francisco, CA
- *               website:
- *                 type: string
- *                 example: https://johndoe.dev
- *               socialLinks:
- *                 type: object
- *                 properties:
- *                   twitter:
- *                     type: string
- *                     example: https://twitter.com/johndoe
- *                   linkedin:
- *                     type: string
- *                     example: https://linkedin.com/in/johndoe
- *                   github:
- *                     type: string
- *                     example: https://github.com/johndoe
- *                   instagram:
- *                     type: string
- *                     example: https://instagram.com/johndoe
- *                   facebook:
- *                     type: string
- *                     example: https://facebook.com/johndoe
- *               dateOfBirth:
- *                 type: string
- *                 format: date
- *                 example: 1990-01-15
- *               phone:
- *                 type: string
- *                 example: +1234567890
- *     responses:
- *       200:
- *         description: Profile updated successfully
- *       400:
- *         description: Username already taken
- *       401:
- *         description: Unauthorized
- */
-/**
- * @openapi
- * /api/user/profile:
- *   get:
- *     summary: Get user profile
- *     tags:
- *       - User
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: User profile retrieved successfully
- *       401:
- *         description: Unauthorized
- */
-userRouter.get('/profile', authenticate, getProfile)
+userRouter.get("/profile", getProfile);
+userRouter.put("/profile", updateProfile);
+userRouter.put("/status", updateStatus);
 
-userRouter.put('/profile', authenticate, updateProfile)
+userRouter.post(
+  "/avatar",
+  (req, _res, next) => {
+    req.params.folder = "profiles";
+    next();
+  },
+  upload.single("avatar"),
+  uploadAvatar,
+);
+userRouter.delete("/avatar", deleteAvatar);
 
-/**
- * @openapi
- * /api/user/avatar:
- *   post:
- *     summary: Upload user avatar
- *     tags:
- *       - User
- *     security:
- *       - bearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         multipart/form-data:
- *           schema:
- *             type: object
- *             properties:
- *               avatar:
- *                 type: string
- *                 format: binary
- *                 description: Avatar image file
- *     responses:
- *       200:
- *         description: Avatar uploaded successfully
- *       400:
- *         description: No file uploaded
- *       401:
- *         description: Unauthorized
- */
-userRouter.post('/avatar', authenticate, (req, res, next) => {
-  req.params.folder = 'profiles';
-  next();
-}, upload.single('avatar'), uploadAvatar)
+userRouter.put("/change-password", changePassword);
 
-/**
- * @openapi
- * /api/user/avatar:
- *   delete:
- *     summary: Delete user avatar
- *     tags:
- *       - User
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: Avatar deleted successfully
- *       400:
- *         description: No avatar to delete
- *       401:
- *         description: Unauthorized
- */
-userRouter.delete('/avatar', authenticate, deleteAvatar)
+userRouter.get("/", getUsers);
+userRouter.get("/search", searchUsers);
 
-/**
- * @openapi
- * /api/user/change-password:
- *   put:
- *     summary: Change user password
- *     tags:
- *       - User
- *     security:
- *       - bearerAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               currentPassword:
- *                 type: string
- *                 example: currentpassword123
- *               newPassword:
- *                 type: string
- *                 example: newpassword123
- *             required:
- *               - currentPassword
- *               - newPassword
- *     responses:
- *       200:
- *         description: Password changed successfully
- *       400:
- *         description: Current password is incorrect
- *       401:
- *         description: Unauthorized
- */
-userRouter.put('/change-password', authenticate, changePassword)
+userRouter.get("/admin/users", requireSuperadmin, getAllUsers);
+userRouter.put("/admin/:userId/role", requireSuperadmin, assignUserRole);
+userRouter.put("/admin/:userId/verification", requireSuperadmin, updateUserVerification);
+userRouter.delete("/admin/:userId", requireSuperadmin, deleteUser);
 
-/**
- * @openapi
- * /api/users:
- *   get:
- *     summary: Get all users with pagination and search
- *     tags:
- *       - Users
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: query
- *         name: page
- *         schema:
- *           type: integer
- *           default: 1
- *       - in: query
- *         name: limit
- *         schema:
- *           type: integer
- *           default: 20
- *       - in: query
- *         name: search
- *         schema:
- *           type: string
- *         description: Search by username or email
- *     responses:
- *       200:
- *         description: List of users
- */
-userRouter.get('/', authenticate, getUsers)
+userRouter.get("/:userId/details", getUserDetails);
+userRouter.get("/:userId", requireSuperadmin, getUserById);
 
-/**
- * @openapi
- * /api/users/search:
- *   get:
- *     summary: Search users
- *     tags:
- *       - Users
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: query
- *         name: q
- *         required: true
- *         schema:
- *           type: string
- *         description: Search query for username or email
- *     responses:
- *       200:
- *         description: Search results
- *       400:
- *         description: Search query is required
- */
-userRouter.get('/search', authenticate, searchUsers)
-
-/**
- * @openapi
- * /api/users/{userId}:
- *   get:
- *     summary: Get user by ID
- *     tags:
- *       - Users
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: userId
- *         required: true
- *         schema:
- *           type: string
- *         example: 60d0fe4f5311236168a109ca
- *     responses:
- *       200:
- *         description: User details
- *       404:
- *         description: User not found
- */
-userRouter.get('/:userId', authenticate, getUserById)
-
-/**
- * @openapi
- * /api/user/{userId}/details:
- *   get:
- *     summary: Get detailed user information including projects and teams
- *     tags:
- *       - Users
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: userId
- *         required: true
- *         schema:
- *           type: string
- *         example: 60d0fe4f5311236168a109ca
- *     responses:
- *       200:
- *         description: Detailed user information
- *       404:
- *         description: User not found
- */
-userRouter.get('/:userId/details', authenticate, getUserDetails)
-
-/**
- * Superadmin routes for user management
- */
-/**
- * @openapi
- * /api/user/admin/users:
- *   get:
- *     summary: Get all users (Superadmin/Admin only)
- *     tags:
- *       - Admin
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: query
- *         name: page
- *         schema:
- *           type: integer
- *           default: 1
- *       - in: query
- *         name: limit
- *         schema:
- *           type: integer
- *           default: 20
- *       - in: query
- *         name: search
- *         schema:
- *           type: string
- *       - in: query
- *         name: role
- *         schema:
- *           type: string
- *           enum: [user, admin, superadmin]
- *     responses:
- *       200:
- *         description: List of users
- *       403:
- *         description: Access denied
- */
-userRouter.get('/admin/users', authenticate, requireAdmin, getAllUsers)
-
-/**
- * @openapi
- * /api/user/admin/{userId}/role:
- *   put:
- *     summary: Assign role to user (Superadmin only)
- *     tags:
- *       - Admin
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: userId
- *         required: true
- *         schema:
- *           type: string
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               role:
- *                 type: string
- *                 enum: [user, admin]
- *                 example: admin
- *             required:
- *               - role
- *     responses:
- *       200:
- *         description: Role assigned successfully
- *       403:
- *         description: Access denied
- */
-userRouter.put('/admin/:userId/role', authenticate, requireSuperadmin, assignUserRole)
-
-/**
- * @openapi
- * /api/user/admin/{userId}/verification:
- *   put:
- *     summary: Update user email verification (Admin/Superadmin)
- *     tags:
- *       - Admin
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: userId
- *         required: true
- *         schema:
- *           type: string
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               emailVerified:
- *                 type: boolean
- *                 example: true
- *             required:
- *               - emailVerified
- *     responses:
- *       200:
- *         description: Status updated successfully
- *       403:
- *         description: Access denied
- */
-userRouter.put('/admin/:userId/verification', authenticate, requireAdmin, updateUserVerification)
-
-/**
- * @openapi
- * /api/user/admin/{userId}:
- *   delete:
- *     summary: Delete user (Superadmin only)
- *     tags:
- *       - Admin
- *     security:
- *       - bearerAuth: []
- *     parameters:
- *       - in: path
- *         name: userId
- *         required: true
- *         schema:
- *           type: string
- *     responses:
- *       200:
- *         description: User deleted successfully
- *       403:
- *         description: Access denied
- */
-userRouter.delete('/admin/:userId', authenticate, requireSuperadmin, deleteUser)
-
-export default userRouter
+export default userRouter;

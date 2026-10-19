@@ -7,7 +7,8 @@ const getOverdueInfo = (dueDate: Date) => {
   const diffMs = now.getTime() - due.getTime();
   const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
-  return diffDays === 0 ? "TODAY" : `${diffDays} DAY${diffDays > 1 ? "S" : ""}`;
+  if (diffDays < 1) return "less than a day";
+  return `${diffDays} day${diffDays === 1 ? "" : "s"}`;
 };
 
 

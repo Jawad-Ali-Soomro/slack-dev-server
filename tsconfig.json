@@ -2,12 +2,29 @@
   "compilerOptions": {
     "target": "ES2020",
     "module": "CommonJS",
+    "moduleResolution": "node",
     "outDir": "dist",
     "rootDir": ".",
     "esModuleInterop": true,
     "strict": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "ignoreDeprecations": "6.0",
+    "resolveJsonModule": true
   },
-  "include": ["index.ts", "helpers/**/*", "config/**/*", "routes/**/*", "services/**/*", "scripts/**/*"],
-  "exclude": ["node_modules"]
+  "include": [
+    "index.ts",
+    "helpers/**/*",
+    "config/**/*",
+    "routes/**/*",
+    "services/**/*",
+    "scripts/**/*",
+    "controllers/**/*",
+    "middlewares/**/*",
+    "models/**/*",
+    "interfaces/**/*",
+    "utils/**/*",
+    "templates/**/*",
+    "types/**/*"
+  ],
+  "exclude": ["node_modules", "dist"]
 }

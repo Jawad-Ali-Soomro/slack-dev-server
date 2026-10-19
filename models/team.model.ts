@@ -1,4 +1,5 @@
 import mongoose, { Document, Schema } from 'mongoose'
+import { JobRole } from '../interfaces/index'
 
 export interface ITeam extends Document {
   name: string
@@ -7,6 +8,7 @@ export interface ITeam extends Document {
   members: Array<{
     user: mongoose.Types.ObjectId
     role: 'owner' | 'admin' | 'member'
+    jobRole: JobRole
     joinedAt: Date
   }>
   projects: mongoose.Types.ObjectId[]
@@ -46,6 +48,11 @@ const TeamSchema = new Schema<ITeam>({
       type: String,
       enum: ['owner', 'admin', 'member'],
       default: 'member'
+    },
+    jobRole: {
+      type: String,
+      enum: Object.values(JobRole),
+      default: JobRole.Unassigned
     },
     joinedAt: {
       type: Date,
@@ -91,6 +98,7 @@ TeamSchema.pre('save', function(next) {
     this.members.push({
       user: this.createdBy,
       role: 'owner',
+      jobRole: JobRole.Unassigned,
       joinedAt: new Date()
     })
   }

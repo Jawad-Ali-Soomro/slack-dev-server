@@ -1,53 +1,57 @@
-import getOverdueInfo from "../utils/formatDate";
-import { sendMail } from "../utils";
-import { catchAsync } from "../middlewares";
-import { Task, User, Notification } from "../models";
+import { catchAsync } from "../middlewares/index";
+import { Task, User } from "../models/index";
 import {
   CreateTaskRequest,
   UpdateTaskRequest,
   TaskResponse,
-} from "../interfaces";
+  Availability,
+} from "../interfaces/index";
 import redisService from "../services/redis.service";
-import buildTaskOverdueEmail from "../templates/taskOverdue";
-import path from "path";
+import { notifyUser } from "../utils/notify";
+import { publishTaskChange } from "../services/taskQueue";
+import { sendOverdueReminders } from "../services/automationRunner";
+
+export const sendOverdueTaskEmails = sendOverdueReminders;
+
+const formatUserRef = (party: any) => {
+  const id =
+    party?._id?.toString?.() ||
+    party?.id?.toString?.() ||
+    (party && typeof party !== "object" ? String(party) : "");
+  if (!id) {
+    return { id: "deleted-user", username: "Deleted User", avatar: undefined };
+  }
+  return {
+    id: String(id),
+    username: party?.username || "User",
+    avatar: party?.avatar,
+  };
+};
 
 const formatTaskResponse = (task: any): TaskResponse => ({
-  id: task._id.toString(),
+  id: task._id?.toString?.() || String(task._id),
   title: task.title,
   description: task.description,
   status: task.status,
   priority: task.priority,
-  assignTo: task.assignTo
+  assignTo: formatUserRef(task.assignTo),
+  assignedBy: formatUserRef(task.assignedBy),
+  project: task.projectId?._id
     ? {
-        id: task.assignTo._id.toString(),
-        username: task.assignTo.username,
-        avatar: task.assignTo.avatar,
-      }
-    : {
-        id: "deleted-user",
-        username: "Deleted User",
-        avatar: undefined,
-      },
-  assignedBy: task.assignedBy
-    ? {
-        id: task.assignedBy._id.toString(),
-        username: task.assignedBy.username,
-        avatar: task.assignedBy.avatar,
-      }
-    : {
-        id: "deleted-user",
-        username: "Deleted User",
-        avatar: undefined,
-      },
-  project: task.projectId
-    ? {
-        id: task.projectId._id.toString(),
+        id: String(task.projectId._id),
         name: task.projectId.name,
         logo: task.projectId.logo,
       }
     : null,
+  repository: task.repository?.repoId
+    ? {
+        repoId: task.repository.repoId,
+        repoName: task.repository.repoName,
+      }
+    : null,
   dueDate: task.dueDate,
   tags: task.tags,
+  captureMetadata: task.captureMetadata || null,
   createdAt: task.createdAt,
   updatedAt: task.updatedAt,
 });
@@ -61,12 +65,21 @@ export const createTask = catchAsync(async (req: any, res: any) => {
     dueDate,
     tags,
     projectId,
+    repository,
+    captureMetadata,
   }: CreateTaskRequest = req.body;
   const assignedBy = req.user._id;
 
   const assignToUser = await User.findById(assignTo);
   if (!assignToUser) {
     return res.status(404).json({ message: "AssignedTo user not found" });
+  }
+
+  if ((assignToUser as any).availability === Availability.Busy) {
+    return res.status(409).json({
+      message: `${assignToUser.username} is currently busy and cannot be assigned new tasks`,
+      code: "USER_BUSY",
+    });
   }
 
   const task = await Task.create({
@@ -78,6 +91,8 @@ export const createTask = catchAsync(async (req: any, res: any) => {
     projectId: projectId || undefined,
     dueDate,
     tags: tags || [],
+    repository,
+    captureMetadata: captureMetadata || undefined,
   });
 
   await task.populate([
@@ -108,18 +123,25 @@ export const createTask = catchAsync(async (req: any, res: any) => {
   await redisService.invalidateDashboardData(assignTo);
 
   await redisService.invalidatePattern("tasks:*");
+  await redisService.del(`task_stats:${assignedBy}`);
+  await redisService.del(`task_stats:${assignTo}`);
 
-  await Notification.create({
+  const taskResponse = formatTaskResponse(task);
+  await notifyUser({
     recipient: assignTo,
     sender: assignedBy,
     type: "task_assigned",
     message: `${req.user.username} assigned you a new task: "${title}"`,
     taskId: task._id,
   });
+  await publishTaskChange({
+    action: "assigned",
+    task: taskResponse,
+  });
 
   res.status(201).json({
     message: "Task created and assigned successfully",
-    task: formatTaskResponse(task),
+    task: taskResponse,
   });
 });
 
@@ -129,10 +151,10 @@ export const getTasks = catchAsync(async (req: any, res: any) => {
     priority,
     assignTo,
     assignedBy,
-    page = 1,
   } = req.query;
+  const currentUserId = req.user._id;
 
-  const cacheKey = `tasks:${JSON.stringify({ status, priority, assignTo, assignedBy, page })}`;
+  const cacheKey = `tasks:${currentUserId}:${JSON.stringify({ status, priority, assignTo, assignedBy })}`;
   const cachedTasks = await redisService.get(cacheKey);
 
   if (cachedTasks) {
@@ -143,7 +165,13 @@ export const getTasks = catchAsync(async (req: any, res: any) => {
   if (status) filter.status = status;
   if (priority) filter.priority = priority;
   if (assignTo) filter.assignTo = assignTo;
-  if (assignedBy) filter.assignedBy = assignedBy;
+  else if (assignedBy) filter.assignedBy = assignedBy;
+  else {
+    filter.$or = [
+      { assignTo: currentUserId },
+      { assignedBy: currentUserId },
+    ];
+  }
 
   const tasks = await Task.find(filter)
     .populate([
@@ -166,47 +194,6 @@ export const getTasks = catchAsync(async (req: any, res: any) => {
 
   res.status(200).json(response);
 });
-
-export const sendOverdueTaskEmails = async () => {
-  const overdueTasks = await Task.find({
-    dueDate: { $lt: new Date() },
-    status: { $ne: "completed" },
-    overdueEmailSent: false,
-  }).populate("assignTo", "username email");
-
-  for (const task of overdueTasks) {
-    const overdueBy = getOverdueInfo(task.dueDate);
-    if (!overdueBy) continue;
-
-    const emailPayload = buildTaskOverdueEmail({
-      type: "TASK_OVERDUE",
-      username: task.assignTo.username,
-      taskTitle: task.title,
-      taskDescription: task.description,
-      dueDate: task.dueDate!.toDateString(),
-      overdueBy,
-      buttonUrl: `https://app.corestack.dev/tasks/${task._id}`,
-      logoUrl: path.join(__dirname, "../public/logo.png")
-    });
-
-    await sendMail({
-      to: task.assignTo.email,
-      subject: `Task Overdue ${task.title}`,
-      html: emailPayload.html,
-      text: emailPayload.text,
-      attachments: [
-        {
-          filename: "logo.png",
-          path: path.join(__dirname, "../public/logo.png"),
-          cid: "logo",
-        },
-      ],
-    });
-
-    task.overdueEmailSent = true;
-    await task.save({ validateBeforeSave: false });
-  }
-};
 
 export const getTaskById = catchAsync(async (req: any, res: any) => {
   const { taskId } = req.params;
@@ -249,9 +236,13 @@ export const updateTask = catchAsync(async (req: any, res: any) => {
       .json({ message: "Only the user who assigned this task can update it" });
   }
 
+  const { overdueEmailSent: _ignoredOverdueFlag, ...safeUpdates } = {
+    ...(updates as UpdateTaskRequest & { overdueEmailSent?: boolean }),
+  };
+
   const task = await Task.findByIdAndUpdate(
     taskId,
-    { ...updates },
+    { ...safeUpdates },
     { new: true, runValidators: true },
   ).populate([
     { path: "assignTo", select: "username avatar" },
@@ -273,6 +264,8 @@ export const updateTask = catchAsync(async (req: any, res: any) => {
   );
   await redisService.invalidateDashboardData(originalTask.assignTo.toString());
   await redisService.invalidatePattern("tasks:*");
+  await redisService.del(`task_stats:${originalTask.assignedBy}`);
+  await redisService.del(`task_stats:${originalTask.assignTo}`);
 
   if (originalTask.projectId) {
     await redisService.invalidateProject(originalTask.projectId.toString());
@@ -284,12 +277,30 @@ export const updateTask = catchAsync(async (req: any, res: any) => {
     );
   }
 
-  await Notification.create({
+  await notifyUser({
     recipient: task.assignTo,
     sender: currentUserId,
     type: "task_updated",
     message: `${req.user.username} updated task "${task.title}"`,
     taskId: task._id,
+  });
+  const body = updates as UpdateTaskRequest & { assignTo?: string };
+  const statusChanged = Boolean(body.status) && body.status !== originalTask.status;
+  const assigneeChanged =
+    Boolean(body.assignTo) &&
+    String(body.assignTo) !== originalTask.assignTo.toString();
+  await publishTaskChange({
+    action: assigneeChanged
+      ? "reassigned"
+      : statusChanged
+        ? "status_updated"
+        : "updated",
+    task: taskResponse,
+    extraUserIds: [
+      originalTask.assignedBy.toString(),
+      originalTask.assignTo.toString(),
+    ],
+    projectIds: [originalTask.projectId?.toString?.()],
   });
 
   res.status(200).json({
@@ -308,10 +319,14 @@ export const updateTaskStatus = catchAsync(async (req: any, res: any) => {
     return res.status(404).json({ message: "Task not found" });
   }
 
-  if (task.assignTo.toString() !== currentUserId.toString()) {
+  const assigneeId = task.assignTo.toString();
+  const assignerId = task.assignedBy.toString();
+  const isAssignee = assigneeId === currentUserId.toString();
+  const isAssigner = assignerId === currentUserId.toString();
+  if (!isAssignee && !isAssigner) {
     return res
       .status(403)
-      .json({ message: "Only the assigned user can update task status" });
+      .json({ message: "Only the assignee or assigner can update status" });
   }
 
   task.status = status;
@@ -326,24 +341,34 @@ export const updateTaskStatus = catchAsync(async (req: any, res: any) => {
 
   await redisService.cacheTask(taskId, taskResponse);
 
-  await redisService.invalidateUserTasks(task.assignedBy.toString());
-  await redisService.invalidateUserTasks(task.assignTo.toString());
-  await redisService.invalidateDashboardData(task.assignedBy.toString());
-  await redisService.invalidateDashboardData(task.assignTo.toString());
+  await redisService.invalidateUserTasks(assignerId);
+  await redisService.invalidateUserTasks(assigneeId);
+  await redisService.invalidateDashboardData(assignerId);
+  await redisService.invalidateDashboardData(assigneeId);
   await redisService.invalidatePattern("tasks:*");
+  await redisService.del(`task_stats:${assignerId}`);
+  await redisService.del(`task_stats:${assigneeId}`);
 
   if (task.projectId) {
     await redisService.invalidateProject(task.projectId.toString());
-    await redisService.invalidatePattern(`user:${task.assignedBy}:projects:*`);
-    await redisService.invalidatePattern(`user:${task.assignTo}:projects:*`);
+    await redisService.invalidatePattern(`user:${assignerId}:projects:*`);
+    await redisService.invalidatePattern(`user:${assigneeId}:projects:*`);
   }
 
-  await Notification.create({
-    recipient: task.assignedBy,
-    sender: currentUserId,
-    type: "task_status_updated",
-    message: `${req.user.username} updated task "${task.title}" status to ${status}`,
-    taskId: task._id,
+  const notifyRecipient = isAssignee ? assignerId : assigneeId;
+  const statusLabel = String(status).replace(/_/g, " ");
+  if (notifyRecipient !== currentUserId.toString()) {
+    await notifyUser({
+      recipient: notifyRecipient,
+      sender: currentUserId,
+      type: "task_status_updated",
+      message: `${req.user.username} moved "${task.title}" to ${statusLabel}`,
+      taskId: task._id,
+    });
+  }
+  await publishTaskChange({
+    action: "status_updated",
+    task: taskResponse,
   });
 
   res.status(200).json({
@@ -363,11 +388,19 @@ export const reassignTask = catchAsync(async (req: any, res: any) => {
   }
 
   if (task.assignedBy.toString() !== currentUserId.toString()) {
-    return res
-      .status(403)
-      .json({
-        message: "Only the user who assigned this task can reassign it",
-      });
+    return res.status(403).json({
+      message: "Only the person who created this task can reassign it",
+    });
+  }
+
+  if (!assignTo) {
+    return res.status(400).json({ message: "New assignee is required" });
+  }
+
+  if (task.assignTo.toString() === String(assignTo)) {
+    return res.status(400).json({
+      message: "Task is already assigned to this person",
+    });
   }
 
   const newAssignee = await User.findById(assignTo);
@@ -375,41 +408,72 @@ export const reassignTask = catchAsync(async (req: any, res: any) => {
     return res.status(404).json({ message: "New assignee not found" });
   }
 
+  if ((newAssignee as any).availability === Availability.Busy) {
+    return res.status(409).json({
+      message: `${newAssignee.username} is currently busy and cannot be assigned new tasks`,
+      code: "USER_BUSY",
+    });
+  }
+
   const oldAssignee = task.assignTo;
+  const dueInTwoDays = new Date();
+  dueInTwoDays.setDate(dueInTwoDays.getDate() + 2);
+
   task.assignTo = assignTo;
+  task.dueDate = dueInTwoDays;
+  (task as any).overdueEmailSent = false;
   await task.save();
 
   await task.populate([
     { path: "assignTo", select: "username avatar" },
     { path: "assignedBy", select: "username avatar" },
+    { path: "projectId", select: "name logo" },
   ]);
 
   const taskResponse = formatTaskResponse(task);
 
   await redisService.cacheTask(taskId, taskResponse);
 
-  await redisService.invalidateUserTasks(task.assignedBy.toString());
-  await redisService.invalidateUserTasks(oldAssignee.toString());
-  await redisService.invalidateUserTasks(assignTo);
-  await redisService.invalidateDashboardData(task.assignedBy.toString());
-  await redisService.invalidateDashboardData(oldAssignee.toString());
-  await redisService.invalidateDashboardData(assignTo);
+  const senderId = currentUserId.toString();
+  const newAssigneeId = String(assignTo);
+  const oldAssigneeId = oldAssignee.toString();
+  const assignerId =
+    task.assignedBy?._id?.toString?.() || task.assignedBy.toString();
+  const affectedUserIds = [
+    ...new Set([senderId, newAssigneeId, oldAssigneeId, assignerId]),
+  ];
+
+  for (const userId of affectedUserIds) {
+    await redisService.invalidateUserTasks(userId);
+    await redisService.invalidateDashboardData(userId);
+    await redisService.del(`task_stats:${userId}`);
+  }
   await redisService.invalidatePattern("tasks:*");
 
-  await Notification.create({
-    recipient: assignTo,
-    sender: currentUserId,
-    type: "task_reassigned",
-    message: `${req.user.username} reassigned task "${task.title}" to you`,
-    taskId: task._id,
-  });
+  if (newAssigneeId !== senderId) {
+    await notifyUser({
+      recipient: assignTo,
+      sender: currentUserId,
+      type: "task_reassigned",
+      message: `${req.user.username} reassigned task "${task.title}" to you`,
+      taskId: task._id,
+    });
+  }
 
-  await Notification.create({
-    recipient: oldAssignee,
-    sender: currentUserId,
-    type: "task_unassigned",
-    message: `Task "${task.title}" has been reassigned`,
-    taskId: task._id,
+  if (oldAssigneeId !== senderId && oldAssigneeId !== newAssigneeId) {
+    await notifyUser({
+      recipient: oldAssignee,
+      sender: currentUserId,
+      type: "task_unassigned",
+      message: `Task "${task.title}" has been reassigned`,
+      taskId: task._id,
+    });
+  }
+
+  await publishTaskChange({
+    action: "reassigned",
+    task: taskResponse,
+    extraUserIds: affectedUserIds,
   });
 
   res.status(200).json({
@@ -433,6 +497,17 @@ export const deleteTask = catchAsync(async (req: any, res: any) => {
       .json({ message: "Only the user who assigned this task can delete it" });
   }
 
+  const deletedTask = {
+    id: task._id.toString(),
+    title: task.title,
+    status: task.status,
+    priority: task.priority,
+    deleted: true,
+    assignTo: { id: task.assignTo.toString() },
+    assignedBy: { id: task.assignedBy.toString() },
+    project: task.projectId ? { id: task.projectId.toString() } : null,
+  };
+
   await Task.findByIdAndDelete(taskId);
 
   await redisService.invalidateTask(taskId);
@@ -441,12 +516,20 @@ export const deleteTask = catchAsync(async (req: any, res: any) => {
   await redisService.invalidateDashboardData(task.assignedBy.toString());
   await redisService.invalidateDashboardData(task.assignTo.toString());
   await redisService.invalidatePattern("tasks:*");
+  await redisService.del(`task_stats:${task.assignedBy}`);
+  await redisService.del(`task_stats:${task.assignTo}`);
+
+  await publishTaskChange({
+    action: "deleted",
+    task: deletedTask,
+  });
 
   res.status(200).json({ message: "Task deleted successfully" });
 });
 
 export const clearTaskCaches = catchAsync(async (req: any, res: any) => {
   await redisService.invalidatePattern("tasks:*");
+  await redisService.invalidatePattern("task_stats:*");
   await redisService.invalidatePattern("user:*:tasks");
   await redisService.invalidatePattern("dashboard:*");
 
@@ -456,44 +539,42 @@ export const clearTaskCaches = catchAsync(async (req: any, res: any) => {
 export const getTaskStats = catchAsync(async (req: any, res: any) => {
   const currentUserId = req.user._id;
 
-  const cachedStats = await redisService.get(`task_stats:${currentUserId}`);
-  if (cachedStats) {
-    return res.status(200).json(cachedStats);
-  }
+  // Always compute fresh — top chips need real-time numbers
+  await redisService.del(`task_stats:${currentUserId}`);
 
-  const totalTasks = await Task.countDocuments({
+  const userFilter = {
     $or: [{ assignTo: currentUserId }, { assignedBy: currentUserId }],
-  });
-  const completedTasks = await Task.countDocuments({
-    $or: [{ assignTo: currentUserId }, { assignedBy: currentUserId }],
-    status: "completed",
-  });
-  const pendingTasks = await Task.countDocuments({
-    $or: [{ assignTo: currentUserId }, { assignedBy: currentUserId }],
-    status: "pending",
-  });
-  const inProgressTasks = await Task.countDocuments({
-    $or: [{ assignTo: currentUserId }, { assignedBy: currentUserId }],
-    status: "in_progress",
-  });
-  const overdueTasks = await Task.countDocuments({
-    $or: [{ assignTo: currentUserId }, { assignedBy: currentUserId }],
-    dueDate: { $lt: new Date() },
-    status: { $ne: "completed" },
-  });
+  };
 
-  const now = new Date();
-  const oneWeekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-  const oneMonthAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
-
-  const tasksThisWeek = await Task.countDocuments({
-    $or: [{ assignTo: currentUserId }, { assignedBy: currentUserId }],
-    createdAt: { $gte: oneWeekAgo },
-  });
-  const tasksThisMonth = await Task.countDocuments({
-    $or: [{ assignTo: currentUserId }, { assignedBy: currentUserId }],
-    createdAt: { $gte: oneMonthAgo },
-  });
+  const [
+    totalTasks,
+    completedTasks,
+    pendingTasks,
+    inProgressTasks,
+    cancelledTasks,
+    overdueTasks,
+    tasksThisWeek,
+    tasksThisMonth,
+  ] = await Promise.all([
+    Task.countDocuments(userFilter),
+    Task.countDocuments({ ...userFilter, status: "completed" }),
+    Task.countDocuments({ ...userFilter, status: "pending" }),
+    Task.countDocuments({ ...userFilter, status: "in_progress" }),
+    Task.countDocuments({ ...userFilter, status: "cancelled" }),
+    Task.countDocuments({
+      ...userFilter,
+      dueDate: { $lt: new Date() },
+      status: { $nin: ["completed", "cancelled"] },
+    }),
+    Task.countDocuments({
+      ...userFilter,
+      createdAt: { $gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) },
+    }),
+    Task.countDocuments({
+      ...userFilter,
+      createdAt: { $gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) },
+    }),
+  ]);
 
   const completionRate =
     totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0;
@@ -503,13 +584,12 @@ export const getTaskStats = catchAsync(async (req: any, res: any) => {
     completedTasks,
     pendingTasks,
     inProgressTasks,
+    cancelledTasks,
     overdueTasks,
     tasksThisWeek,
     tasksThisMonth,
     completionRate: parseFloat(completionRate.toFixed(2)),
   };
-
-  await redisService.set(`task_stats:${currentUserId}`, stats, 300);
 
   res.status(200).json(stats);
 });

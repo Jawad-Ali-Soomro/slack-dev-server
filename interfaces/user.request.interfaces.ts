@@ -1,3 +1,5 @@
+import { Availability, IUser, JobRole } from "./user.interface";
+
 export interface UpdateProfileRequest {
   username?: string;
   bio?: string;
@@ -13,6 +15,9 @@ export interface UpdateProfileRequest {
   dateOfBirth?: Date;
   phone?: string;
   isPrivate?: boolean;
+  availability?: string;
+  jobRole?: string;
+  statusMessage?: string;
 }
 
 export interface ChangePasswordRequest {
@@ -42,6 +47,9 @@ export interface UserResponse {
   followersCount?: number;
   followingCount?: number;
   emailVerified?: boolean;
+  availability?: string;
+  jobRole?: string;
+  statusMessage?: string;
   awards?: Array<{
     awardId: string;
     name: string;
@@ -54,3 +62,19 @@ export interface UserResponse {
   createdAt?: Date;
   updatedAt?: Date;
 }
+
+
+export const formatUserResponse = (user: IUser): UserResponse => ({
+  id: user._id,
+  email: user.email,
+  username: user.username,
+  role: user.role,
+  avatar: user.avatar,
+  emailVerified: user.emailVerified,
+  isPrivate: user.isPrivate,
+  createdAt: user.createdAt,
+  socialLinks: user?.socialLinks,
+  availability: (user as any).availability || Availability.Available,
+  jobRole: (user as any).jobRole || JobRole.Unassigned,
+  statusMessage: (user as any).statusMessage
+});

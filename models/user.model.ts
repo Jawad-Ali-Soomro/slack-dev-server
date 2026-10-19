@@ -1,10 +1,10 @@
 import mongoose, { Document, Schema } from "mongoose";
 import bcrypt from "bcryptjs";
-import { IUser, Role } from "../interfaces";
+import { IUser, Role, Availability, JobRole } from "../interfaces/index";
 
 const UserSchema = new Schema<IUser>({
   email: { type: String, required: true },
-  username: { type: String, required: true, unique: true },
+  username: { type: String, required: true },
   password: { type: String, required: true },
   role: {
     type: String,
@@ -97,19 +97,19 @@ const UserSchema = new Schema<IUser>({
       ref: "Team",
     },
   ],
-  awards: [
-    {
-      awardId: { type: String, required: true },
-      name: { type: String, required: true },
-      icon: { type: String, required: true },
-      description: { type: String, required: true },
-      pointsRequired: { type: Number, required: true },
-      earnedAt: { type: Date, default: Date.now },
-    },
-  ],
-  totalChallengePoints: {
-    type: Number,
-    default: 0,
+  availability: {
+    type: String,
+    enum: Object.values(Availability),
+    default: Availability.Available,
+  },
+  jobRole: {
+    type: String,
+    enum: Object.values(JobRole),
+    default: JobRole.Unassigned,
+  },
+  statusMessage: {
+    type: String,
+    maxlength: 140,
   },
 });
 

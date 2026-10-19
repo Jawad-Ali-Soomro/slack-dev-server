@@ -2,13 +2,13 @@ export const swaggerOptions = {
   definition: {
     openapi: "3.0.0",
     info: {
-      title: "Core Stack API",
+      title: "Skack Developers API",
       version: "1.0.0",
       description: "Complete authentication system with email verification and password reset",
     },
     servers: [
       {
-        url: "http://localhost:4000",
+        url: process.env.SERVER_URL,
         description: "Development server"
       },
     ],
